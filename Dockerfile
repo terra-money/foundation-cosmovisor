@@ -3,9 +3,9 @@ FROM ubuntu:20.04
 RUN apt update
 RUN apt install -y curl vim sudo
 
-RUN addgroup terra \
-    && adduser --ingroup terra --disabled-login --home /home/terra terra
-RUN echo "terra  ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/terra
+RUN addgroup ubuntu \
+    && adduser --ingroup ubuntu --disabled-login --home /home/ubuntu ubuntu
+RUN echo "ubuntu  ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/ubuntu
 
 #https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.3.0
 RUN curl -L https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | tar xz && mv cosmovisor /usr/local/bin/cosmovisor
@@ -20,9 +20,9 @@ RUN mkdir /app/config
 COPY ./scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod u+x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
-RUN chown terra:terra /usr/local/bin/entrypoint.sh /usr/local/bin/cosmovisor /entrypoint /var/log/cosmovisor /app /app/*
+RUN chown ubuntu:ubuntu /usr/local/bin/entrypoint.sh /usr/local/bin/cosmovisor /entrypoint /var/log/cosmovisor /app /app/*
 
-USER terra
+USER ubuntu
 
 
 # rest server
