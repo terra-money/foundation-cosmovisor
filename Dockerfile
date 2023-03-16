@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 RUN apt update
-RUN apt install -y curl vim sudo
+RUN apt install -y curl vim sudo jq
 
 RUN addgroup ubuntu \
     && adduser --ingroup ubuntu --disabled-login --home /home/ubuntu ubuntu
