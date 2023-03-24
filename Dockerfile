@@ -1,29 +1,23 @@
-FROM ubuntu:20.04
+FROM alpine:3.16
 
-RUN apt update
-RUN apt install -y curl vim sudo jq
+RUN apk add --no-cache jq
 
-RUN addgroup ubuntu \
-    && adduser --ingroup ubuntu --disabled-login --home /home/ubuntu ubuntu
-RUN echo "ubuntu  ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/ubuntu
+COPY ./chains /etc/chains
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
-#https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.3.0
-RUN curl -L https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | tar xz && mv cosmovisor /usr/local/bin/cosmovisor
+WORKDIR /app
 
-RUN mkdir /entrypoint
-RUN mkdir /var/log/cosmovisor
+RUN wget -O- https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
+    tar -xz -C /usr/local/bin
 
-RUN mkdir /app
-RUN mkdir /app/data
-RUN mkdir /app/config
+RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
 
-COPY ./scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-RUN chmod u+x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
-RUN chown ubuntu:ubuntu /usr/local/bin/entrypoint.sh /usr/local/bin/cosmovisor /entrypoint /var/log/cosmovisor /app /app/*
-
-USER ubuntu
-
+# Cosmosvisor vars
+ENV DAEMON_HOME=/app \
+    DAEMON_NAME=terrad \
+    DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
+    DAEMON_RESTART_AFTER_UPGRADE=true \
+    UNSAFE_SKIP_BACKUP=true 
 
 # rest server
 EXPOSE 1317
@@ -34,4 +28,8 @@ EXPOSE 26656
 # tendermint rpc
 EXPOSE 26657
 
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh"]
+RUN addgroup -g 1000 cosmovisor && \
+    adduser -u 1000 -G cosmovisor -D -h /app cosmovisor
+
+ENTRYPOINT [ "entrypoint.sh"]
+CMD ["cosmovisor", "run", "start", "--home", "./"]
