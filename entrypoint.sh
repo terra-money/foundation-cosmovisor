@@ -50,11 +50,6 @@ fi
 : ${DAEMON_HOME:="${HOME}/.${DAEMON_NAME}"}
 : ${DAEMON_PREFIX:="$(echo ${DAEMON_NAME} | sed -e 's/d$//')"}
 
-
-# System information
-OS=$(uname -s)
-ARCH=$(uname -m)
-
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
 UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
@@ -76,7 +71,17 @@ CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_CURRENT_BIN="${CV_CURRENT_DIR}/bin/${DAEMON_NAME}"
 
+# Set the default chain information
 CHAIN_INFO="/etc/chains/${DAEMON_NAME}/${CHAIN_ID}"
+
+# System information
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+MACH=$(uname -m)
+if [ "${MACH}" = "x86_64" ]; then
+    ARCH="${OS}/amd64"
+elif [ "${MACH}" = "aarch64" ]; then
+    ARCH="${OS}/arm64"
+fi
 
 main(){
     import_chain_info
@@ -107,19 +112,19 @@ download_binaries(){
 
     if [ -f "${UPGRADE_JSON}" ]; then
         name=$(jq  -r ".name" ${UPGRADE_JSON})
-        info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"linux/amd64\" end" ${UPGRADE_JSON})
+        info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
         if [ "${info}" = http:* ]; then
             download="${info}"
         elif [ -f "${chains_dir}/${name}" ]; then
-            download=$(jq -r ".binaries.\"linux/amd64\"" "${chains_dir}/${name}")
+            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${name}")
         elif [ -f "${chains_dir}/${info}" ]; then
-            download=$(jq -r ".binaries.\"linux/amd64\"" "${chains_dir}/${info}")
+            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${info}")
         fi
         download_binary "${name}" "${download}"
         link_cv_current "${name}"
     elif [ -d "${chains_dir}" ]; then
         for name in $(ls ${chains_dir}); do
-            download=$(jq -r ".binaries.\"linux/amd64\"" "${chains_dir}/${name}")
+            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${name}")
             download_binary "${name}" "${download}"
             link_cv_current "${name}"
         done 
@@ -148,6 +153,7 @@ link_cv_current(){
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
         ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
     fi
+    # Link the genesis directory if the upgrade is the genesis version (or no genesis version is set)
     if [ -z "${GENESIS_VERSION}" ] || [ "${GENESIS_VERSION}" = "${upgrade}" ]; then
         link_cv_genesis "${upgrade}"
     fi

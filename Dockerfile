@@ -1,4 +1,8 @@
-FROM alpine:3.16
+ARG ALPINE_VERSION="3.16"
+ARG BUILDPLATFORM=linux/amd64
+ARG BASE_IMAGE="alpine:${ALPINE_VERSION}"
+
+FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
 RUN apk add --no-cache jq
 
