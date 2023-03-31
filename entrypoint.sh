@@ -6,8 +6,6 @@ if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
 
-CHAIN_REGISTRY_NAME=${CHAIN_REGISTRY_NAME:="terra2testnet"}
-CHAIN_REGISTRY=${CHAIN_REGISTRY:="https://raw.githubusercontent.com/terra-money/chain-registry/master"}
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_JSON="${DAEMON_HOME}/${CHAIN_REGISTRY_NAME}.json"
 
@@ -64,14 +62,6 @@ get_system_info(){
 
 # Chain information
 get_chain_json(){
-    case "${CHAIN_REGISTRY_NAME}" in
-    *testnet) 
-        CHAIN_JSON_URL=${CHAIN_JSON_URL:="${CHAIN_REGISTRY}/testnets/${CHAIN_REGISTRY_NAME}/chain.json"}
-        ;;
-    *       ) 
-        CHAIN_JSON_URL=${CHAIN_JSON_URL:="${CHAIN_REGISTRY}/${CHAIN_REGISTRY_NAME}/chain.json"}
-        ;;
-    esac
     logger "Retrieving chain information from ${CHAIN_JSON_URL}"
     if [ ! -f "${CHAIN_JSON}" ]; then
         wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
