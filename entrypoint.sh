@@ -6,49 +6,10 @@ if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
 
-: ${MONIKER:=moniker}
-: ${PRUNING_STRATEGY:=nothing}
-: ${PRUNING_KEEP_RECENT:=0}
-: ${PRUNING_INTERVAL:=0}
-: ${PRUNING_KEEP_EVERY:=0}
-: ${SNAPSHOT_INTERVAL:=0}
-: ${KEEP_SNAPSHOTS:=5}
-: ${TRUST_LOOKBACK:=2000}
-: ${DB_BACKEND:=goleveldb}
-: ${CONTRACT_MEMORY_CACHE_SIZE:=8192}
-
-: ${LOG_FORMAT:=json}
-: ${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
-: ${MAX_BODY_BYTES:=2000000}
-: ${ADDR_BOOK_STRICT:=false}
-: ${ALLLOW_DUPLICATE_IP:=true}
-: ${DIAL_TIMEOUT:=5s}
-: ${CHUNK_FETCHERS:=30}
-: ${ENABLE_API:=true}
-: ${ENABLE_SWAGGER:=true}
-: ${UNSAFE_SKIP_BACKUP=true}
-
-: ${SEEDS:=}
-: ${NODE_KEY:=}
-: ${NODE_MODE:=}
-: ${MAX_PAYLOAD:=}
-: ${GENESIS_URL:=}
-: ${ADDR_BOOK_URL:=}
-: ${PRIVATE_VALIDATOR_KEY:=}
-: ${PRIVATE_PEER_IDS:=}
-: ${PUBLIC_ADDRESS:=}
-: ${BOOTSTRAP_PEERS:=}
-: ${PERSISTENT_PEERS:=}
-: ${UNCONDITIONAL_PEER_IDS:=}
-: ${IS_SEED_NODE:="false"}
-: ${IS_SENTRY:="false"}
-: ${USE_HORCRUX:="false"}
-: ${SENTRIED_VALIDATOR:="false"}
-
-: ${CHAIN_ID}
-: ${DAEMON_NAME:="terrad"}
-: ${DAEMON_HOME:="${HOME}/.${DAEMON_NAME}"}
-: ${DAEMON_PREFIX:="$(echo ${DAEMON_NAME} | sed -e 's/d$//')"}
+CHAIN_REGISTRY_NAME=${CHAIN_REGISTRY_NAME:="terra2testnet"}
+CHAIN_REGISTRY=${CHAIN_REGISTRY:="https://raw.githubusercontent.com/terra-money/chain-registry/master"}
+DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
+CHAIN_JSON="${DAEMON_HOME}/${CHAIN_REGISTRY_NAME}.json"
 
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
@@ -56,35 +17,24 @@ UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
 
 # Config directory
 CONFIG_DIR="${DAEMON_HOME}/config"
-APP_TOML="${CONFIG_DIR}/app.toml"
-CONFIG_TOML="${CONFIG_DIR}/config.toml"
-CLIENT_TOML="${CONFIG_DIR}/client.toml"
 ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
+APP_TOML="${CONFIG_DIR}/app.toml"
+CLIENT_TOML="${CONFIG_DIR}/client.toml"
+CONFIG_TOML="${CONFIG_DIR}/config.toml"
 GENESIS_FILE="${CONFIG_DIR}/genesis.json"
 NODE_KEY_FILE=${CONFIG_DIR}/node_key.json
 PV_KEY_FILE=${CONFIG_DIR}/priv_validator_key.json
 
 # Cosmovisor directory
 COSMOVISOR_DIR="${DAEMON_HOME}/cosmovisor"
-CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
-CV_CURRENT_BIN="${CV_CURRENT_DIR}/bin/${DAEMON_NAME}"
-
-# Set the default chain information
-CHAIN_INFO="/etc/chains/${DAEMON_NAME}/${CHAIN_ID}"
-
-# System information
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-MACH=$(uname -m)
-if [ "${MACH}" = "x86_64" ]; then
-    ARCH="${OS}/amd64"
-elif [ "${MACH}" = "aarch64" ]; then
-    ARCH="${OS}/arm64"
-fi
+CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
 main(){
-    import_chain_info
+    get_system_info
+    get_chain_json
+    parse_chain_info
     download_binaries
     initialize_node
     download_genesis
@@ -96,53 +46,138 @@ main(){
     modify_app_toml
 }
 
-# Chain information
-import_chain_info(){
-    if [ -f "${CHAIN_INFO}/defaults" ]; then
-        . "${CHAIN_INFO}/defaults"
+logger(){
+    echo "$*"
+}
+
+# System information
+get_system_info(){
+    logger "Identifying system architecture..."
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    MACH=$(uname -m)
+    if [ "${MACH}" = "x86_64" ]; then
+        ARCH="${OS}/amd64"
+    elif [ "${MACH}" = "aarch64" ]; then
+        ARCH="${OS}/arm64"
     fi
+}
+
+# Chain information
+get_chain_json(){
+    case "${CHAIN_REGISTRY_NAME}" in
+    *testnet) 
+        CHAIN_JSON_URL=${CHAIN_JSON_URL:="${CHAIN_REGISTRY}/testnets/${CHAIN_REGISTRY_NAME}/chain.json"}
+        ;;
+    *       ) 
+        CHAIN_JSON_URL=${CHAIN_JSON_URL:="${CHAIN_REGISTRY}/${CHAIN_REGISTRY_NAME}/chain.json"}
+        ;;
+    esac
+    logger "Retrieving chain information from ${CHAIN_JSON_URL}"
+    if [ ! -f "${CHAIN_JSON}" ]; then
+        wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
+    fi
+}
+
+parse_chain_info(){
+    logger "Parsing chain information..."
+    export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
+    export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
+
+    MONIKER=${MONIKER:=moniker}
+    PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
+    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
+    PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
+    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=0}
+    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=5}
+    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
+    DB_BACKEND=${DB_BACKEND:=goleveldb}
+    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
+
+    LOG_FORMAT=${LOG_FORMAT:=json}
+    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
+    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
+    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
+    ALLLOW_DUPLICATE_IP=${ALLLOW_DUPLICATE_IP:=true}
+    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
+    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
+    ENABLE_API=${ENABLE_API:=true}
+    ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
+    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
+
+    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
+    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
+    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
+    NODE_KEY=${NODE_KEY:=}
+    NODE_MODE=${NODE_MODE:=}
+    MAX_PAYLOAD=${MAX_PAYLOAD:=}
+    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
+    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
+    PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
+    PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
+    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
+    UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
+    IS_SEED_NODE=${IS_SEED_NODE:="false"}
+    IS_SENTRY=${IS_SENTRY:="false"}
+    USE_HORCRUX=${USE_HORCRUX:="false"}
+    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
 }
 
 # Identify and download the binaries for the given upgrades
 download_binaries(){
     local name
     local info
-    local download
-    local chains_dir="${CHAIN_INFO}/updates"
+    local binary_url
 
     if [ -f "${UPGRADE_JSON}" ]; then
-        name=$(jq  -r ".name" ${UPGRADE_JSON})
+        logger "Downloading binary identified in ${upgrade_json}..."
+        name=$(jq  -r ".name" ${upgrade_json})
         info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
         if [ "${info}" = http:* ]; then
-            download="${info}"
-        elif [ -f "${chains_dir}/${name}" ]; then
-            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${name}")
-        elif [ -f "${chains_dir}/${info}" ]; then
-            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${info}")
+            binary_url="${info}"
         fi
-        download_binary "${name}" "${download}"
-        link_cv_current "${name}"
-    elif [ -d "${chains_dir}" ]; then
-        for name in $(ls ${chains_dir}); do
-            download=$(jq -r ".binaries.\"${ARCH}\"" "${chains_dir}/${name}")
-            download_binary "${name}" "${download}"
-            link_cv_current "${name}"
-        done 
+        recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
+        for version in "${name}" "${info}", "${recver}"; do
+            binary_url="${binary_url:="$(get_chain_json_binary "${version}")"}"
+            if [ -n "${binary_url}" ]; then
+                download_binary "${version}" "${binary_url}"
+                link_cv_current "${version}"
+                break
+            fi
+        done
     else
-        echo "Daemon binary not found" >&2
-        exit 1
+        logger "Downloading binaries identified in ${CHAIN_JSON}..."
+        for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
+            binary_url="$(get_chain_json_binary "${version}")"
+            download_binary "${version}" "${binary_url}"
+            link_cv_current "${version}"
+        done 
     fi
 }
-    
+
+get_chain_json_binary(){
+    local version="$1"
+    local binary_url
+    if [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
+        echo "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
+    elif [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
+        echo "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
+    elif [ "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" = *"${version}"* ]; then
+        echo "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
+    fi
+}
+
 # Download the binary for the given upgrade
 download_binary(){
     local upgrade="$1"
-    local download="$2"
+    local binary_url="$2"
     local bin_path="${CV_UPGRADES_DIR}/${upgrade}/bin"
     local binary="${bin_path}/${DAEMON_NAME}"
     if [ ! -f "${binary}" ]; then
         mkdir -p "${bin_path}"
-        wget "${download}" -O- | tar xz -C "${bin_path}"
+        wget "${binary_url}" -O- | tar xz -C "${bin_path}"
     fi
 }
 
@@ -176,7 +211,7 @@ link_cv_genesis(){
 initialize_node(){
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         echo "Initializing node from scratch..."
-        ${CV_CURRENT_BIN} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
+        ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
     fi
     if [ ! -d "${DATA_DIR}" ]; then
         mkdir -p "${DATA_DIR}"
@@ -286,8 +321,7 @@ modify_config_toml(){
 
 modify_app_toml(){
     cp "${APP_TOML}" "${APP_TOML}.bak" 
-    MODIFIED_MINIMUM_GAS_PRICES="$(echo ${MINIMUM_GAS_PRICES} | tr "'" '"' | jq -r '. | to_entries[] | "\(.value)\(.key)"' | paste -sd ,)"
-    sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MODIFIED_MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
+    sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning *=.*|pruning = \"${PRUNING_STRATEGY}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-interval *=.*|pruning-interval = \"${PRUNING_INTERVAL}\"|" -i "${APP_TOML}"

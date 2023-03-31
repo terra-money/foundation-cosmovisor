@@ -6,7 +6,6 @@ FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
 RUN apk add --no-cache jq
 
-COPY ./chains /etc/chains
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /app
@@ -16,9 +15,11 @@ RUN wget -O- https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2
 
 RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
 
+# Chain registry name
+ENV CHAIN_REGISTRY_NAME=terra2testnet
+
 # Cosmosvisor vars
 ENV DAEMON_HOME=/app \
-    DAEMON_NAME=terrad \
     DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
     DAEMON_RESTART_AFTER_UPGRADE=true \
     UNSAFE_SKIP_BACKUP=true 

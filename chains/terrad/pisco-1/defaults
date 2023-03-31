@@ -1,3 +1,0 @@
-: ${GENESIS_URL:="https://tfl-pisco-1.s3.amazonaws.com/genesis.json"}
-: ${MINIMUM_GAS_PRICES:='{"uluna": "0.015"}'}
-: ${GENESIS_VERSION:="2.0.0-rc.0"}
