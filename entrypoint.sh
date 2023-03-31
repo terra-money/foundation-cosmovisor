@@ -122,8 +122,8 @@ download_binaries(){
     local binary_url
 
     if [ -f "${UPGRADE_JSON}" ]; then
-        logger "Downloading binary identified in ${upgrade_json}..."
-        name=$(jq  -r ".name" ${upgrade_json})
+        logger "Downloading binary identified in ${UPGRADE_JSON}..."
+        name=$(jq  -r ".name" ${UPGRADE_JSON})
         info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
         if [ "${info}" = http:* ]; then
             binary_url="${info}"
