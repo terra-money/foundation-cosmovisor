@@ -7,7 +7,7 @@ if [ -n "${DEBUG:=}" ]; then
 fi
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
-CHAIN_JSON="${DAEMON_HOME}/${CHAIN_REGISTRY_NAME}.json"
+CHAIN_JSON="${DAEMON_HOME}/chain.json"
 
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
