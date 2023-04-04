@@ -273,7 +273,7 @@ modify_config_toml(){
     sed -e "s|^addr-book-strict *=.*|addr-book-strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
     sed -e "s|^use-p2p *=.*|use-p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
-    sed -e "s|^namespace *=.*|namespace = ${METRIC_NAMESPACE}|" -i "${CONFIG_TOML}"
+    sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
 
     if [ -n "${NODE_MODE}" ]; then
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
