@@ -113,6 +113,7 @@ parse_chain_info(){
     IS_SENTRY=${IS_SENTRY:="false"}
     USE_HORCRUX=${USE_HORCRUX:="false"}
     SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
+    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
 }
 
 # Identify and download the binaries for the given upgrades
@@ -259,7 +260,6 @@ modify_client_toml(){
 modify_config_toml(){
     cp "${CONFIG_TOML}" "${CONFIG_TOML}.bak"
     sed -e "s|^laddr *=\s*\"tcp:\/\/127.0.0.1|laddr = \"tcp:\/\/0.0.0.0|" -i "${CONFIG_TOML}"
-    sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^log_format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^timeout_broadcast_tx_commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^max_body_bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
@@ -272,6 +272,8 @@ modify_config_toml(){
     sed -e "s|^allow-duplicate-ip *=.*|allow-duplicate-ip = ${ALLLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
     sed -e "s|^addr-book-strict *=.*|addr-book-strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
     sed -e "s|^use-p2p *=.*|use-p2p = true|" -i "${CONFIG_TOML}"
+    sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
+    sed -e "s|^namespace *=.*|namespace = ${METRIC_NAMESPACE}|" -i "${CONFIG_TOML}"
 
     if [ -n "${NODE_MODE}" ]; then
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
