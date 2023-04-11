@@ -171,8 +171,19 @@ download_binary(){
     local bin_path="${CV_UPGRADES_DIR}/${upgrade}/bin"
     local binary="${bin_path}/${DAEMON_NAME}"
     if [ ! -f "${binary}" ]; then
-        mkdir -p "${bin_path}"
-        wget "${binary_url}" -O- | tar xz -C "${bin_path}"
+        olddir="$(pwd)"
+        tmpdir="$(mktemp -d)"
+        cd "${tmpdir}"
+        wget "${binary_url}" 
+        for file in $(ls) do;
+            if [ "${file}" = *.tar.gz ]; then
+                tar xzf "${file}" -C "${bin_path}"
+            else
+                mv "${file}" "${binary}"
+            fi
+        done
+        cd "${olddir}"
+        rm -rf "${tmpdir}"
     fi
 }
 
