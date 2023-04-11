@@ -124,20 +124,27 @@ download_binaries(){
 
     if [ -f "${UPGRADE_JSON}" ]; then
         logger "Downloading binary identified in ${UPGRADE_JSON}..."
-        name=$(jq  -r ".name" ${UPGRADE_JSON})
         info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
-        if [ "${info}" = http:* ]; then
+        if [ "${info}" = "{\"binaries\""* ]; then
+            binary_url="$(echo $info | jq -r ".binaries.\"${ARCH}\"")"
+            download_binary "${version}" "${binary_url}"
+            link_cv_current "${version}"
+        elif [ "${info}" = http:* ]; then
             binary_url="${info}"
+            download_binary "${version}" "${binary_url}"
+            link_cv_current "${version}"
+        else
+            name=$(jq  -r ".name" ${UPGRADE_JSON})
+            recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
+            for version in "${name}" "${info}", "${recver}"; do
+                binary_url="${binary_url:="$(get_chain_json_binary "${version}")"}"
+                if [ -n "${binary_url}" ]; then
+                    download_binary "${version}" "${binary_url}"
+                    link_cv_current "${version}"
+                    break
+                fi
+            done
         fi
-        recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
-        for version in "${name}" "${info}", "${recver}"; do
-            binary_url="${binary_url:="$(get_chain_json_binary "${version}")"}"
-            if [ -n "${binary_url}" ]; then
-                download_binary "${version}" "${binary_url}"
-                link_cv_current "${version}"
-                break
-            fi
-        done
     else
         logger "Downloading binaries identified in ${CHAIN_JSON}..."
         for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
