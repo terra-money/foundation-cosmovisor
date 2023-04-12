@@ -62,7 +62,7 @@ get_system_info(){
 
 # Chain information
 get_chain_json(){
-    logger "Retrieving chain information from ${CHAIN_JSON_URL}"
+    logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
     if [ ! -f "${CHAIN_JSON}" ]; then
         wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
     fi
@@ -122,7 +122,8 @@ download_binaries(){
     local info
     local binary_url
 
-    if [ -f "${UPGRADE_JSON}" ]; then
+    # if upgrade.json is present try to get the binary found in upgrade.json
+    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
         logger "Downloading binary identified in ${UPGRADE_JSON}..."
         name=$(jq  -r ".name" ${UPGRADE_JSON})
         info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
@@ -136,13 +137,20 @@ download_binaries(){
             link_cv_current "${name}"
         fi
     fi
-    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+
+    # if upgrade.json is present but the binary is not found in upgrade.json
+    # try to get the binary from chain.json rec version
+    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
         recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
         binary_url="${binary_url:="$(get_chain_json_binary "${recver}")"}"
         if [ -n "${binary_url}" ]; then
             download_binary "${recver}" "${binary_url}"
             link_cv_current "${recver}"
         fi
+    fi
+
+    # if upgrade.json is not present try to get all binaries from chain.json
+    if [ ! -e "${CV_CURRENT_DIR}" ]; then
         logger "Downloading binaries identified in ${CHAIN_JSON}..."
         for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
             binary_url="$(get_chain_json_binary "${version}")"
@@ -174,6 +182,7 @@ download_binary(){
     local binary="${bin_path}/${DAEMON_NAME}"
     if [ ! -f "${binary}" ]; then
         mkdir -p "${bin_path}"
+        logger "Downloading ${binary_url} to ${binary}..."
         if [ ${binary_url} = *.tar.gz* ]; then
             wget "${binary_url}" -O- | tar xz -C "${bin_path}"
         else
@@ -188,6 +197,7 @@ link_cv_current(){
     local upgrade="$1"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade}"
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
+        logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}"
         ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
     fi
     # Link the genesis directory if the upgrade is the genesis version (or no genesis version is set)
@@ -201,10 +211,13 @@ link_cv_genesis(){
     local upgrade="$1"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade}"
     if [ ! -e "${CV_GENESIS_DIR}" ]; then
+        logger "Linking ${CV_GENESIS_DIR} to ${upgrade_path}"
         ln -s "${upgrade_path}" "${CV_GENESIS_DIR}"
     elif [ ! -e "${CV_GENESIS_DIR}/bin" ]; then
+        logger "Linking ${CV_GENESIS_DIR}/bin to ${upgrade_path}/bin"
         ln -s "${upgrade_path}/bin" "${CV_GENESIS_DIR}/bin"
     elif [ ! -e "${CV_GENESIS_DIR}/bin/${DAEMON_NAME}" ]; then
+        logger "Linking ${CV_GENESIS_DIR}/bin/${DAEMON_NAME} to ${upgrade_path}/bin/${DAEMON_NAME}"
         ln -s "${upgrade_path}/bin/${DAEMON_NAME}" "${CV_GENESIS_DIR}/bin/${DAEMON_NAME}"
     fi
 }
@@ -212,7 +225,7 @@ link_cv_genesis(){
 # Initialize the node
 initialize_node(){
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
-        echo "Initializing node from scratch..."
+        logger "Initializing node from scratch..."
         ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
     fi
     if [ ! -d "${DATA_DIR}" ]; then
@@ -227,7 +240,7 @@ download_genesis(){
     fi
 
     if [ -n "${GENESIS_URL}" ]; then
-        echo "Downloading genesis file..."
+        logger "Downloading genesis file from ${GENESIS_URL}..."
         if [ "${GENESIS_URL}" = *.tar.gz ]; then
             wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
         elif [ "${GENESIS_URL}" = *.gz ]; then
@@ -374,14 +387,11 @@ configure_state_sync(){
 
         echo ""
         echo "Using state sync from with the following settings:"
-        sed -i.bak -e "s/^enable *=.*/enable = true/" "${CONFIG_TOML}"
-        sed -i.bak -e "s#^rpc_servers *=.*#rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"#" "${CONFIG_TOML}"
-        sed -i.bak -e "s#^rpc-servers *=.*#rpc-servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"#" "${CONFIG_TOML}"
-        sed -i.bak -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" "${CONFIG_TOML}"
-        sed -i.bak -e "s|^trust-height *=.*|trust-height = ${SYNC_BLOCK_HEIGHT}|" "${CONFIG_TOML}"
-        sed -i.bak -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" "${CONFIG_TOML}"
-        sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"${SYNC_BLOCK_HASH}\"|" "${CONFIG_TOML}"
-        # sed -i.bak -e "s/^trust_period *=.*/trust_period = \"168h\"/" "${CONFIG_TOML}"
+        sed -e "s/^enable *=.*/enable = true/" -i "${CONFIG_TOML}"
+        sed -e "s#^rpc_servers *=.*#rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"#" -i "${CONFIG_TOML}"
+        sed -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
+        sed -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
+        # sed -e "s/^trust_period *=.*/trust_period = \"168h\"/" -i "${CONFIG_TOML}"
 
         cat "${CONFIG_TOML}" | grep "enable ="
         cat "${CONFIG_TOML}" | grep -A 2 -B 2 trust_hash
