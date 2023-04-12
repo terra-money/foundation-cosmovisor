@@ -140,14 +140,16 @@ download_binaries(){
         recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
         binary_url="${binary_url:="$(get_chain_json_binary "${recver}")"}"
         if [ -n "${binary_url}" ]; then
-            download_binary "${version}" "${binary_url}"
-            link_cv_current "${version}"
+            download_binary "${recver}" "${binary_url}"
+            link_cv_current "${recver}"
         fi
         logger "Downloading binaries identified in ${CHAIN_JSON}..."
         for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
             binary_url="$(get_chain_json_binary "${version}")"
-            download_binary "${version}" "${binary_url}"
-            link_cv_current "${version}"
+            if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
+                download_binary "${version}" "${binary_url}"
+                link_cv_current "${version}"
+            fi
         done 
     fi
 }
@@ -171,19 +173,13 @@ download_binary(){
     local bin_path="${CV_UPGRADES_DIR}/${upgrade}/bin"
     local binary="${bin_path}/${DAEMON_NAME}"
     if [ ! -f "${binary}" ]; then
-        olddir="$(pwd)"
-        tmpdir="$(mktemp -d)"
-        cd "${tmpdir}"
-        wget "${binary_url}" 
-        for file in $(ls); do
-            if [ "${file}" = *.tar.gz ]; then
-                tar xzf "${file}" -C "${bin_path}"
-            else
-                mv "${file}" "${binary}"
-            fi
-        done
-        cd "${olddir}"
-        rm -rf "${tmpdir}"
+        mkdir -p "${bin_path}"
+        if [ ${binary_url} = *.tar.gz* ]; then
+            wget "${binary_url}" -O- | tar xz -C "${bin_path}"
+        else
+            wget "${binary_url}" -O "${binary}"
+        fi
+        chmod 0755 "${binary}"
     fi
 }
 
