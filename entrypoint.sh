@@ -175,7 +175,7 @@ download_binary(){
         tmpdir="$(mktemp -d)"
         cd "${tmpdir}"
         wget "${binary_url}" 
-        for file in $(ls) do;
+        for file in $(ls); do
             if [ "${file}" = *.tar.gz ]; then
                 tar xzf "${file}" -C "${bin_path}"
             else
