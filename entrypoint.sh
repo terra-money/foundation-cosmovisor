@@ -224,9 +224,11 @@ link_cv_genesis(){
 
 # Initialize the node
 initialize_node(){
+    # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
         ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
+        rm "${GENESIS_FILE}"
     fi
     if [ ! -d "${DATA_DIR}" ]; then
         mkdir -p "${DATA_DIR}"
@@ -239,7 +241,7 @@ download_genesis(){
         mkdir -p "${CONFIG_DIR}"
     fi
 
-    if [ -n "${GENESIS_URL}" ]; then
+    if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
         logger "Downloading genesis file from ${GENESIS_URL}..."
         if [ "${GENESIS_URL}" = *.tar.gz ]; then
             wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
