@@ -8,7 +8,6 @@ fi
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_JSON="${DAEMON_HOME}/chain.json"
-
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
 UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
@@ -42,6 +41,7 @@ main(){
     modify_client_toml
     modify_config_toml
     modify_app_toml
+    configure_state_sync
 }
 
 logger(){
@@ -74,6 +74,13 @@ parse_chain_info(){
     export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
 
     MONIKER=${MONIKER:=moniker}
+
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:=false}
+    FORCE_SNAPSHOT_HEIGHT=${FORCE_SNAPSHOT_HEIGHT:=}
+    STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:=}
+    SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:=}
+    RESET_ON_START=${RESET_ON_START:=false}
+
     PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
     PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
@@ -96,6 +103,7 @@ parse_chain_info(){
     UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
 
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
+    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:=}
     GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
     SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
@@ -183,11 +191,14 @@ download_binary(){
     if [ ! -f "${binary}" ]; then
         mkdir -p "${bin_path}"
         logger "Downloading ${binary_url} to ${binary}..."
-        if [ ${binary_url} = *.tar.gz* ]; then
-            wget "${binary_url}" -O- | tar xz -C "${bin_path}"
-        else
-            wget "${binary_url}" -O "${binary}"
-        fi
+        case ${binary_url} in
+            *".tar.gz"*)
+                wget "${binary_url}" -O- | tar xz -C "${bin_path}"
+                ;;
+            *)
+                wget "${binary_url}" -O "${binary}"
+                ;;
+        esac
         chmod 0755 "${binary}"
     fi
 }
@@ -196,7 +207,11 @@ download_binary(){
 link_cv_current(){
     local upgrade="$1"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade}"
-    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+    if [ ! -e "${CV_CURRENT_DIR}" ] || [ -n "${RECOMMENDED_VERSION}" ]; then
+        if [ -L "${CV_CURRENT_DIR}" ]; then
+            logger "Removing link ${CV_CURRENT_DIR}"
+            rm "${CV_CURRENT_DIR}"
+        fi
         logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}"
         ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
     fi
@@ -243,13 +258,17 @@ download_genesis(){
 
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
         logger "Downloading genesis file from ${GENESIS_URL}..."
-        if [ "${GENESIS_URL}" = *.tar.gz ]; then
-            wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
-        elif [ "${GENESIS_URL}" = *.gz ]; then
-            wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
-        else
-            wget "${GENESIS_URL}" -O "${GENESIS_FILE}"
-        fi
+        case ${GENESIS_URL} in
+            *".tar.gz")
+                wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
+                ;;
+            *".gz")
+                wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
+                ;;
+            *)
+                wget "${GENESIS_URL}" -O "${GENESIS_FILE}"
+                ;;
+        esac
     fi
 }
 
@@ -363,6 +382,10 @@ modify_app_toml(){
 
 configure_state_sync(){
     if [ ${STATE_SYNC_ENABLED} = "true" ]; then
+        RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON} | sed 's/^v//g')"}
+        echo "setting the recommended version to ${RECOMMENDED_VERSION}"
+        link_cv_current "${RECOMMENDED_VERSION}"
+
         echo "State sync is enabled, attempting to fetch snapshot info..."
         if [ -z "${FORCE_SNAPSHOT_HEIGHT}" ]; then
             LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
