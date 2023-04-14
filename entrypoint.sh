@@ -79,7 +79,7 @@ parse_chain_info(){
     FORCE_SNAPSHOT_HEIGHT=${FORCE_SNAPSHOT_HEIGHT:=}
     STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:=}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:=}
-    RESET_ON_START=${RESET_ON_START:=false}
+    RESET_ON_START=${RESET_ON_START:=}
 
     PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
@@ -108,6 +108,8 @@ parse_chain_info(){
     SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
+    CHAIN_NAME=${CHAIN_NAME:="$(jq -r ".chain_name" ${CHAIN_JSON})"}
+    NETWORK_TYPE=${NETWORK_TYPE:="$(jq -r ".network_type" ${CHAIN_JSON})"}
     NODE_KEY=${NODE_KEY:=}
     NODE_MODE=${NODE_MODE:=}
     MAX_PAYLOAD=${MAX_PAYLOAD:=}
@@ -159,8 +161,14 @@ download_binaries(){
     # if upgrade.json is not present try to get all binaries from chain.json
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
         logger "Downloading binaries identified in ${CHAIN_JSON}..."
-        #reverse the versions to get the latest first
-        for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON} | tac); do
+        #reverse the versions to get the latest first if state sync is enabled
+        if [ ${STATE_SYNC_ENABLED} = "true" ]; then
+            versions=$(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON} | tac)
+        #start from the genesis version
+        else
+            versions=$(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON})
+        fi
+        for version in ${versions}; do
             binary_url="$(get_chain_json_binary "${version}")"
             if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
                 download_binary "${version}" "${binary_url}"
@@ -376,16 +384,29 @@ modify_app_toml(){
     fi
 }
 
+get_wasm(){
+    if [ "${NETWORK_TYPE}" = "testnet" ]; then
+       testnet_prefix="testnet-"
+    else
+       testnet_prefix=""
+    fi
+    wasm_url="https://snapshots.polkachu.com/${testnet_prefix}wasm/${CHAIN_NAME}/wasmonly.tar.lz4"
+    logger "Downloading wasm files from ${wasm_url}"
+    wget -O wasmonly.tar.lz4 ${wasm_url}
+
+    lz4 -c -d wasmonly.tar.lz4  | tar -x -C /app/data/
+    rm wasmonly.tar.lz4
+}
+
 configure_state_sync(){
     if [ ${STATE_SYNC_ENABLED} = "true" ]; then
-        echo "State sync is enabled, attempting to fetch snapshot info..."
+        logger "State sync is enabled, attempting to fetch snapshot info..."
         if [ -z "${FORCE_SNAPSHOT_HEIGHT}" ]; then
             LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
             if [ "${LATEST_HEIGHT}" = "null" ]; then
                 # Maybe Tendermint 0.35+?
                 LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
             fi
-
             SYNC_BLOCK_HEIGHT=$((${LATEST_HEIGHT} - ${TRUST_LOOKBACK}))
         else
             SYNC_BLOCK_HEIGHT=${FORCE_SNAPSHOT_HEIGHT}
@@ -395,6 +416,7 @@ configure_state_sync(){
             # Maybe Tendermint 0.35+?
             SYNC_BLOCK_HASH=$(curl -s "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
         fi
+        get_wasm
     fi
 
     if [ -n "${SYNC_BLOCK_HASH}" ]; then
@@ -416,18 +438,12 @@ configure_state_sync(){
     elif [ ${STATE_SYNC_ENABLED} = 'true' ]; then
         echo "Failed to look up sync snapshot, falling back to full sync..."
     fi
-
     if [ -n "${RESET_ON_START}" ]; then
+        logger "Reset on start set to: ${RESET_ON_START}"
         cp "${DATA_DIR}/priv_validator_state.json" /root/priv_validator_state.json.backup
         rm -rf "${DATA_DIR}"
         mkdir -p "${DATA_DIR}"
         mv /root/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
-    elif [ -n "${PRUNE_ON_START}" ]; then
-        if [ -n "${COSMPRUND_APP}" ]; then
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --app=${COSMPRUND_APP} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        else
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        fi
     fi
 }
 
