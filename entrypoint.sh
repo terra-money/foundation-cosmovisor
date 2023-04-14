@@ -103,7 +103,7 @@ parse_chain_info(){
     UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
 
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
-    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:=}
+    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON} | sed 's/^v//g')"}
     GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
     SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
@@ -149,18 +149,18 @@ download_binaries(){
     # if upgrade.json is present but the binary is not found in upgrade.json
     # try to get the binary from chain.json rec version
     if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
-        recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
-        binary_url="${binary_url:="$(get_chain_json_binary "${recver}")"}"
+        binary_url="${binary_url:="$(get_chain_json_binary "${RECOMMENDED_VERSION}")"}"
         if [ -n "${binary_url}" ]; then
-            download_binary "${recver}" "${binary_url}"
-            link_cv_current "${recver}"
+            download_binary "${RECOMMENDED_VERSION}" "${binary_url}"
+            link_cv_current "${RECOMMENDED_VERSION}"
         fi
     fi
 
     # if upgrade.json is not present try to get all binaries from chain.json
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
         logger "Downloading binaries identified in ${CHAIN_JSON}..."
-        for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
+        #reverse the versions to get the latest first
+        for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON} | tac); do
             binary_url="$(get_chain_json_binary "${version}")"
             if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
                 download_binary "${version}" "${binary_url}"
@@ -192,7 +192,7 @@ download_binary(){
         mkdir -p "${bin_path}"
         logger "Downloading ${binary_url} to ${binary}..."
         case ${binary_url} in
-            *".tar.gz"*)
+            *.tar.gz*)
                 wget "${binary_url}" -O- | tar xz -C "${bin_path}"
                 ;;
             *)
@@ -207,11 +207,7 @@ download_binary(){
 link_cv_current(){
     local upgrade="$1"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade}"
-    if [ ! -e "${CV_CURRENT_DIR}" ] || [ -n "${RECOMMENDED_VERSION}" ]; then
-        if [ -L "${CV_CURRENT_DIR}" ]; then
-            logger "Removing link ${CV_CURRENT_DIR}"
-            rm "${CV_CURRENT_DIR}"
-        fi
+    if [ ! -e "${CV_CURRENT_DIR}" ]; then
         logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}"
         ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
     fi
@@ -259,10 +255,10 @@ download_genesis(){
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
         logger "Downloading genesis file from ${GENESIS_URL}..."
         case ${GENESIS_URL} in
-            *".tar.gz")
+            *.tar.gz)
                 wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
                 ;;
-            *".gz")
+            *.gz)
                 wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
                 ;;
             *)
@@ -382,10 +378,6 @@ modify_app_toml(){
 
 configure_state_sync(){
     if [ ${STATE_SYNC_ENABLED} = "true" ]; then
-        RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON} | sed 's/^v//g')"}
-        echo "setting the recommended version to ${RECOMMENDED_VERSION}"
-        link_cv_current "${RECOMMENDED_VERSION}"
-
         echo "State sync is enabled, attempting to fetch snapshot info..."
         if [ -z "${FORCE_SNAPSHOT_HEIGHT}" ]; then
             LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
