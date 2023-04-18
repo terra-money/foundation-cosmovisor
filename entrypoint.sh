@@ -135,6 +135,7 @@ download_versions(){
     # if state sync is enabled try to get latest version
     if [ ${STATE_SYNC_ENABLED} = "true" ]; then
         download_versions_statesync
+        get_wasm
     else
         download_versions_default
     fi
@@ -468,18 +469,28 @@ modify_app_toml(){
     fi
 }
 
+get_wasm(){
+    if [ "${NETWORK_TYPE}" = "testnet" ]; then
+       testnet_prefix="testnet-"
+    else
+       testnet_prefix=""
+    fi
+    wasm_url="https://snapshots.polkachu.com/${testnet_prefix}wasm/${CHAIN_NAME}/wasmonly.tar.lz4"
+    logger "Downloading wasm files from ${wasm_url}"
+    wget -O wasmonly.tar.lz4 ${wasm_url}
+
+    lz4 -c -d wasmonly.tar.lz4  | tar -x -C /app/data/
+    rm wasmonly.tar.lz4
+}
+
+
 reset_on_start(){
     if [ -n "${RESET_ON_START}" ]; then
+        logger "Reset on start set to: ${RESET_ON_START}"
         cp "${DATA_DIR}/priv_validator_state.json" /root/priv_validator_state.json.backup
         rm -rf "${DATA_DIR}"
         mkdir -p "${DATA_DIR}"
         mv /root/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
-    elif [ -n "${PRUNE_ON_START}" ]; then
-        if [ -n "${COSMPRUND_APP}" ]; then
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --app=${COSMPRUND_APP} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        else
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        fi
     fi
 }
 
