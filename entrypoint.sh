@@ -12,6 +12,7 @@ CHAIN_JSON="${DAEMON_HOME}/chain.json"
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
 UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
+WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
 
 # Config directory
 CONFIG_DIR="${DAEMON_HOME}/config"
@@ -118,13 +119,14 @@ parse_chain_info(){
     USE_HORCRUX=${USE_HORCRUX:="false"}
 
     # State sync
+    WASM_URL=${WASM_URL:=}
+    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
     RESET_ON_START=${RESET_ON_START:="false"}
     STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
     STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
-    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
 }
 
 # Identify and download the binaries for the given upgrades
@@ -361,7 +363,7 @@ get_sync_block_hash(){
     local sync_block_hash
     if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
         sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .result.block_id.hash)
-        if [ "${SYNC_BLOCK_HASH}" = "null" ]; then
+        if [ "${sync_block_hash}" = "null" ]; then
             sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .block_id.hash)
         fi
     fi
@@ -428,21 +430,21 @@ modify_config_toml(){
     fi
 
     if [ ${STATE_SYNC_ENABLED} = "true" ]; then
-        sed -e "s/^enable *=.*/enable = true/" -i "${CONFIG_TOML}"
+        sed -e "s|^enable *=.*|enable = true|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${STATE_SYNC_RPC}" ] || [ -n "${STATE_SYNC_WITNESSES}" ]; then
-        sed -e "s/^rpc_servers *=.*/rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"/" -i "${CONFIG_TOML}"
+        sed -e "s|^rpc_servers *=.*|rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${SYNC_BLOCK_HEIGHT}" ]; then
-        sed -e "s/^trust_height *=.*/trust_height = ${SYNC_BLOCK_HEIGHT}/" -i "${CONFIG_TOML}"
+        sed -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${SYNC_BLOCK_HASH}" ]; then
-        sed -e "s/^trust_hash *=.*/trust_hash = \"${SYNC_BLOCK_HASH}\"/" -i "${CONFIG_TOML}"
+        sed -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
     fi
-    # sed -e "s/^trust_period *=.*/trust_period = \"168h\"/" -i "${CONFIG_TOML}"
+    # sed -e "s|^trust_period *=.*|trust_period = \"168h\"|" -i "${CONFIG_TOML}"
 }
 
 modify_app_toml(){
@@ -471,17 +473,12 @@ modify_app_toml(){
 }
 
 get_wasm(){
-    if [ "${NETWORK_TYPE}" = "testnet" ]; then
-       testnet_prefix="testnet-"
-    else
-       testnet_prefix=""
+    if [ -n "${WASM_URL}" ]; then
+        logger "Downloading wasm files from ${WASM_URL}"
+        wasm_base_dir=$(dirname ${WASM_DIR})
+        mkdir -p "${wasm_base_dir}"
+        wget "${WASM_URL}" -O- | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
-    wasm_url="https://snapshots.polkachu.com/${testnet_prefix}wasm/${CHAIN_NAME}/wasmonly.tar.lz4"
-    logger "Downloading wasm files from ${wasm_url}"
-    wget -O wasmonly.tar.lz4 ${wasm_url}
-
-    lz4 -c -d wasmonly.tar.lz4  | tar -x -C /app/data/
-    rm wasmonly.tar.lz4
 }
 
 
