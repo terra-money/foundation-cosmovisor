@@ -74,14 +74,14 @@ parse_chain_info(){
 
     # Codebase Versions
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
-    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON}}
+    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
 
-`   # app.toml
+    # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
     ENABLE_API=${ENABLE_API:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
     KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=5}
-    MONIKER=${MONIKER:=moniker}
+    MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
     PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
@@ -121,7 +121,7 @@ parse_chain_info(){
     RESET_ON_START=${RESET_ON_START:="false"}
     STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
     STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
-    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] ? "true" : "false" )"}
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
     TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
@@ -289,7 +289,7 @@ initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
-        ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
+        ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}" -o
         rm "${GENESIS_FILE}"
     fi
     if [ ! -d "${DATA_DIR}" ]; then
@@ -447,6 +447,7 @@ modify_config_toml(){
 
 modify_app_toml(){
     cp "${APP_TOML}" "${APP_TOML}.bak" 
+    sed -e "s|^moniker *=.*|moniker = \"${MONIKER}\"|" -i "${APP_TOML}"
     sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning *=.*|pruning = \"${PRUNING_STRATEGY}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
@@ -496,5 +497,5 @@ reset_on_start(){
 
 if [ "$(basename $0)" = "entrypoint.sh" ]; then
     main
-    exec $@
+    exec "$@"
 fi
