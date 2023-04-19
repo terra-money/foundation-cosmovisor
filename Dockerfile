@@ -4,7 +4,7 @@ ARG BASE_IMAGE="alpine:${ALPINE_VERSION}"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
-RUN apk add --no-cache jq
+RUN apk add --no-cache jq lz4
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 

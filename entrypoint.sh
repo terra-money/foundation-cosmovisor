@@ -12,6 +12,7 @@ CHAIN_JSON="${DAEMON_HOME}/chain.json"
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
 UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
+WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
 
 # Config directory
 CONFIG_DIR="${DAEMON_HOME}/config"
@@ -33,7 +34,7 @@ main(){
     get_system_info
     get_chain_json
     parse_chain_info
-    download_binaries
+    download_versions
     initialize_node
     download_genesis
     download_addrbook
@@ -63,9 +64,8 @@ get_system_info(){
 # Chain information
 get_chain_json(){
     logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
-    if [ ! -f "${CHAIN_JSON}" ]; then
-        wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
-    fi
+    # always download newest version of chain.json
+    wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
 }
 
 parse_chain_info(){
@@ -73,109 +73,170 @@ parse_chain_info(){
     export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
     export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
 
-    MONIKER=${MONIKER:=moniker}
-    PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
-    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
-    PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
-    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=0}
-    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=5}
-    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
-    DB_BACKEND=${DB_BACKEND:=goleveldb}
-    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
+    # Codebase Versions
+    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
+    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
 
-    LOG_FORMAT=${LOG_FORMAT:=json}
-    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
-    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
-    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
-    ALLLOW_DUPLICATE_IP=${ALLLOW_DUPLICATE_IP:=true}
-    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
-    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
+    # app.toml
+    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
     ENABLE_API=${ENABLE_API:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
-    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
-
-    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
-    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
-    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
-    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=5}
+    MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
+    PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
+    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
+    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
+    PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=0}
+
+    # config.toml
+    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
+    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
+    ALLOW_DUPLICATE_IP=${ALLOW_DUPLICATE_IP:=true}
+    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
+    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
+    DB_BACKEND=${DB_BACKEND:=goleveldb}
+    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
+    LOG_FORMAT=${LOG_FORMAT:=json}
+    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
+    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
+    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
+    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
+    IS_SEED_NODE=${IS_SEED_NODE:="false"}
+    IS_SENTRY=${IS_SENTRY:="false"}
+    MAX_PAYLOAD=${MAX_PAYLOAD:=}
+    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
     NODE_KEY=${NODE_KEY:=}
     NODE_MODE=${NODE_MODE:=}
-    MAX_PAYLOAD=${MAX_PAYLOAD:=}
-    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
+    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
     PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
     PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
     PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
-    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
     UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
-    IS_SEED_NODE=${IS_SEED_NODE:="false"}
-    IS_SENTRY=${IS_SENTRY:="false"}
     USE_HORCRUX=${USE_HORCRUX:="false"}
-    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
-    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
+
+    # State sync
+    WASM_URL=${WASM_URL:=}
+    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
+    RESET_ON_START=${RESET_ON_START:="false"}
+    STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
+    STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
+    SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
+    SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
 }
 
 # Identify and download the binaries for the given upgrades
-download_binaries(){
+download_versions(){
     local name
     local info
-    local binary_url
 
+    # if state sync is enabled try to get latest version
+    if [ ${STATE_SYNC_ENABLED} = "true" ]; then
+        download_versions_statesync
+        get_wasm
+    else
+        download_versions_default
+    fi
+}
+
+download_versions_default(){
     # if upgrade.json is present try to get the binary found in upgrade.json
     if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
-        logger "Downloading binary identified in ${UPGRADE_JSON}..."
-        name=$(jq  -r ".name" ${UPGRADE_JSON})
-        info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
-        if [ "${info}" = "{\"binaries\""* ]; then
-            binary_url="$(echo "${info}" | jq -r ".binaries.\"${ARCH}\"")"
-            download_binary "${name}" "${binary_url}"
-            link_cv_current "${name}"
-        elif [ "${info}" = http:* ]; then
-            binary_url="${info}"
-            download_binary "${name}" "${binary_url}"
-            link_cv_current "${name}"
-        fi
+        get_upgrade_json_version
     fi
 
     # if upgrade.json is present but the binary is not found in upgrade.json
     # try to get the binary from chain.json rec version
-    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
-        recver="$(jq -r '.codebase.recommended_version' ${CHAIN_JSON})"
-        binary_url="${binary_url:="$(get_chain_json_binary "${recver}")"}"
-        if [ -n "${binary_url}" ]; then
-            download_binary "${recver}" "${binary_url}"
-            link_cv_current "${recver}"
-        fi
+    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ] && [ ${STATE_SYNC_ENABLED} != "true" ]; then
+        get_recommended_version
     fi
 
     # if upgrade.json is not present try to get all binaries from chain.json
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
-        logger "Downloading binaries identified in ${CHAIN_JSON}..."
-        for version in $(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}); do
-            binary_url="$(get_chain_json_binary "${version}")"
-            if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
-                download_binary "${version}" "${binary_url}"
-                link_cv_current "${version}"
-            fi
-        done 
+        get_available_versions_asc
     fi
 }
 
-get_chain_json_binary(){
+download_versions_statesync(){
+    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+        get_recommended_version
+    fi
+    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+        get_available_versions_dec
+    fi
+}
+
+get_upgrade_json_version(){
+    logger "Downloading binary identified in ${UPGRADE_JSON}..."
+    local name=$(jq  -r ".name" ${UPGRADE_JSON})
+    local info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
+    local binary_url
+    if [ "${info}" = "{\"binaries\""* ]; then
+        binary_url="$(echo "${info}" | jq -r ".binaries.\"${ARCH}\"")"
+        download_version "${name}" "${binary_url}"
+        link_cv_current "${name}"
+    elif [ "${info}" = http:* ]; then
+        binary_url="${info}"
+        download_version "${name}" "${binary_url}"
+        link_cv_current "${name}"
+    fi
+}
+
+get_recommended_version(){
+    logger "Downloading recommended version identified in ${CHAIN_JSON}..."
+    local binary_url="$(get_chain_json_version "${RECOMMENDED_VERSION}")"
+    if [ -z "${binary_url}" ]; then
+        binary_url="$(get_chain_json_version "$(echo "${RECOMMENDED_VERSION}" | sed -e "s/^v//")")"
+    fi
+    if [ -n "${binary_url}" ]; then
+        download_version "${RECOMMENDED_VERSION}" "${binary_url}"
+        link_cv_current "${RECOMMENDED_VERSION}"
+    fi
+}
+
+get_available_versions_asc(){
+    logger "Downloading oldest to newest versions identified in ${CHAIN_JSON}..."
+    local versions=$(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON}) 
+    get_available_versions "${versions}"
+}
+
+get_available_versions_dec(){
+    logger "Downloading newest to oldest versions identified in ${CHAIN_JSON}..."
+    local versions=$(jq -r '.codebase.versions[] | .name' ${CHAIN_JSON} | tac) 
+    get_available_versions "${versions}"
+}
+
+get_available_versions(){
+    logger "Downloading all versions identified in ${CHAIN_JSON}..."
+    local versions="$1" 
+    local binary_url
+    for version in ${versions}; do
+        binary_url="$(get_chain_json_version "${version}")"
+        if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
+            download_version "${version}" "${binary_url}"
+            link_cv_current "${version}"
+        fi
+    done 
+}
+
+get_chain_json_version(){
     local version="$1"
     local binary_url
     if [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
         echo "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
     elif [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
         echo "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
-    elif [ "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" = *"${version}"* ]; then
+    elif expr "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" : "/${version}/"; then
         echo "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
     fi
 }
 
 # Download the binary for the given upgrade
-download_binary(){
+download_version(){
     local upgrade="$1"
     local binary_url="$2"
     local bin_path="${CV_UPGRADES_DIR}/${upgrade}/bin"
@@ -183,11 +244,14 @@ download_binary(){
     if [ ! -f "${binary}" ]; then
         mkdir -p "${bin_path}"
         logger "Downloading ${binary_url} to ${binary}..."
-        if [ ${binary_url} = *.tar.gz* ]; then
-            wget "${binary_url}" -O- | tar xz -C "${bin_path}"
-        else
-            wget "${binary_url}" -O "${binary}"
-        fi
+        case ${binary_url} in
+            *.tar.gz*)
+                wget "${binary_url}" -O- | tar xz -C "${bin_path}"
+                ;;
+            *)
+                wget "${binary_url}" -O "${binary}"
+                ;;
+        esac
         chmod 0755 "${binary}"
     fi
 }
@@ -227,7 +291,7 @@ initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
-        ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" -o --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
+        ${CV_CURRENT_DIR}/bin/${DAEMON_NAME} init "${MONIKER}" --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}" -o
         rm "${GENESIS_FILE}"
     fi
     if [ ! -d "${DATA_DIR}" ]; then
@@ -243,13 +307,17 @@ download_genesis(){
 
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
         logger "Downloading genesis file from ${GENESIS_URL}..."
-        if [ "${GENESIS_URL}" = *.tar.gz ]; then
-            wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
-        elif [ "${GENESIS_URL}" = *.gz ]; then
-            wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
-        else
-            wget "${GENESIS_URL}" -O "${GENESIS_FILE}"
-        fi
+        case "${GENESIS_URL}" in
+            *.tar.gz)
+                wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
+                ;;
+            *.gz)
+                wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
+                ;;
+            *)
+                wget "${GENESIS_URL}" -O "${GENESIS_FILE}"
+                ;;
+        esac
     fi
 }
 
@@ -277,6 +345,31 @@ set_private_validator_key(){
     fi
 }
 
+get_sync_block_height(){
+    local latest_height
+    local sync_block_height
+    if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+        latest_height=$(wget ${STATE_SYNC_RPC}/block -O- | jq -r .result.block.header.height)
+        if [ "${latest_height}" = "null" ]; then
+            # Maybe Tendermint 0.35+?
+            latest_height=$(wget ${STATE_SYNC_RPC}/block -O- | jq -r .block.header.height)
+        fi
+        sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
+    fi
+    echo "${sync_block_height:=}"
+}
+
+get_sync_block_hash(){
+    local sync_block_hash
+    if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+        sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .result.block_id.hash)
+        if [ "${sync_block_hash}" = "null" ]; then
+            sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .block_id.hash)
+        fi
+    fi
+    echo "${sync_block_hash:=}"
+}
+
 # Modify the client.toml file
 modify_client_toml(){
     sed -e "s|^chain-id *=.*|chain-id = \"${CHAIN_ID}\"|" -i "${CLIENT_TOML}"
@@ -295,7 +388,7 @@ modify_config_toml(){
     sed -e "s|^persistent_peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^unconditional_peer_ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^allow-duplicate-ip *=.*|allow-duplicate-ip = ${ALLLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
+    sed -e "s|^allow-duplicate-ip *=.*|allow-duplicate-ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
     sed -e "s|^addr-book-strict *=.*|addr-book-strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
     sed -e "s|^use-p2p *=.*|use-p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
@@ -335,10 +428,28 @@ modify_config_toml(){
     if [ "${SENTRIED_VALIDATOR}" = "true" ]; then
         sed -e "s|^pex *=.*|pex = false|" -i "${CONFIG_TOML}"
     fi
+
+    if [ ${STATE_SYNC_ENABLED} = "true" ]; then
+        sed -e "s|^enable *=.*|enable = true|" -i "${CONFIG_TOML}"
+    fi
+
+    if [ -n "${STATE_SYNC_RPC}" ] || [ -n "${STATE_SYNC_WITNESSES}" ]; then
+        sed -e "s|^rpc_servers *=.*|rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"|" -i "${CONFIG_TOML}"
+    fi
+
+    if [ -n "${SYNC_BLOCK_HEIGHT}" ]; then
+        sed -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
+    fi
+
+    if [ -n "${SYNC_BLOCK_HASH}" ]; then
+        sed -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
+    fi
+    # sed -e "s|^trust_period *=.*|trust_period = \"168h\"|" -i "${CONFIG_TOML}"
 }
 
 modify_app_toml(){
     cp "${APP_TOML}" "${APP_TOML}.bak" 
+    sed -e "s|^moniker *=.*|moniker = \"${MONIKER}\"|" -i "${APP_TOML}"
     sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning *=.*|pruning = \"${PRUNING_STRATEGY}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
@@ -361,62 +472,27 @@ modify_app_toml(){
     fi
 }
 
-configure_state_sync(){
-    if [ ${STATE_SYNC_ENABLED} = "true" ]; then
-        echo "State sync is enabled, attempting to fetch snapshot info..."
-        if [ -z "${FORCE_SNAPSHOT_HEIGHT}" ]; then
-            LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
-            if [ "${LATEST_HEIGHT}" = "null" ]; then
-                # Maybe Tendermint 0.35+?
-                LATEST_HEIGHT=$(curl -s ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
-            fi
-
-            SYNC_BLOCK_HEIGHT=$((${LATEST_HEIGHT} - ${TRUST_LOOKBACK}))
-        else
-            SYNC_BLOCK_HEIGHT=${FORCE_SNAPSHOT_HEIGHT}
-        fi
-        SYNC_BLOCK_HASH=$(curl -s "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .result.block_id.hash)
-        if [ "${SYNC_BLOCK_HASH}" = "null" ]; then
-            # Maybe Tendermint 0.35+?
-            SYNC_BLOCK_HASH=$(curl -s "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
-        fi
+get_wasm(){
+    if [ -n "${WASM_URL}" ]; then
+        logger "Downloading wasm files from ${WASM_URL}"
+        wasm_base_dir=$(dirname ${WASM_DIR})
+        mkdir -p "${wasm_base_dir}"
+        wget "${WASM_URL}" -O- | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
+}
 
-    if [ -n "${SYNC_BLOCK_HASH}" ]; then
-        if [ -z "${STATE_SYNC_WITNESSES}" ]; then
-            STATE_SYNC_WITNESSES=${STATE_SYNC_RPC}
-        fi
 
-        echo ""
-        echo "Using state sync from with the following settings:"
-        sed -e "s/^enable *=.*/enable = true/" -i "${CONFIG_TOML}"
-        sed -e "s#^rpc_servers *=.*#rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"#" -i "${CONFIG_TOML}"
-        sed -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
-        sed -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
-        # sed -e "s/^trust_period *=.*/trust_period = \"168h\"/" -i "${CONFIG_TOML}"
-
-        cat "${CONFIG_TOML}" | grep "enable ="
-        cat "${CONFIG_TOML}" | grep -A 2 -B 2 trust_hash
-
-    elif [ ${STATE_SYNC_ENABLED} = 'true' ]; then
-        echo "Failed to look up sync snapshot, falling back to full sync..."
-    fi
-
+reset_on_start(){
     if [ -n "${RESET_ON_START}" ]; then
+        logger "Reset on start set to: ${RESET_ON_START}"
         cp "${DATA_DIR}/priv_validator_state.json" /root/priv_validator_state.json.backup
         rm -rf "${DATA_DIR}"
         mkdir -p "${DATA_DIR}"
         mv /root/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
-    elif [ -n "${PRUNE_ON_START}" ]; then
-        if [ -n "${COSMPRUND_APP}" ]; then
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --app=${COSMPRUND_APP} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        else
-            cosmprund-${DB_BACKEND} prune ${DATA_DIR} --blocks=${PRUNING_KEEP_RECENT} --versions=${PRUNING_KEEP_RECENT}
-        fi
     fi
 }
 
 if [ "$(basename $0)" = "entrypoint.sh" ]; then
     main
-    exec $@
+    exec "$@"
 fi
