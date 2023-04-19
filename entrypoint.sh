@@ -226,10 +226,12 @@ get_available_versions(){
 get_chain_json_version(){
     local version="$1"
     local binary_url
-    if [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
-        echo "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
-    elif [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
+    if [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .tag" ${CHAIN_JSON})" ]; then
         echo "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
+    elif [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
+        echo "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
+    elif [ -n "$(jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\") | .recommended_version" ${CHAIN_JSON})" ]; then
+        echo "$(jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\") | .binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
     elif expr "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" : "/${version}/"; then
         echo "$(jq -r ".codebase.binaries[\"${ARCH}\"]" ${CHAIN_JSON})" 
     fi
