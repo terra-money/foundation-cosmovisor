@@ -112,7 +112,7 @@ parse_chain_info(){
     PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
-    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
+    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:='{"height": "0","round": 0,"step": 0}'}
     PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
     PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
     UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
