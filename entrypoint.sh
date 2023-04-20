@@ -198,11 +198,6 @@ get_upgrade_json_version(){
 }
 
 get_recommended_version(){
-    #Cosmovisor will try to use version from upgrade.json if it exists, so we have to rename it
-    if [ -e "${UPGRADE_JSON}" ]; then
-        logger "Moving ${UPGRADE_JSON} to ${UPGRADE_JSON}.bkp"
-        mv "${UPGRADE_JSON}" "${UPGRADE_JSON}.bkp"
-    fi
     logger "Downloading recommended version identified in ${CHAIN_JSON}..."
     local name="${1:="${RECOMMENDED_VERSION}"}"
     local binary_url="$(get_chain_json_version "${RECOMMENDED_VERSION}")"
@@ -211,6 +206,12 @@ get_recommended_version(){
     fi
     if [ -n "${binary_url}" ]; then
         download_version "${name}" "${binary_url}"
+    fi
+    
+    #Cosmovisor will try to use version from upgrade.json if it exists, so rename it
+    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ -f "${UPGRADE_JSON}" ]; then
+        logger "Moving ${UPGRADE_JSON} to ${UPGRADE_JSON}.bkp"
+        mv "${UPGRADE_JSON}" "${UPGRADE_JSON}.bkp"
     fi
 }
 
