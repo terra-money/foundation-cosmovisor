@@ -76,6 +76,8 @@ parse_chain_info(){
     # Codebase Versions
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
     RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
+    # Prefer recommended version over upgrade.json
+    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
 
     # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
@@ -144,6 +146,11 @@ download_versions(){
 }
 
 download_versions_default(){
+    # try to get the binary recommended version
+    if [ ! -e "${CV_CURRENT_DIR}" ] && [ "${PREFER_RECOMMENDED_VERSION}" = "true" ]; then
+        get_recommended_version
+    fi
+
     # if upgrade.json is present try to get the binary found in upgrade.json
     if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
         get_upgrade_json_version
@@ -151,7 +158,7 @@ download_versions_default(){
 
     # if upgrade.json is present but the binary is not found in upgrade.json
     # try to get the binary from chain.json rec version
-    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ] && [ ${STATE_SYNC_ENABLED} != "true" ]; then
+    if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ] && [ "${STATE_SYNC_ENABLED}" != "true" ]; then
         get_recommended_version
     fi
 
