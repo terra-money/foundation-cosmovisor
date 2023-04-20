@@ -36,10 +36,11 @@ main(){
     parse_chain_info
     download_versions
     initialize_node
-    download_genesis
-    download_addrbook
+    reset_on_start
     set_node_key
     set_private_validator_key
+    download_genesis
+    download_addrbook
     modify_client_toml
     modify_config_toml
     modify_app_toml
@@ -65,7 +66,7 @@ get_system_info(){
 get_chain_json(){
     logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
     # always download newest version of chain.json
-    wget "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
+    wget -q "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
 }
 
 parse_chain_info(){
@@ -146,11 +147,6 @@ download_versions(){
 }
 
 download_versions_default(){
-    # try to get the binary recommended version
-    if [ ! -e "${CV_CURRENT_DIR}" ] && [ "${PREFER_RECOMMENDED_VERSION}" = "true" ]; then
-        get_recommended_version
-    fi
-
     # if upgrade.json is present try to get the binary found in upgrade.json
     if [ ! -e "${CV_CURRENT_DIR}" ] && [ -f "${UPGRADE_JSON}" ]; then
         get_upgrade_json_version
@@ -182,26 +178,34 @@ get_upgrade_json_version(){
     local name=$(jq  -r ".name" ${UPGRADE_JSON})
     local info=$(jq  -r ".info | if type==\"string\" then . else .binaries.\"${ARCH}\" end" ${UPGRADE_JSON})
     local binary_url
-    if [ "${info}" = "{\"binaries\""* ]; then
+    # try to get the binary recommended version
+    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ]; then
+        # download recommended version instead
+        get_recommended_version "${name}"
+    elif [ "${info}" = "{\"binaries\""* ]; then
         binary_url="$(echo "${info}" | jq -r ".binaries.\"${ARCH}\"")"
         download_version "${name}" "${binary_url}"
-        link_cv_current "${name}"
     elif [ "${info}" = http:* ]; then
         binary_url="${info}"
         download_version "${name}" "${binary_url}"
-        link_cv_current "${name}"
+    elif [ -n "$(get_chain_json_version "${name}")" ]; then
+        binary_url="$(get_chain_json_version "${name}")"
+        download_version "${name}" "${binary_url}"
+    else
+        # fallback to recommended version
+        get_recommended_version "${name}"
     fi
 }
 
 get_recommended_version(){
     logger "Downloading recommended version identified in ${CHAIN_JSON}..."
+    local name="${1:="${RECOMMENDED_VERSION}"}"
     local binary_url="$(get_chain_json_version "${RECOMMENDED_VERSION}")"
     if [ -z "${binary_url}" ]; then
         binary_url="$(get_chain_json_version "$(echo "${RECOMMENDED_VERSION}" | sed -e "s/^v//")")"
     fi
     if [ -n "${binary_url}" ]; then
-        download_version "${RECOMMENDED_VERSION}" "${binary_url}"
-        link_cv_current "${RECOMMENDED_VERSION}"
+        download_version "${name}" "${binary_url}"
     fi
 }
 
@@ -225,7 +229,6 @@ get_available_versions(){
         binary_url="$(get_chain_json_version "${version}")"
         if [ -n "${binary_url}" ] && [ "${binary_url}" != "null" ]; then
             download_version "${version}" "${binary_url}"
-            link_cv_current "${version}"
         fi
     done 
 }
@@ -244,38 +247,40 @@ get_chain_json_version(){
     fi
 }
 
-# Download the binary for the given upgrade
 download_version(){
-    local upgrade="$1"
+    local name="$1"
     local binary_url="$2"
-    local bin_path="${CV_UPGRADES_DIR}/${upgrade}/bin"
+    download_version_binary "${name}" "${binary_url}"
+    local upgrade_path="${CV_UPGRADES_DIR}/${name}"
+    # Link the given cosmosvisor upgrade directory to the cosmovisor current directory
+    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+        logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}"
+        ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
+    fi
+    # Link the genesis directory if the upgrade is the genesis version (or no genesis version is set)
+    if [ -z "${GENESIS_VERSION}" ] || [ "${GENESIS_VERSION}" = "${name}" ]; then
+        link_cv_genesis "${name}"
+    fi
+}
+
+# Download the binary for the given upgrade
+download_version_binary(){
+    local name="$1"
+    local binary_url="$2"
+    local bin_path="${CV_UPGRADES_DIR}/${name}/bin"
     local binary="${bin_path}/${DAEMON_NAME}"
     if [ ! -f "${binary}" ]; then
         mkdir -p "${bin_path}"
         logger "Downloading ${binary_url} to ${binary}..."
         case ${binary_url} in
             *.tar.gz*)
-                wget "${binary_url}" -O- | tar xz -C "${bin_path}"
+                wget -q "${binary_url}" -O- | tar xz -C "${bin_path}"
                 ;;
             *)
-                wget "${binary_url}" -O "${binary}"
+                wget -q "${binary_url}" -O "${binary}"
                 ;;
         esac
         chmod 0755 "${binary}"
-    fi
-}
-
-# Link the given cosmosvisor upgrade directory to the cosmovisor current directory
-link_cv_current(){
-    local upgrade="$1"
-    local upgrade_path="${CV_UPGRADES_DIR}/${upgrade}"
-    if [ ! -e "${CV_CURRENT_DIR}" ]; then
-        logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}"
-        ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
-    fi
-    # Link the genesis directory if the upgrade is the genesis version (or no genesis version is set)
-    if [ -z "${GENESIS_VERSION}" ] || [ "${GENESIS_VERSION}" = "${upgrade}" ]; then
-        link_cv_genesis "${upgrade}"
     fi
 }
 
@@ -318,13 +323,13 @@ download_genesis(){
         logger "Downloading genesis file from ${GENESIS_URL}..."
         case "${GENESIS_URL}" in
             *.tar.gz)
-                wget "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
+                wget -q "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
                 ;;
             *.gz)
-                wget "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
+                wget -q "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
                 ;;
             *)
-                wget "${GENESIS_URL}" -O "${GENESIS_FILE}"
+                wget -q "${GENESIS_URL}" -O "${GENESIS_FILE}"
                 ;;
         esac
     fi
@@ -334,7 +339,7 @@ download_genesis(){
 download_addrbook(){
     if [ -n "${ADDR_BOOK_URL}" ]; then
         echo "Downloading address book file..."
-        wget "${ADDR_BOOK_URL}" -O "${ADDR_BOOK_FILE}"
+        wget -q "${ADDR_BOOK_URL}" -O "${ADDR_BOOK_FILE}"
     fi
 }
 
@@ -358,10 +363,10 @@ get_sync_block_height(){
     local latest_height
     local sync_block_height
     if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        latest_height=$(wget ${STATE_SYNC_RPC}/block -O- | jq -r .result.block.header.height)
+        latest_height=$(wget -q ${STATE_SYNC_RPC}/block -O- | jq -r .result.block.header.height)
         if [ "${latest_height}" = "null" ]; then
             # Maybe Tendermint 0.35+?
-            latest_height=$(wget ${STATE_SYNC_RPC}/block -O- | jq -r .block.header.height)
+            latest_height=$(wget -q ${STATE_SYNC_RPC}/block -O- | jq -r .block.header.height)
         fi
         sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
     fi
@@ -371,9 +376,9 @@ get_sync_block_height(){
 get_sync_block_hash(){
     local sync_block_hash
     if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .result.block_id.hash)
+        sync_block_hash=$(wget -q "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .result.block_id.hash)
         if [ "${sync_block_hash}" = "null" ]; then
-            sync_block_hash=$(wget "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .block_id.hash)
+            sync_block_hash=$(wget -q "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .block_id.hash)
         fi
     fi
     echo "${sync_block_hash:=}"
@@ -486,18 +491,17 @@ get_wasm(){
         logger "Downloading wasm files from ${WASM_URL}"
         wasm_base_dir=$(dirname ${WASM_DIR})
         mkdir -p "${wasm_base_dir}"
-        wget "${WASM_URL}" -O- | lz4 -c -d | tar -x -C "${wasm_base_dir}"
+        wget -q "${WASM_URL}" -O- | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
 }
 
-
 reset_on_start(){
-    if [ -n "${RESET_ON_START}" ]; then
+    if [ "${RESET_ON_START}" = "true" ]; then
         logger "Reset on start set to: ${RESET_ON_START}"
-        cp "${DATA_DIR}/priv_validator_state.json" /root/priv_validator_state.json.backup
+        cp "${DATA_DIR}/priv_validator_state.json" /tmp/priv_validator_state.json.backup
         rm -rf "${DATA_DIR}"
         mkdir -p "${DATA_DIR}"
-        mv /root/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
+        mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
     fi
 }
 
