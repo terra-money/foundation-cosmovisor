@@ -208,7 +208,7 @@ get_recommended_version(){
         download_version "${name}" "${binary_url}"
     fi
     
-    #Cosmovisor will try to use version from upgrade.json if it exists, so rename it
+    # Cosmovisor may try to use version from upgrade.json if it exists, so move it
     if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ -f "${UPGRADE_JSON}" ]; then
         logger "Moving ${UPGRADE_JSON} to ${UPGRADE_JSON}.bkp"
         mv "${UPGRADE_JSON}" "${UPGRADE_JSON}.bkp"
