@@ -251,6 +251,7 @@ create_cv_upgrade(){
     logger "Creating ${upgrade_json}..."
     echo "${upgrade_info}" | jq "." > "${upgrade_json}"
     logger "Copying ${upgrade_json} to ${UPGRADE_JSON}..."
+    cp "${upgrade_json}" "${UPGRADE_JSON}"
     link_cv_current "${upgrade_path}"
     download_cv_current "${upgrade_path}"
 }
