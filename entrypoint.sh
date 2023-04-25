@@ -16,7 +16,6 @@ WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
 
 # Config directory
 CONFIG_DIR="${DAEMON_HOME}/config"
-ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 APP_TOML="${CONFIG_DIR}/app.toml"
 CLIENT_TOML="${CONFIG_DIR}/client.toml"
 CONFIG_TOML="${CONFIG_DIR}/config.toml"
@@ -34,6 +33,7 @@ main(){
     get_system_info
     get_chain_json
     parse_chain_info
+    prepare_system
     prepare_versions
     initialize_node
     reset_on_start
@@ -84,14 +84,16 @@ parse_chain_info(){
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
     ENABLE_API=${ENABLE_API:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
-    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=5}
+    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
     MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
-    PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
-    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
-    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
-    PRUNING_STRATEGY=${PRUNING_STRATEGY:=nothing}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=0}
+    PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
+    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
+    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
+    # choosing nothing as the default pruning strategy
+    # to avoid accidentally pruning data on an archival node
+    PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"} 
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=1000}
 
     # config.toml
     ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
@@ -132,13 +134,21 @@ parse_chain_info(){
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
 }
 
+prepare_system(){
+    mkdir -p "${DATA_DIR}"
+    if [ ! -f "${DATA_DIR}/priv_validator_key.json" ]; then
+        logger "Generating priv_validator_key.json..."
+        echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > "${DATA_DIR}/priv_validator_key.json"
+    fi
+}
+
 # Identify and download the binaries for the given upgrades
 prepare_versions(){
     local name
     local info
 
     # use recommended version from env or set in chain.json
-    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ]; then
+    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ "${STATE_SYNC_ENABLED}" = "false" ]; then        
         prepare_recommended_version
     
     # if state sync is enabled use recommended (or most recent) version 
@@ -170,8 +180,13 @@ prepare_recommended_version(){
     logger "Preparing recommended version ${RECOMMENDED_VERSION}..."
     prepare_chain_json_version "${RECOMMENDED_VERSION}"
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
-        logger "Recommended version not found in ${CHAIN_JSON}, falling back to last version..."
-        prepare_last_available_version
+        if [ -f "${UPGRADE_JSON}" ]; then
+            logger "Recommended version not found in ${CHAIN_JSON}, falling back to latest version..."
+            prepare_last_available_version
+        else
+            logger "Recommended version not found in ${CHAIN_JSON}, falling back to genesis version..."
+            prepare_first_available_version
+        fi
     fi
 }
 
@@ -192,7 +207,7 @@ prepare_chain_json_version(){
 
     # use recommended version
     upgrade_info=$(get_chain_json_version "${version}" |
-        jq "{\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}"
+        jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
     )
 
     # fail over to last version
@@ -202,19 +217,22 @@ prepare_chain_json_version(){
 }
 
 prepare_last_available_version(){
+    local upgrade_info=""
     logger "Preparing last available version identified in ${CHAIN_JSON}..."
 
     # try to get version without next_version_name set
-    local upgrade_info=$(jq "last(.codebase.versions[] | \
-        select(has("next_version_name") | not)) | \
-        {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" \
-        "${CHAIN_JSON}")
+    if [ -n "$(jq -r "first(.codebase.versions[] | .next_version_name // \"\")" ${CHAIN_JSON})" ]; then
+        upgrade_info=$(jq "last(.codebase.versions[] | 
+            select(has("next_version_name") | not) | 
+            {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
+            "${CHAIN_JSON}")
+    fi
 
     # if last query fails simplify
     if [ -n "${upgrade_info}" ]; then
-        upgrade_info=$(jq "last(.codebase.versions[] | \
-            {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" \
-            "${CHAIN_JSON}" > "${upgrade_json}")
+        upgrade_info="$(jq "last(.codebase.versions[] | 
+            {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
+            "${CHAIN_JSON}" > "${upgrade_json}")"
     fi
 
     if [ -n "${upgrade_info}" ]; then
@@ -229,14 +247,17 @@ prepare_genesis_version(){
         logger "Genesis version (${GENESIS_VERSION}) not found in ${CHAIN_JSON}, falling back to first version..."
         prepare_first_available_version
     fi
+    if [ -L "${CV_CURRENT_DIR}" ]; then
+        link_cv_genesis "${CV_CURRENT_DIR}"
+    fi
 }
 
 prepare_first_available_version(){
     logger "Preparing first available version identified in ${CHAIN_JSON}..."
     local upgrade_info=$(jq "first(.codebase.versions[] | 
-        {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" \
+        {\"name\": .name, \"height\": (.height // 0),  \"info\": ({\"binaries\": .binaries} | tostring)})" \
         "${CHAIN_JSON}")
-    if [ -n "${upgrade_info}" ]; then
+    if [ -n "${upgrade_info:=}" ]; then
         create_cv_upgrade "${upgrade_info}"
     fi
 }
@@ -244,22 +265,34 @@ prepare_first_available_version(){
 create_cv_upgrade(){
     local upgrade_info="$1"
     local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
+    local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade_name}"
     local upgrade_json="${upgrade_path}/upgrade-info.json"
+    local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
+    local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
     logger "Found version ${upgrade_name}, Creating ${upgrade_path}..."
-    mkdir -p "${upgrade_path}/bin"
-    logger "Creating ${upgrade_json}..."
-    echo "${upgrade_info}" | jq "." > "${upgrade_json}"
-    logger "Copying ${upgrade_json} to ${UPGRADE_JSON}..."
-    cp "${upgrade_json}" "${UPGRADE_JSON}"
-    link_cv_current "${upgrade_path}"
-    download_cv_current "${upgrade_path}"
+    mkdir -p "${upgrade_path}"
+    if [ "${binary_url}" != "null" ]; then
+        download_cv_current "${binary_url}" "${binary_file}"
+    fi
+    if [ ${upgrade_height} -gt 0 ]; then
+        logger "Creating ${upgrade_json}..."
+        echo "${upgrade_info}" > "${upgrade_json}"
+        logger "Copying ${upgrade_json} to ${UPGRADE_JSON}..."
+        cp "${upgrade_json}" "${UPGRADE_JSON}"
+        link_cv_current "${upgrade_path}"
+    else
+        link_cv_genesis "${upgrade_path}"
+    fi
 }
 
 # Link the given cosmosvisor upgrade directory to the cosmovisor current directory
 link_cv_current(){
     local upgrade_path="$1"
-    if [ -e "${CV_CURRENT_DIR}" ]; then
+    if [ -L "${CV_CURRENT_DIR}" ]; then
+        logger "Removing existing ${CV_CURRENT_DIR}..."
+        rm "${CV_CURRENT_DIR}" 
+    elif [ -e "${CV_CURRENT_DIR}" ]; then
         logger "Removing existing ${CV_CURRENT_DIR}..."
         rm -rf "${CV_CURRENT_DIR}" 
     fi
@@ -270,9 +303,9 @@ link_cv_current(){
 # Link the given cosmosvisor upgrade directory to the cosmovisor genesis directory
 link_cv_genesis(){
     local upgrade_path="$1"
-    if [ -e "${CV_CURRENT_DIR}" ]; then
+    if [ -e "${CV_GENESIS_DIR}" ]; then
         logger "Removing existing ${CV_GENESIS_DIR}..."
-        rm -rf "${CV_CURRENT_DIR}" 
+        rm -rf "${CV_GENESIS_DIR}" 
     fi
     logger "Linking ${CV_GENESIS_DIR} to ${upgrade_path}"
     ln -s "${upgrade_path}" "${CV_GENESIS_DIR}"
@@ -280,12 +313,12 @@ link_cv_genesis(){
 
 # Download the binary for the given upgrade
 download_cv_current(){
-    local upgrade_path="$1"
-    local binary_path="${upgrade_path}/bin"
-    local binary_file="${binary_path}/${DAEMON_NAME}"
-    local binary_url="$(jq -r ".info | fromjson | .binaries.\"${ARCH}\"" "${CV_CURRENT_DIR}/upgrade-info.json")"
+    local binary_url="$1"
+    local binary_file="$2"
+    local binary_path="$(dirname "${binary_file}")"
 
     logger "Downloading ${binary_url} to ${binary_file}..."
+    mkdir -p "${upgrade_path}/bin"
     case ${binary_url} in
         *.tar.gz*)
             wget -q "${binary_url}" -O- | tar xz -C "${binary_path}"
@@ -295,6 +328,10 @@ download_cv_current(){
             ;;
     esac
     chmod 0755 "${binary_file}"
+    if [ "$(file -b ${binary_file})" = "JSON data" ]; then
+        binary_url="$(jq -r ".binaries.\"${ARCH}\"" "${binary_file}")"
+        download_cv_current "${binary_url}" "${binary_file}"
+    fi
 }
 
 get_upgrade_json_version(){
@@ -318,9 +355,6 @@ get_upgrade_json_version(){
 
 # Initialize the node
 initialize_node(){
-    if [ ! -d "${DATA_DIR}" ]; then
-        mkdir -p "${DATA_DIR}"
-    fi
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
@@ -409,18 +443,18 @@ modify_client_toml(){
 modify_config_toml(){
     cp "${CONFIG_TOML}" "${CONFIG_TOML}.bak"
     sed -e "s|^laddr *=\s*\"tcp:\/\/127.0.0.1|laddr = \"tcp:\/\/0.0.0.0|" -i "${CONFIG_TOML}"
-    sed -e "s|^log_format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^timeout_broadcast_tx_commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^max_body_bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
-    sed -e "s|^dial_timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^chunk_fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^log.format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
+    sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^seeds *=.*|seeds = \"${SEEDS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^persistent_peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^unconditional_peer_ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^allow-duplicate-ip *=.*|allow-duplicate-ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
-    sed -e "s|^addr-book-strict *=.*|addr-book-strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
-    sed -e "s|^use-p2p *=.*|use-p2p = true|" -i "${CONFIG_TOML}"
+    sed -e "s|^persistent.peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
+    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
+    sed -e "s|^use.p2p *=.*|use_p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
 
@@ -429,30 +463,30 @@ modify_config_toml(){
     fi
 
     if [ -n "${MAX_PAYLOAD}" ]; then
-        sed -e "s|^max-packet-msg-payload-size *=.*|max-packet-msg-payload-size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
+        sed -e "s|^max.packet.msg.payload.size *=.*|max_packet_msg_payload_size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
     fi
 
     if [ "${IS_SEED_NODE}" = "true" ]; then
-        sed -e "s|^seed_mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
+        sed -e "s|^seed.mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
     fi
 
     if [ "${IS_SENTRY}" = "true" ] || [ -n "${PRIVATE_PEER_IDS}" ]; then
-        sed -e "s|^private_peer_ids *=.*|private_peer_ids = \"${PRIVATE_PEER_IDS}\"|" -i "${CONFIG_TOML}"
+        sed -e "s|^private.peer.ids *=.*|private_peer_ids = \"${PRIVATE_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${PUBLIC_ADDRESS}" ]; then
         echo "Setting public address to ${PUBLIC_ADDRESS}"
-        sed -e "s|^external_address *=.*|external_address = \"${PUBLIC_ADDRESS}\"|" -i "${CONFIG_TOML}"
+        sed -e "s|^external.address *=.*|external_address = \"${PUBLIC_ADDRESS}\"|" -i "${CONFIG_TOML}"
     fi
 
     if [ "${USE_HORCRUX}" = "true" ]; then
-        sed -e "s|^priv_validator_laddr *=.*|priv_validator_laddr = \"tcp://[::]:23756\"|" \
+        sed -e "s|^priv.validator.laddr *=.*|priv_validator_laddr = \"tcp://[::]:23756\"|" \
             -e "s|^laddr *= \"\"|laddr = \"tcp://[::]:23756\"|" \
             -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${DB_BACKEND}" ]; then
-        sed -e "s|^db_backend *=.*|db_backend = \"${DB_BACKEND}\"|" -i "${CONFIG_TOML}"
+        sed -e "s|^db.backend *=.*|db_backend = \"${DB_BACKEND}\"|" -i "${CONFIG_TOML}"
     fi
 
     if [ "${SENTRIED_VALIDATOR}" = "true" ]; then
@@ -464,15 +498,15 @@ modify_config_toml(){
     fi
 
     if [ -n "${STATE_SYNC_RPC}" ] || [ -n "${STATE_SYNC_WITNESSES}" ]; then
-        sed -e "s|^rpc_servers *=.*|rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"|" -i "${CONFIG_TOML}"
+        sed -e "s|^rpc.servers *=.*|rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${SYNC_BLOCK_HEIGHT}" ]; then
-        sed -e "s|^trust_height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
+        sed -e "s|^trust.height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
     fi
 
     if [ -n "${SYNC_BLOCK_HASH}" ]; then
-        sed -e "s|^trust_hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
+        sed -e "s|^trust.hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
     fi
     # sed -e "s|^trust_period *=.*|trust_period = \"168h\"|" -i "${CONFIG_TOML}"
 }

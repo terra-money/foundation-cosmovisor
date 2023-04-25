@@ -4,7 +4,7 @@ ARG BASE_IMAGE="alpine:${ALPINE_VERSION}"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
-RUN apk add --no-cache jq lz4
+RUN apk add --no-cache file jq lz4
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
@@ -33,5 +33,6 @@ EXPOSE 26657
 RUN addgroup -g 1000 cosmovisor && \
     adduser -u 1000 -G cosmovisor -D -h /app cosmovisor
 
+VOLUME ["/app"]
 ENTRYPOINT [ "entrypoint.sh"]
 CMD ["cosmovisor", "run", "start", "--home", "./"]
