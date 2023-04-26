@@ -170,10 +170,8 @@ prepare_upgrade_json_version(){
     local name=$(jq  -r ".name" ${UPGRADE_JSON})
     local upgrade_path="${CV_UPGRADES_DIR}/${name}"
     local upgrade_json="${upgrade_path}/upgrade-info.json"
-    logger "Creating ${upgrade_path}"
-    mkdir -p "${upgrade_path}/bin"
-    logger "Copying ${UPGRADE_JSON} to ${upgrade_path}"
-    cp "${UPGRADE_JSON}" "${upgrade_json}"
+    logger "Using info from ${UPGRADE_JSON}"
+    create_cv_upgrade "$(cat ${UPGRADE_JSON})"
 }
 
 prepare_recommended_version(){
@@ -184,7 +182,7 @@ prepare_recommended_version(){
             logger "Recommended version not found in ${CHAIN_JSON}, falling back to latest version..."
             prepare_last_available_version
         else
-            logger "Recommended version not found in ${CHAIN_JSON}, falling back to genesis version..."
+            logger "Recommended version not found in ${CHAIN_JSON}, falling back to first version..."
             prepare_first_available_version
         fi
     fi
@@ -257,7 +255,7 @@ prepare_first_available_version(){
     local upgrade_info=$(jq "first(.codebase.versions[] | 
         {\"name\": .name, \"height\": (.height // 0),  \"info\": ({\"binaries\": .binaries} | tostring)})" \
         "${CHAIN_JSON}")
-    if [ -n "${upgrade_info:=}" ]; then
+    if [ -n "${upgrade_info}" ]; then
         create_cv_upgrade "${upgrade_info}"
     fi
 }
