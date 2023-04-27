@@ -66,7 +66,7 @@ get_system_info(){
 get_chain_json(){
     logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
     # always download newest version of chain.json
-    wget -q "${CHAIN_JSON_URL}" -O "${CHAIN_JSON}"
+    curl -sSL "${CHAIN_JSON_URL}" -o "${CHAIN_JSON}"
 }
 
 parse_chain_info(){
@@ -319,10 +319,10 @@ download_cv_current(){
     mkdir -p "${upgrade_path}/bin"
     case ${binary_url} in
         *.tar.gz*)
-            wget -q "${binary_url}" -O- | tar xz -C "${binary_path}"
+            curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
             ;;
         *)
-            wget -q "${binary_url}" -O "${binary_file}"
+            curl -sSL "${binary_url}" -o "${binary_file}"
             ;;
     esac
     chmod 0755 "${binary_file}"
@@ -371,13 +371,13 @@ download_genesis(){
         logger "Downloading genesis file from ${GENESIS_URL}..."
         case "${GENESIS_URL}" in
             *.tar.gz)
-                wget -q "${GENESIS_URL}" -O- | tar -xz > "${GENESIS_FILE}"
+                curl -sSL "${GENESIS_URL}" | tar -xz > "${GENESIS_FILE}"
                 ;;
             *.gz)
-                wget -q "${GENESIS_URL}" -O- | zcat > "${GENESIS_FILE}"
+                curl -sSL "${GENESIS_URL}" | zcat > "${GENESIS_FILE}"
                 ;;
             *)
-                wget -q "${GENESIS_URL}" -O "${GENESIS_FILE}"
+                curl -sSL "${GENESIS_URL}" -o "${GENESIS_FILE}"
                 ;;
         esac
     fi
@@ -387,7 +387,7 @@ download_genesis(){
 download_addrbook(){
     if [ -n "${ADDR_BOOK_URL}" ]; then
         echo "Downloading address book file..."
-        wget -q "${ADDR_BOOK_URL}" -O "${ADDR_BOOK_FILE}"
+        curl -sSL "${ADDR_BOOK_URL}" -o "${ADDR_BOOK_FILE}"
     fi
 }
 
@@ -411,10 +411,10 @@ get_sync_block_height(){
     local latest_height
     local sync_block_height
     if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        latest_height=$(wget -q ${STATE_SYNC_RPC}/block -O- | jq -r .result.block.header.height)
+        latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
         if [ "${latest_height}" = "null" ]; then
             # Maybe Tendermint 0.35+?
-            latest_height=$(wget -q ${STATE_SYNC_RPC}/block -O- | jq -r .block.header.height)
+            latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
         fi
         sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
     fi
@@ -424,9 +424,9 @@ get_sync_block_height(){
 get_sync_block_hash(){
     local sync_block_hash
     if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        sync_block_hash=$(wget -q "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .result.block_id.hash)
+        sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .result.block_id.hash)
         if [ "${sync_block_hash}" = "null" ]; then
-            sync_block_hash=$(wget -q "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" -O- | jq -r .block_id.hash)
+            sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
         fi
     fi
     echo "${sync_block_hash:=}"
@@ -539,7 +539,7 @@ get_wasm(){
         logger "Downloading wasm files from ${WASM_URL}"
         wasm_base_dir=$(dirname ${WASM_DIR})
         mkdir -p "${wasm_base_dir}"
-        wget -q "${WASM_URL}" -O- | lz4 -c -d | tar -x -C "${wasm_base_dir}"
+        curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
 }
 
@@ -551,6 +551,25 @@ reset_on_start(){
         mkdir -p "${DATA_DIR}"
         mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
     fi
+}
+
+curlverify(){
+    local url="$1"
+    local target="$2"
+    curl -sSL "${url}" -o "${target}"
+
+    local query=$(echo ${orig_url} | sed -e 's/^.*?\?//')
+    case query in
+        checksum=sha256:*)
+            local checksum=$(echo ${query} | sed -e 's/^checksum=sha256://')
+            local actual=$(sha256sum "${target}" | awk '{print $1}')
+            if [ "${actual}" != "${checksum}" ]; then
+                logger "Checksum mismatch: ${actual} != ${checksum}"
+                rm -rf "${target}"
+                exit 1
+            fi
+        ;;
+    esac
 }
 
 if [ "$(basename $0)" = "entrypoint.sh" ]; then

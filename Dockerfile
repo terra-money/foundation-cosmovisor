@@ -1,16 +1,13 @@
-ARG ALPINE_VERSION="3.16"
 ARG BUILDPLATFORM=linux/amd64
-ARG BASE_IMAGE="alpine:${ALPINE_VERSION}"
+ARG BASE_IMAGE="archlinux:base"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
-RUN apk add --no-cache file jq lz4
+RUN pacman -Syyu --noconfirm file jq lz4 curl
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
-WORKDIR /app
-
-RUN wget -O- https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
+RUN curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin
 
 RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
@@ -30,9 +27,12 @@ EXPOSE 26656
 # tendermint rpc
 EXPOSE 26657
 
-RUN addgroup -g 1000 cosmovisor && \
-    adduser -u 1000 -G cosmovisor -D -h /app cosmovisor
+WORKDIR /app
 
+RUN groupadd -g 1000 cosmovisor # && \
+    useradd -u 1000 -g 1000 -Mh /app cosmovisor
+
+#USER cosmovisor
 VOLUME ["/app"]
 ENTRYPOINT [ "entrypoint.sh"]
-CMD ["cosmovisor", "run", "start", "--home", "./"]
+CMD ["cosmovisor", "run", "start", "--home", "/app"]
