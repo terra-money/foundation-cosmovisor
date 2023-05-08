@@ -93,7 +93,7 @@ parse_chain_info(){
     # choosing nothing as the default pruning strategy
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"} 
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=1000}
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${PRUNING_KEEP_EVERY}}
 
     # config.toml
     ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
