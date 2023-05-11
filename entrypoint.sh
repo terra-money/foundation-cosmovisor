@@ -104,6 +104,7 @@ parse_chain_info(){
     DB_BACKEND=${DB_BACKEND:=goleveldb}
     DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
     LOG_FORMAT=${LOG_FORMAT:=json}
+    FAST_SYNC=${FAST_SYNC:="true"}
     TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
     UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
     MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
@@ -445,6 +446,7 @@ modify_config_toml(){
     sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
     sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^fast.sync *=.*|fast_sync = \"${FAST_SYNC}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^seeds *=.*|seeds = \"${SEEDS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^persistent.peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
