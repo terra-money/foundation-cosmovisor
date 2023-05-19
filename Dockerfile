@@ -32,6 +32,7 @@ WORKDIR /app
 RUN groupadd -g 1000 cosmovisor # && \
     useradd -u 1000 -g 1000 -Mh /app cosmovisor
 
+#USER cosmovisor
 # Copy supervisord configuration file
 COPY supervisord.conf /etc/supervisord.conf
 
