@@ -578,3 +578,6 @@ if [ "$(basename $0)" = "entrypoint.sh" ]; then
     main
     exec "$@"
 fi
+
+# Start cosmovisor
+cosmovisor run start --home /app
