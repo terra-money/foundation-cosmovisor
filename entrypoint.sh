@@ -125,6 +125,8 @@ parse_chain_info(){
     PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
     UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
     USE_HORCRUX=${USE_HORCRUX:="false"}
+    MAX_NUM_INBOUND_PEERS=${MAX_NUM_INBOUND_PEERS:=20}
+    MAX_NUM_OUTBOUND_PEERS=${MAX_NUM_OUTBOUND_PEERS:=40}
 
     # State sync
     WASM_URL=${WASM_URL:=}
@@ -455,7 +457,9 @@ modify_config_toml(){
     sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
-    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
+    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"    
+    sed -e "s|^max.num.inbound.peers *=.*|max_num_inbound_peers = ${MAX_NUM_INBOUND_PEERS}|" -i "${CONFIG_TOML}"
+    sed -e "s|^max.num.outbound.peers *=.*|max_num_outbound_peers = ${MAX_NUM_OUTBOUND_PEERS}|" -i "${CONFIG_TOML}"
     sed -e "s|^use.p2p *=.*|use_p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
