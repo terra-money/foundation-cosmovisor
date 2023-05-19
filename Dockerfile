@@ -3,7 +3,7 @@ ARG BASE_IMAGE="archlinux:base"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
-RUN pacman -Syyu --noconfirm file jq lz4 curl
+RUN pacman -Syyu --noconfirm file jq lz4 curl supervisor
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
@@ -33,6 +33,10 @@ RUN groupadd -g 1000 cosmovisor # && \
     useradd -u 1000 -g 1000 -Mh /app cosmovisor
 
 #USER cosmovisor
+# Copy supervisord configuration file
+COPY supervisord.conf /etc/supervisord.conf
+
 VOLUME ["/app"]
-ENTRYPOINT [ "entrypoint.sh"]
-CMD ["cosmovisor", "run", "start", "--home", "/app"]
+
+# Set supervisord as the entrypoint
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

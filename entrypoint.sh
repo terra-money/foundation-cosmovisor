@@ -29,6 +29,8 @@ CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
+HALT_HEIGHT=${HALT_HEIGHT:=""}
+
 main(){
     get_system_info
     get_chain_json
@@ -577,4 +579,14 @@ curlverify(){
 if [ "$(basename $0)" = "entrypoint.sh" ]; then
     main
     exec "$@"
+fi
+
+# ------------------------------------------------------------------------------------
+# Start the chain
+# ------------------------------------------------------------------------------------
+
+if [[ -n "$HALT_HEIGHT" ]]; then
+    cosmovisor run start --halt-height $HALT_HEIGHT --home /app
+else
+    cosmovisor run start --home /app
 fi
