@@ -97,6 +97,7 @@ parse_chain_info(){
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"} 
     SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${PRUNING_KEEP_EVERY}}
 
+    RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
     # config.toml
     ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
     ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
@@ -528,6 +529,7 @@ modify_app_toml(){
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
+    sed -e "s|^rpc-max-body-bytes *=.*|rpc-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
 
     if [ -n "${DB_BACKEND}" ]; then
         sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND}\"|" -i "${APP_TOML}"
