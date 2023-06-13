@@ -6,17 +6,18 @@ FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 RUN pacman -Syyu --noconfirm file jq lz4 curl supervisor
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ./health_check.sh /usr/local/bin/health_check.sh
 
 RUN curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin
 
-RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh /usr/local/bin/health_check.sh
 
 # Cosmosvisor vars
 ENV DAEMON_HOME=/app \
     DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
     DAEMON_RESTART_AFTER_UPGRADE=true \
-    UNSAFE_SKIP_BACKUP=true 
+    UNSAFE_SKIP_BACKUP=true
 
 # rest server
 EXPOSE 1317
