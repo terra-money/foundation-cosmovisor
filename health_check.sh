@@ -15,7 +15,12 @@ fi
 # Skip check if current block height is not available
 if [ -z $current_height ]; then
     echo "Current block height is not available."
-    exit 0
+    # Return error when file exists but block height is not available
+    if [ -f $PREVIOUS_HEIGHT_FILE ]; then
+        exit 1
+    else
+        exit 0
+    fi
 fi
 
 # Create the previous height file if does not exist
