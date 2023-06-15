@@ -1,44 +1,85 @@
 #!/bin/sh
 
-# Define the file to store the previous block height
-PREVIOUS_HEIGHT_FILE=/tmp/previous_height
+PREVIOUS_HEIGHT_FILE=${PREVIOUS_HEIGHT_FILE:="/tmp/previous_height"}
+TENDERMINT_ENDPOINT=${TENDERMINT_ENDPOINT:="localhost:26657"}
 
-# Get the current block height using curl and jq
-current_height=$(curl -s localhost:26657/status | jq -re .result.sync_info.latest_block_height)
+CURL_MAXIMUM_REQUESTS=${CURL_MAXIMUM_REQUESTS:="5"}
+CURL_INTERVAL=${CURL_INTERVAL:="1"}
+CHECK_MAXIMUM_RETRIES=${CHECK_MAXIMUM_RETRIES:="5"}
+CHECK_INTERVAL=${CHECK_INTERVAL:="1"}
 
-# Check if there was an error during the curl command
-if [ $? -ne 0 ]; then
-    echo "Error occurred while executing curl command."
-    exit 1
-fi
+get_current_height() {
+    local requests=1
 
-# Skip check if current block height is not available
-if [ -z $current_height ]; then
-    echo "Current block height is not available."
-    # Return error when file exists but block height is not available
-    if [ -f $PREVIOUS_HEIGHT_FILE ]; then
+    while [ $requests -le $CURL_MAXIMUM_REQUESTS ]; do
+        current_height=$(curl -s $TENDERMINT_ENDPOINT/status | jq -re .result.sync_info.latest_block_height)
+
+        if [ $? -ne 0 ]; then
+            echo "Error occurred while executing curl command. Retrying."
+        else
+            break
+        fi
+
+        requests=$((requests + 1))
+        sleep $CURL_INTERVAL
+    done
+
+    if [ $requests -gt $CURL_MAXIMUM_REQUESTS ]; then
+        echo "Failed to retrieve current block height after $CURL_MAXIMUM_REQUESTS attempts."
         exit 1
+    fi
+}
+
+get_previous_height() {
+    if [ -f $PREVIOUS_HEIGHT_FILE ]; then
+        previous_height=$(cat $PREVIOUS_HEIGHT_FILE)
+        if [ $? -ne 0 ]; then
+            echo "Error occurred while reading previous height file."
+            exit 1
+        fi
     else
+        previous_height=0
+    fi
+}
+
+save_previous_height() {
+    echo $current_height > $PREVIOUS_HEIGHT_FILE
+    if [ $? -ne 0 ]; then
+        echo "Error occurred while saving previous height file."
+        exit 1
+    fi
+}
+
+health_check() {
+    get_current_height
+    if [ -z $current_height ]; then
+        echo "Current block height is not available."
+        if [ -f $PREVIOUS_HEIGHT_FILE ]; then
+            exit 1
+        else
+            exit 0
+        fi
+    fi
+
+    get_previous_height
+    if [ $current_height -le $previous_height ]; then
+        echo "Block height did not increase since the last check. Retrying."
+    else
+        save_previous_height
+        echo "Block height increased since last check."
         exit 0
     fi
-fi
+}
 
-# Create the previous height file if does not exist
-if [ ! -f $PREVIOUS_HEIGHT_FILE ]; then
-    echo 0 > $PREVIOUS_HEIGHT_FILE
-fi
+retries=1
 
-# Read the previous block height from the file
-previous_height=$(cat $PREVIOUS_HEIGHT_FILE 2>/dev/null)
+while [ $retries -le $CHECK_MAXIMUM_RETRIES ]; do
+    health_check
+    retries=$((retries + 1))
+    sleep $CHECK_INTERVAL
+done
 
-# Check if the current height is greater than the previous height
-if [ $current_height -le $previous_height ]; then
-    echo "Block height did not increase since the last check."
+if [ $retries -gt $CHECK_MAXIMUM_RETRIES ]; then
+    echo "Block height did not increase after $CHECK_MAXIMUM_RETRIES attempts."
     exit 1
 fi
-
-# Save the current height as the previous height
-echo $current_height > $PREVIOUS_HEIGHT_FILE
-
-# Exit with success status
-exit 0
