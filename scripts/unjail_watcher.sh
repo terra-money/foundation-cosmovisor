@@ -28,6 +28,7 @@ unjail_validator() {
         catching_up=$("$TERRA_BINARY" status | jq -r .SyncInfo.catching_up)
         if [ $? -ne 0 ]; then
             echo "$(date): Error: Node status is not available."
+            break
         elif [ "$catching_up" == "false" ]; then
             send_transaction
             break
