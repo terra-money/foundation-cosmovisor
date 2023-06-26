@@ -5,12 +5,12 @@ FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
 RUN pacman -Syyu --noconfirm file jq lz4 curl supervisor
 
-COPY ./entrypoint.sh ./health_check.sh /usr/local/bin/
+COPY ./entrypoint.sh scripts/health_check.sh scripts/unjail_watcher.sh /usr/local/bin/
 
 RUN curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin
 
-RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh /usr/local/bin/health_check.sh
+RUN chmod +x /usr/local/bin/cosmovisor /usr/local/bin/entrypoint.sh /usr/local/bin/health_check.sh /usr/local/bin/unjail_watcher.sh
 
 # Cosmosvisor vars
 ENV DAEMON_HOME=/app \
