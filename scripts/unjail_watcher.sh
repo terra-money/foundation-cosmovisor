@@ -1,10 +1,10 @@
 #!/bin/sh
 
-HOME_PATH=${HOME_PATH:="/app"}
+DAEMON_HOME=${DAEMON_HOME:="/app"}
 TRANSACTION_FEE=${TRANSACTION_FEE:="3000uluna"}
 CHECK_INTERVAL=${CHECK_INTERVAL:=300}
-TERRA_BINARY=${TERRA_BINARY:="$HOME_PATH/cosmovisor/current/bin/terrad"}
-ACCOUNT_NAME=${ACCOUNT_NAME:=$(cat "$HOME_PATH"/config/config.toml | grep moniker | awk -F'"' '{print $2}')}
+TERRA_BINARY=${TERRA_BINARY:="$DAEMON_HOME/cosmovisor/current/bin/terrad"}
+ACCOUNT_NAME=${ACCOUNT_NAME:=$(cat "$DAEMON_HOME"/config/config.toml | grep moniker | awk -F'"' '{print $2}')}
 
 if [ -z "$KEYRING_PASSPHRASE" ]; then
     echo "$(date): Error: KEYRING_PASSPHRASE variable is empty."
@@ -14,40 +14,31 @@ elif [ -z "$ACCOUNT_NAME" ]; then
     exit 1
 fi
 
-send_transaction() {
-    echo "$(date): Sending unjail transaction..."
-    echo "$KEYRING_PASSPHRASE" | $TERRA_BINARY tx slashing unjail \
-        --from $ACCOUNT_NAME \
-        --fees $TRANSACTION_FEE \
-        --yes \
-        --home $HOME_PATH | tail -n1
-}
-
-unjail_validator() {
-    while true; do
-        catching_up=$("$TERRA_BINARY" status | jq -r .SyncInfo.catching_up)
-        if [ $? -ne 0 ]; then
-            echo "$(date): Error: Node status is not available."
-            break
-        elif [ "$catching_up" == "false" ]; then
-            send_transaction
-            break
-        else
-            echo "$(date): Waiting 60s for validator to catch up..."
-            sleep 60
-        fi
-    done
-}
-
 while true; do
-    voting_power=$("$TERRA_BINARY" status | jq -r .ValidatorInfo.VotingPower)
+    status=$("$TERRA_BINARY" status --home $DAEMON_HOME 2> /dev/null)
     if [ $? -ne 0 ]; then
         echo "$(date): Error: Node status is not available."
-    elif [ $voting_power -gt 0 ]; then
-        echo "$(date): Validator is active. Voting power: $voting_power"
-    else
-        echo "$(date): Validator is jailed. Voting power: $voting_power"
-        unjail_validator
+    fi
+
+    voting_power=$(echo "$status" | jq -r .ValidatorInfo.VotingPower)
+    catching_up=$(echo "$status" | jq -r .SyncInfo.catching_up)
+
+    if [ -n "$voting_power" ]; then
+        if [ $voting_power -gt 0 ]; then
+            echo "$(date): Validator is active. Voting power: $voting_power"
+        elif [ "$catching_up" = "false" ]; then
+            echo "$(date): Validator is jailed. Voting power: $voting_power"
+            echo "$(date): Sending unjail transaction..."
+
+            echo "$KEYRING_PASSPHRASE" | $TERRA_BINARY tx slashing unjail \
+                --from $ACCOUNT_NAME \
+                --fees $TRANSACTION_FEE \
+                --yes \
+                --home $DAEMON_HOME | tail -n1
+        else
+            echo "$(date): Validator is jailed. Voting power: $voting_power"
+            echo "$(date): Waiting for validator to catch up..."
+        fi
     fi
 
     echo "$(date): Sleeping for $CHECK_INTERVAL seconds..."
