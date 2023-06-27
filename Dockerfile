@@ -30,7 +30,7 @@ EXPOSE 26657
 WORKDIR /app
 
 RUN groupadd -g 1000 cosmovisor # && \
-    useradd -u 1000 -g 1000 -Mh /app cosmovisor
+    useradd -u 1000 -g 1000 -Md /app cosmovisor
 
 #USER cosmovisor
 # Copy supervisord configuration file
