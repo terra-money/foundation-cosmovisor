@@ -2,7 +2,7 @@
 
 set -eu
 
-if [ -n "${DEBUG:=}" ]; then 
+if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
 
@@ -94,7 +94,7 @@ parse_chain_info(){
     PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
     # choosing nothing as the default pruning strategy
     # to avoid accidentally pruning data on an archival node
-    PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"} 
+    PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
     SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${PRUNING_KEEP_EVERY}}
 
     RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
@@ -154,10 +154,10 @@ prepare_versions(){
     local info
 
     # use recommended version from env or set in chain.json
-    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ "${STATE_SYNC_ENABLED}" = "false" ]; then        
+    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ "${STATE_SYNC_ENABLED}" = "false" ]; then
         prepare_recommended_version
-    
-    # if state sync is enabled use recommended (or most recent) version 
+
+    # if state sync is enabled use recommended (or most recent) version
     elif [ ${STATE_SYNC_ENABLED} = "true" ]; then
         prepare_recommended_version
         get_wasm
@@ -165,7 +165,7 @@ prepare_versions(){
     # if datadir has upgrade use that version
     elif [ -f "${UPGRADE_JSON}" ]; then
         prepare_upgrade_json_version
-    
+
     # presume we are syncing from genesis otherwise
     else
         prepare_genesis_version
@@ -197,11 +197,11 @@ prepare_recommended_version(){
 get_chain_json_version(){
     local version="$1"
     if [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .tag" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.tag == \"${version}\")" ${CHAIN_JSON} 
+        jq -r ".codebase.versions[] | select(.tag == \"${version}\")" ${CHAIN_JSON}
     elif [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.name == \"${version}\")" ${CHAIN_JSON} 
+        jq -r ".codebase.versions[] | select(.name == \"${version}\")" ${CHAIN_JSON}
     elif [ -n "$(jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\") | .recommended_version" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\")" ${CHAIN_JSON} 
+        jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\")" ${CHAIN_JSON}
     fi
 }
 
@@ -226,15 +226,15 @@ prepare_last_available_version(){
 
     # try to get version without next_version_name set
     if [ -n "$(jq -r "first(.codebase.versions[] | .next_version_name // \"\")" ${CHAIN_JSON})" ]; then
-        upgrade_info=$(jq "last(.codebase.versions[] | 
-            select(has("next_version_name") | not) | 
+        upgrade_info=$(jq "last(.codebase.versions[] |
+            select(has("next_version_name") | not) |
             {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
             "${CHAIN_JSON}")
     fi
 
     # if last query fails simplify
     if [ -n "${upgrade_info}" ]; then
-        upgrade_info="$(jq "last(.codebase.versions[] | 
+        upgrade_info="$(jq "last(.codebase.versions[] |
             {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
             "${CHAIN_JSON}" > "${upgrade_json}")"
     fi
@@ -258,7 +258,7 @@ prepare_genesis_version(){
 
 prepare_first_available_version(){
     logger "Preparing first available version identified in ${CHAIN_JSON}..."
-    local upgrade_info=$(jq "first(.codebase.versions[] | 
+    local upgrade_info=$(jq "first(.codebase.versions[] |
         {\"name\": .name, \"height\": (.height // 0),  \"info\": ({\"binaries\": .binaries} | tostring)})" \
         "${CHAIN_JSON}")
     if [ -n "${upgrade_info}" ]; then
@@ -295,10 +295,10 @@ link_cv_current(){
     local upgrade_path="$1"
     if [ -L "${CV_CURRENT_DIR}" ]; then
         logger "Removing existing ${CV_CURRENT_DIR}..."
-        rm "${CV_CURRENT_DIR}" 
+        rm "${CV_CURRENT_DIR}"
     elif [ -e "${CV_CURRENT_DIR}" ]; then
         logger "Removing existing ${CV_CURRENT_DIR}..."
-        rm -rf "${CV_CURRENT_DIR}" 
+        rm -rf "${CV_CURRENT_DIR}"
     fi
     logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}..."
     ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
@@ -309,7 +309,7 @@ link_cv_genesis(){
     local upgrade_path="$1"
     if [ -e "${CV_GENESIS_DIR}" ]; then
         logger "Removing existing ${CV_GENESIS_DIR}..."
-        rm -rf "${CV_GENESIS_DIR}" 
+        rm -rf "${CV_GENESIS_DIR}"
     fi
     logger "Linking ${CV_GENESIS_DIR} to ${upgrade_path}"
     ln -s "${upgrade_path}" "${CV_GENESIS_DIR}"
@@ -354,8 +354,6 @@ get_upgrade_json_version(){
         get_recommended_version "${name}"
     fi
 }
-
-
 
 # Initialize the node
 initialize_node(){
@@ -458,7 +456,7 @@ modify_config_toml(){
     sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
-    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"    
+    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
     sed -e "s|^max.num.inbound.peers *=.*|max_num_inbound_peers = ${MAX_NUM_INBOUND_PEERS}|" -i "${CONFIG_TOML}"
     sed -e "s|^max.num.outbound.peers *=.*|max_num_outbound_peers = ${MAX_NUM_OUTBOUND_PEERS}|" -i "${CONFIG_TOML}"
     sed -e "s|^use.p2p *=.*|use_p2p = true|" -i "${CONFIG_TOML}"
@@ -519,7 +517,7 @@ modify_config_toml(){
 }
 
 modify_app_toml(){
-    cp "${APP_TOML}" "${APP_TOML}.bak" 
+    cp "${APP_TOML}" "${APP_TOML}.bak"
     sed -e "s|^moniker *=.*|moniker = \"${MONIKER}\"|" -i "${APP_TOML}"
     sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning *=.*|pruning = \"${PRUNING_STRATEGY}\"|" -i "${APP_TOML}"
@@ -535,7 +533,7 @@ modify_app_toml(){
         sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND}\"|" -i "${APP_TOML}"
     fi
 
-    if [ "${ENABLE_API}" = "true" ]; then  
+    if [ "${ENABLE_API}" = "true" ]; then
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^enable *=.*|enable = true|' -i "${APP_TOML}"
     fi
 
