@@ -351,6 +351,7 @@ initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
+        mkdir -p "${DATA_DIR}"
         /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
         rm "${GENESIS_FILE}"
     fi
