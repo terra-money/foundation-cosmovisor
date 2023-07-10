@@ -35,7 +35,6 @@ main(){
     get_system_info
     get_chain_json
     parse_chain_info
-    prepare_system
     prepare_versions
     initialize_node
     reset_on_start
@@ -138,14 +137,6 @@ parse_chain_info(){
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
-}
-
-prepare_system(){
-    mkdir -p "${DATA_DIR}"
-    if [ ! -f "${DATA_DIR}/priv_validator_key.json" ]; then
-        logger "Generating priv_validator_key.json..."
-        echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > "${DATA_DIR}/priv_validator_key.json"
-    fi
 }
 
 # Identify and download the binaries for the given upgrades
