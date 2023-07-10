@@ -35,6 +35,7 @@ main(){
     get_system_info
     get_chain_json
     parse_chain_info
+    prepare_system
     prepare_versions
     initialize_node
     reset_on_start
@@ -137,6 +138,14 @@ parse_chain_info(){
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
+}
+
+prepare_system(){
+    mkdir -p "${DATA_DIR}"
+    if [ ! -f "${DATA_DIR}/priv_validator_state.json" ]; then
+        logger "Generating priv_validator_state.json..."
+        echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > "${DATA_DIR}/priv_validator_state.json"
+    fi
 }
 
 # Identify and download the binaries for the given upgrades
@@ -351,7 +360,6 @@ initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
-        mkdir -p "${DATA_DIR}"
         /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
         rm "${GENESIS_FILE}"
     fi
