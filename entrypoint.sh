@@ -29,6 +29,7 @@ CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
+GENESIS_CONTENT=${GENESIS_CONTENT:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 
 main(){
@@ -41,7 +42,7 @@ main(){
     reset_on_start
     set_node_key
     set_private_validator_key
-    download_genesis
+    create_genesis
     download_addrbook
     modify_client_toml
     modify_config_toml
@@ -96,8 +97,8 @@ parse_chain_info(){
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
     SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${PRUNING_KEEP_EVERY}}
-
     RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
+
     # config.toml
     ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
     ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
@@ -365,10 +366,15 @@ initialize_node(){
     fi
 }
 
-# Download the genesis file
-download_genesis(){
+# Create the genesis file
+create_genesis(){
     if [ ! -d "${CONFIG_DIR}" ]; then
         mkdir -p "${CONFIG_DIR}"
+    fi
+
+    if [ -n "${GENESIS_CONTENT}" ]; then
+        echo "Using genesis content from env..."
+        echo "${GENESIS_CONTENT}" | base64 -d > "${GENESIS_FILE}"
     fi
 
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
