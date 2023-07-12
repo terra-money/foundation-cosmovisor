@@ -20,8 +20,9 @@ APP_TOML="${CONFIG_DIR}/app.toml"
 CLIENT_TOML="${CONFIG_DIR}/client.toml"
 CONFIG_TOML="${CONFIG_DIR}/config.toml"
 GENESIS_FILE="${CONFIG_DIR}/genesis.json"
-NODE_KEY_FILE=${CONFIG_DIR}/node_key.json
-PV_KEY_FILE=${CONFIG_DIR}/priv_validator_key.json
+NODE_KEY_FILE="${CONFIG_DIR}/node_key.json"
+PV_KEY_FILE="${CONFIG_DIR}/priv_validator_key.json"
+ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
 # Cosmovisor directory
 COSMOVISOR_DIR="${DAEMON_HOME}/cosmovisor"
@@ -29,6 +30,7 @@ CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
+GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 GENESIS_CONTENT=${GENESIS_CONTENT:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 
@@ -268,13 +270,19 @@ prepare_first_available_version(){
 }
 
 create_cv_upgrade(){
-    local upgrade_info="$1"
-    local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
-    local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
+    if [ -n "${GENESIS_BINARY_URL}" ]; then
+        local upgrade_name="${GENESIS_VERSION}"
+        local upgrade_height=0
+        local binary_url="${GENESIS_BINARY_URL}"
+    else
+        local upgrade_info="$1"
+        local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
+        local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
+        local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
+    fi
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade_name}"
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
-    local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
     logger "Found version ${upgrade_name}, Creating ${upgrade_path}..."
     mkdir -p "${upgrade_path}"
     if [ "${binary_url}" != "null" ]; then
@@ -444,7 +452,9 @@ get_sync_block_hash(){
 
 # Modify the client.toml file
 modify_client_toml(){
-    sed -e "s|^chain-id *=.*|chain-id = \"${CHAIN_ID}\"|" -i "${CLIENT_TOML}"
+    if [ -f "${CLIENT_TOML}" ]; then
+        sed -e "s|^chain-id *=.*|chain-id = \"${CHAIN_ID}\"|" -i "${CLIENT_TOML}"
+    fi
 }
 
 # Modify the config.toml file
