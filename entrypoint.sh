@@ -38,7 +38,6 @@ main(){
     get_system_info
     get_chain_json
     parse_chain_info
-    prepare_system
     prepare_versions
     initialize_node
     reset_on_start
@@ -143,18 +142,11 @@ parse_chain_info(){
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
 }
 
-prepare_system(){
-    mkdir -p "${DATA_DIR}"
-    if [ ! -f "${DATA_DIR}/priv_validator_state.json" ]; then
-        logger "Generating priv_validator_state.json..."
-        echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > "${DATA_DIR}/priv_validator_state.json"
-    fi
-}
-
 # Identify and download the binaries for the given upgrades
 prepare_versions(){
     local name
     local info
+    mkdir -p "${DATA_DIR}"
 
     # use recommended version from env or set in chain.json
     if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ "${STATE_SYNC_ENABLED}" = "false" ]; then
@@ -212,12 +204,12 @@ prepare_chain_json_version(){
     local version="$1"
     logger "Looking for version ${version} in ${CHAIN_JSON}..."
 
-    # use recommended version
+    # get binary details for given version
     upgrade_info=$(get_chain_json_version "${version}" |
         jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
     )
 
-    # fail over to last version
+    # install binary if found
     if [ -n "${upgrade_info}" ]; then
         create_cv_upgrade "${upgrade_info}"
     fi
@@ -248,14 +240,18 @@ prepare_last_available_version(){
 }
 
 prepare_genesis_version(){
-    logger "Preparing genesis version identified in ${CHAIN_JSON}..."
-    prepare_chain_json_version "${GENESIS_VERSION}"
-    if [ ! -L "${CV_CURRENT_DIR}" ]; then
+    if [ -n "${GENESIS_BINARY_URL}" ]; then
+        logger "Preparing genesis version defined with environment variables..."
+        create_cv_upgrade
+    else
+        logger "Preparing genesis version identified in ${CHAIN_JSON}..."
+        prepare_chain_json_version "${GENESIS_VERSION}"
+    fi
+    if [ ! -L "${CV_GENESIS_DIR}" ]; then
         logger "Genesis version (${GENESIS_VERSION}) not found in ${CHAIN_JSON}, falling back to first version..."
         prepare_first_available_version
-    fi
-    if [ -L "${CV_CURRENT_DIR}" ]; then
-        link_cv_genesis "${CV_CURRENT_DIR}"
+    else
+        link_cv_current "${CV_GENESIS_DIR}"
     fi
 }
 
