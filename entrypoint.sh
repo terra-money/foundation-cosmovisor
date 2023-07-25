@@ -32,6 +32,7 @@ CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
 GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 GENESIS_CONTENT=${GENESIS_CONTENT:=""}
+LIBRARY_URLS=${LIBRARY_URLS:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 
 main(){
@@ -39,6 +40,7 @@ main(){
     get_chain_json
     parse_chain_info
     prepare_versions
+    download_libraries
     initialize_node
     reset_on_start
     set_node_key
@@ -358,6 +360,17 @@ get_upgrade_json_version(){
         # fallback to recommended version
         get_recommended_version "${name}"
     fi
+}
+
+# Download required libraries
+download_libraries(){
+    if [ -n "${LIBRARY_URLS}" ]; then
+        for url in ${LIBRARY_URLS}; do
+            logger "Downloading library: $url..."
+            curl -sSLO --output-dir "/usr/local/lib" "${url}"
+        done
+    fi
+    export LD_LIBRARY_PATH="/usr/local/lib"
 }
 
 # Initialize the node
