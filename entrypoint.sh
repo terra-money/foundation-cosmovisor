@@ -33,6 +33,7 @@ CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 GENESIS_CONTENT=${GENESIS_CONTENT:=""}
 LIBRARY_URLS=${LIBRARY_URLS:=""}
+BINARY_INFO_URL=${BINARY_INFO_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 
 main(){
@@ -170,11 +171,23 @@ prepare_versions(){
 }
 
 prepare_upgrade_json_version(){
-    local name=$(jq  -r ".name" ${UPGRADE_JSON})
-    local upgrade_path="${CV_UPGRADES_DIR}/${name}"
-    local upgrade_json="${upgrade_path}/upgrade-info.json"
-    logger "Using info from ${UPGRADE_JSON}"
-    create_cv_upgrade "$(cat ${UPGRADE_JSON})"
+    # If binary is defined in upgrade-info.json use it
+    if [ -n "$(jq -r ".info | fromjson | .binaries.\"${ARCH}\"" ${UPGRADE_JSON})" ]; then
+        logger "Using info from ${UPGRADE_JSON}..."
+        create_cv_upgrade "$(cat ${UPGRADE_JSON})"
+
+    # Otherwise look for missing binary in external file
+    elif [ -n "${BINARY_INFO_URL}" ]; then
+        logger "Binary URL is missing in upgrade-info.json, checking ${BINARY_INFO_URL}..."
+        local name=$(jq  -r ".name" ${UPGRADE_JSON})
+        local upgrade_info=$(curl -sSL "${BINARY_INFO_URL}" | jq ".[\"${CHAIN_ID}\"][] | select(.name == \"${name}\")")
+
+        if [ -n "${upgrade_info}" ]; then
+            create_cv_upgrade "${upgrade_info}"
+        else
+            logger "Binary URL is missing, update ${BINARY_INFO_URL} to continue."
+        fi
+    fi
 }
 
 prepare_recommended_version(){
@@ -369,8 +382,8 @@ download_libraries(){
             logger "Downloading library: $url..."
             curl -sSLO --output-dir "/usr/local/lib" "${url}"
         done
+        export LD_LIBRARY_PATH="/usr/local/lib"
     fi
-    export LD_LIBRARY_PATH="/usr/local/lib"
 }
 
 # Initialize the node
