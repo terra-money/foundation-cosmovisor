@@ -31,7 +31,6 @@ CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
 GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
-GENESIS_CONTENT=${GENESIS_CONTENT:=""}
 LIBRARY_URLS=${LIBRARY_URLS:=""}
 BINARY_INFO_URL=${BINARY_INFO_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
@@ -257,7 +256,12 @@ prepare_last_available_version(){
 prepare_genesis_version(){
     if [ -n "${GENESIS_BINARY_URL}" ]; then
         logger "Preparing genesis version defined with environment variables..."
-        create_cv_upgrade
+        local upgrade_info="{
+            \"name\": \"${GENESIS_VERSION}\",
+            \"height\": 0,
+            \"info\": \"{\\\"binaries\\\":{\\\"linux/amd64\\\":\\\"${GENESIS_BINARY_URL}\\\"}}\"
+        }"
+        create_cv_upgrade "${upgrade_info}"
     else
         logger "Preparing genesis version identified in ${CHAIN_JSON}..."
         prepare_chain_json_version "${GENESIS_VERSION}"
@@ -281,16 +285,10 @@ prepare_first_available_version(){
 }
 
 create_cv_upgrade(){
-    if [ -n "${GENESIS_BINARY_URL}" ]; then
-        local upgrade_name="${GENESIS_VERSION}"
-        local upgrade_height=0
-        local binary_url="${GENESIS_BINARY_URL}"
-    else
-        local upgrade_info="$1"
-        local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
-        local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
-        local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
-    fi
+    local upgrade_info="$1"
+    local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
+    local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
+    local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade_name}"
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
@@ -400,11 +398,6 @@ initialize_node(){
 create_genesis(){
     if [ ! -d "${CONFIG_DIR}" ]; then
         mkdir -p "${CONFIG_DIR}"
-    fi
-
-    if [ -n "${GENESIS_CONTENT}" ]; then
-        echo "Using genesis content from env..."
-        echo "${GENESIS_CONTENT}" | base64 -d > "${GENESIS_FILE}"
     fi
 
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
