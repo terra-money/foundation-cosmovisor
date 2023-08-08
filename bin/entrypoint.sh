@@ -34,8 +34,7 @@ GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 LIBRARY_URLS=${LIBRARY_URLS:=""}
 BINARY_INFO_URL=${BINARY_INFO_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
-
-SUPERVISOR_ENABLED=${SUPERVISOR_ENABLED:=""}
+EXTRA_ARGS=${EXTRA_ARGS:=""}
 
 main(){
     get_system_info
@@ -619,5 +618,5 @@ curlverify(){
 
 if [ "$(basename $0)" = "entrypoint.sh" ] || [ -n "${SUPERVISOR_ENABLED}" ]; then
     main 
-    exec /bin/sh -c "trap : TERM INT; (while true; do $* && sleep 3; done) & wait"
+    exec /bin/sh -c "trap : TERM INT; (while true; do $* ${EXTRA_ARGS} && sleep 3; done) & wait"
 fi
