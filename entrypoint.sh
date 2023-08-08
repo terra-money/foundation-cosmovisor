@@ -35,6 +35,8 @@ LIBRARY_URLS=${LIBRARY_URLS:=""}
 BINARY_INFO_URL=${BINARY_INFO_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 
+SUPERVISOR_ENABLED=${SUPERVISOR_ENABLED:=""}
+
 main(){
     get_system_info
     get_chain_json
@@ -571,6 +573,10 @@ modify_app_toml(){
     if [ "${ENABLE_SWAGGER}" = "true" ]; then
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^swagger *=.*|swagger = true|' -i "${APP_TOML}"
     fi
+
+    if [ -n "${HALT_HEIGHT}" ]; then
+        sed -e "s|^halt-height *=.*|halt-height = \"${HALT_HEIGHT}\"|" -i "${APP_TOML}"
+    fi
 }
 
 get_wasm(){
@@ -611,17 +617,7 @@ curlverify(){
     esac
 }
 
-if [ "$(basename $0)" = "entrypoint.sh" ]; then
+if [ "$(basename $0)" = "entrypoint.sh" ] || [ -n "${SUPERVISOR_ENABLED}" ]; then
     main
     exec "$@"
-fi
-
-# ------------------------------------------------------------------------------------
-# Start the chain
-# ------------------------------------------------------------------------------------
-
-if [[ -n "$HALT_HEIGHT" ]]; then
-    cosmovisor run start --halt-height $HALT_HEIGHT --home /app
-else
-    cosmovisor run start --home /app
 fi
