@@ -618,6 +618,6 @@ curlverify(){
 }
 
 if [ "$(basename $0)" = "entrypoint.sh" ] || [ -n "${SUPERVISOR_ENABLED}" ]; then
-    main
-    exec "$@"
+    main 
+    exec /bin/sh -c "trap : TERM INT; (while true; do $* && sleep 3; done) & wait"
 fi
