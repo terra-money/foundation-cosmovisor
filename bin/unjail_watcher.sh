@@ -3,8 +3,7 @@
 DAEMON_HOME=${DAEMON_HOME:="/app"}
 TRANSACTION_FEE=${TRANSACTION_FEE:="3000uluna"}
 CHECK_INTERVAL=${CHECK_INTERVAL:=300}
-TERRA_BINARY=${TERRA_BINARY:="$DAEMON_HOME/cosmovisor/current/bin/terrad"}
-ACCOUNT_NAME=${ACCOUNT_NAME:=$(cat "$DAEMON_HOME"/config/config.toml | grep moniker | awk -F'"' '{print $2}')}
+ACCOUNT_NAME=${ACCOUNT_NAME:=$(awk -F'"' '/^moniker/{print $2}' "${DAEMON_HOME}/config/config.toml")}
 
 if [ -z "$KEYRING_PASSPHRASE" ]; then
     echo "$(date): Error: KEYRING_PASSPHRASE variable is empty."
@@ -15,7 +14,7 @@ elif [ -z "$ACCOUNT_NAME" ]; then
 fi
 
 while true; do
-    status=$("$TERRA_BINARY" status --home $DAEMON_HOME 2> /dev/null)
+    status=$(cosmovisor run status --home $DAEMON_HOME 2> /dev/null)
     if [ $? -ne 0 ]; then
         echo "$(date): Error: Node status is not available."
     fi
@@ -30,7 +29,7 @@ while true; do
             echo "$(date): Validator is jailed. Voting power: $voting_power"
             echo "$(date): Sending unjail transaction..."
 
-            echo "$KEYRING_PASSPHRASE" | $TERRA_BINARY tx slashing unjail \
+            echo "$KEYRING_PASSPHRASE" | cosmovisor run tx slashing unjail \
                 --from $ACCOUNT_NAME \
                 --fees $TRANSACTION_FEE \
                 --yes \

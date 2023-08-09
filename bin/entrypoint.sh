@@ -616,7 +616,10 @@ curlverify(){
     esac
 }
 
-if [ "$(basename $0)" = "entrypoint.sh" ] || [ -n "${SUPERVISOR_ENABLED}" ]; then
-    main 
+if [ "$(basename $0)" = "entrypoint.sh" ]; then
+    main
+    if [ -n "${RUN_UNJAIL_SCRIPT:=""}" ]; then
+        (unjail_watcher.sh) &
+    fi
     exec /bin/sh -c "trap : TERM INT; (while true; do $* ${EXTRA_ARGS} && sleep 3; done) & wait"
 fi
