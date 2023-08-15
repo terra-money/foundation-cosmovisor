@@ -346,6 +346,9 @@ download_cv_current(){
         *.tar.gz*)
             curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
             ;;
+        *.zip*)
+            curl -sSL "${binary_url}" | funzip > "${binary_file}"
+            ;;
         *)
             curl -sSL "${binary_url}" -o "${binary_file}"
             ;;

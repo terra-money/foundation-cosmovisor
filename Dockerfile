@@ -3,7 +3,7 @@ ARG BASE_IMAGE="archlinux:base"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
-RUN pacman -Syyu --noconfirm file jq lz4 curl
+RUN pacman -Syyu --noconfirm file jq lz4 curl unzip
 
 COPY ./bin /usr/local/bin/
 
