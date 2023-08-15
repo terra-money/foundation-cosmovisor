@@ -379,9 +379,9 @@ download_libraries(){
     if [ -n "${LIBRARY_URLS}" ]; then
         for url in ${LIBRARY_URLS}; do
             logger "Downloading library: $url..."
-            curl -sSLO --output-dir "/usr/local/lib" "${url}"
+            curl -sSLO --output-dir "${DAEMON_HOME}" "${url}"
         done
-        export LD_LIBRARY_PATH="/usr/local/lib"
+        export LD_LIBRARY_PATH="${DAEMON_HOME}"
     fi
 }
 
