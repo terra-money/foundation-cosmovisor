@@ -347,7 +347,9 @@ download_cv_current(){
             curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
             ;;
         *.zip*)
-            curl -sSL "${binary_url}" | funzip > "${binary_file}"
+            curl -sSL "${binary_url}" -o /tmp/$(basename "$binary_url")
+            unzip /tmp/$(basename "$binary_url") -d "${binary_path}"
+            rm /tmp/$(basename "$binary_url")
             ;;
         *)
             curl -sSL "${binary_url}" -o "${binary_file}"
