@@ -193,7 +193,7 @@ prepare_upgrade_json_version(){
 prepare_recommended_version(){
     logger "Preparing recommended version ${RECOMMENDED_VERSION}..."
     prepare_chain_json_version "${RECOMMENDED_VERSION}"
-    if [ ! -e "${CV_CURRENT_DIR}" ]; then
+    if [ ! -d "${CV_CURRENT_DIR}" ]; then
         if [ -f "${UPGRADE_JSON}" ]; then
             logger "Recommended version not found in ${CHAIN_JSON}, falling back to latest version..."
             prepare_last_available_version
@@ -306,6 +306,7 @@ create_cv_upgrade(){
         link_cv_current "${upgrade_path}"
     else
         link_cv_genesis "${upgrade_path}"
+        link_cv_current "${upgrade_path}"
     fi
 }
 
