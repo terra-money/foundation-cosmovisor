@@ -221,7 +221,7 @@ prepare_chain_json_version(){
 
     # get binary details for given version
     upgrade_info=$(get_chain_json_version "${version}" |
-        jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
+        jq "{\"name\": .name, \"height\": (.height // ${SYNC_BLOCK_HEIGHT:=0}), \"info\": ({\"binaries\": .binaries} | tostring)}"
     )
 
     # install binary if found
