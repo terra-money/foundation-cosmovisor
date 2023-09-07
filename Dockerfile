@@ -44,6 +44,8 @@ FROM cosmovisor
 ARG CHAIN_NAME="osmosis"
 ARG CHAIN_NETWORK="mainnet"
 
+USER root
+
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 

@@ -7,9 +7,15 @@ UPGRADES_YML="/app/config/upgrades.yml"
 
 . ${BINPATH}/entrypoint.sh
 
+get_system_info 
+DAEMON_NAME=${DAEMON_NAME:="appd"}
+
 if [ -f "${UPGRADES_YML}" ]; then
     for tag in $(yq  ".[] | .tag"  ${UPGRADES_YML}); do
-        upgrade_info=$(yq  -o json ".[] | select(.tag == \"${tag}\") | {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}" ${UPGRADES_YML})
+        binaries_content=$(yq -e ".[] | select(.tag == ${tag}) | .binaries" ${UPGRADES_YML})
+        new_binaries_json="{\"binaries\":${binaries_content}}"
+        binaries_json_encoded=$(echo "${new_binaries_json}" | jq '@json')        
+        upgrade_info=$(yq -e ".[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": (.height // 0), \"info\": ${binaries_json_encoded}}" ${UPGRADES_YML})
         create_cv_upgrade "${upgrade_info}"
     done
     if [ -L "${CV_CURRENT_DIR}" ]; then
