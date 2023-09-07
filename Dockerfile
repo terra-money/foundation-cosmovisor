@@ -54,3 +54,6 @@ COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/config/upgrades.yml
 RUN set -eux && \
     export DEBUG=1 && \
     /usr/local/bin/getbinaries.sh
+
+RUN chown -R cosmovisor:cosmovisor /app
+USER cosmovisor
