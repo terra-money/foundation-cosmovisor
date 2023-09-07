@@ -75,14 +75,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: |
-            ghcr.io/${{ github.repository }}/${{matrix.chains}}-${{matrix.networks}}
-            ${{ env.ECR_REGISTRY }}/cosmovisor-${{matrix.chains}}-${{matrix.networks}}
+            ghcr.io/${{ github.repository }}
+            ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
-            type=sha
-            type=edge,branch=test
-            type=semver,pattern={{tag}}
-            type=semver,pattern={{version}}
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}
+            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}
+            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}
+            type=semver,pattern={{version},prefix=${{matrix.chains}}-${{matrix.networks}}}
+            type=raw,value=latest,enable={{is_default_branch}},prefix=${{matrix.chains}}-${{matrix.networks}}
 
       - name: Build docker image
         uses: docker/build-push-action@v3
