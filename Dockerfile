@@ -49,7 +49,7 @@ USER root
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
-COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/config/upgrades.yml
+COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml
 
 RUN set -eux && \
     export DEBUG=1 && \
