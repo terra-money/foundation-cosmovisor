@@ -41,7 +41,7 @@ CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
 ###############################################################################
 FROM cosmovisor
 
-ARG CHAIN_NAME="osmosis"
+ARG CHAIN_NAME="terra"
 ARG CHAIN_NETWORK="mainnet"
 
 USER root

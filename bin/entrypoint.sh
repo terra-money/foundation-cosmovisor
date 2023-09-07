@@ -295,13 +295,13 @@ create_cv_upgrade(){
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
     logger "Found version ${upgrade_name}, Checking for ${upgrade_path}..."
-    mkdir -p "${upgrade_path}"
     if [ "${binary_url}" != "null" ]; then
+        mkdir -p "${upgrade_path}"
         download_cv_current "${binary_url}" "${binary_file}"
-    fi
-    link_cv_current "${upgrade_path}"
-    if [ ${upgrade_height} -le 0 ]; then
-        link_cv_genesis "${upgrade_path}"
+        link_cv_current "${upgrade_path}"
+        if [ ${upgrade_height} -le 0 ]; then
+            link_cv_genesis "${upgrade_path}"
+        fi
     fi
 }
 
