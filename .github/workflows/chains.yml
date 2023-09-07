@@ -1,4 +1,4 @@
-name: generic-build
+name: chains-build
 
 on:
   pull_request:
@@ -18,6 +18,19 @@ env:
 
 jobs:
   build:
+    strategy:
+        matrix:
+          chains: [terra, cosmoshub, osmosis]
+          networks: [mainnet, testnet]
+          include:
+            - chains: terra
+              networks: classic
+          exclude:
+            - chains: cosmoshub
+              networks: testnet
+            - chains: osmosis
+              networks: testnet
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,7 +55,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v3
         
       - name: Convert previous steps output to env var 
         run: |
@@ -61,8 +74,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: |
-            ghcr.io/${{ github.repository }}
-            ${{ env.ECR_REGISTRY }}/cosmovisor
+            ghcr.io/${{ github.repository }}/${{matrix.chains}}-${{matrix.networks}}
+            ${{ env.ECR_REGISTRY }}/cosmovisor-${{matrix.chains}}-${{matrix.networks}}
           tags: |
             type=sha
             type=edge,branch=test
@@ -70,12 +83,12 @@ jobs:
             type=semver,pattern={{version}}
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build docker image
-        uses: docker/build-push-action@v3
-        with:
-          push: ${{ github.event_name != 'pull_request' }}
-          file: Dockerfile
-          target: cosmovisor
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
-          labels: ${{ env.DOCKER_METADATA_OUTPUT_LABELS }}
+    #   - name: Build docker image
+    #     uses: docker/build-push-action@v3
+    #     with:
+    #       push: ${{ github.event_name != 'pull_request' }}
+    #       file: Dockerfile
+    #       target: cosmovisor
+    #       platforms: linux/amd64,linux/arm64
+    #       tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
+    #       labels: ${{ env.DOCKER_METADATA_OUTPUT_LABELS }}

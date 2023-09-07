@@ -1,14 +1,16 @@
 ARG BUILDPLATFORM=linux/amd64
 ARG BASE_IMAGE="archlinux:base"
 
-FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
+FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE} as cosmovisor
 
-RUN pacman -Syyu --noconfirm file jq lz4 curl unzip vim
+ARG COSMOVISOR_VERSION="v1.5.0"
+
+RUN pacman -Syyu --noconfirm file jq lz4 curl unzip vim dumb-init
 
 COPY ./bin /usr/local/bin/
 
 RUN set -eux && \
-    curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.3.0/cosmovisor-v1.3.0-linux-amd64.tar.gz | \
+    curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin && \
     chmod +x /usr/local/bin/*
 
@@ -35,3 +37,17 @@ WORKDIR /app
 VOLUME ["/app"]
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
+
+###############################################################################
+FROM cosmovisor
+
+ARG CHAIN_NAME
+ARG CHAIN_NETWORK
+
+ENV CHAIN_NAME=${CHAIN_NAME} \
+    CHAIN_NETWORK=${CHAIN_NETWORK}
+
+COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/config/upgrades.yml
+
+RUN set -eux && \
+    /usr/local/bin/getbinaries.sh
