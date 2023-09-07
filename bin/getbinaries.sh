@@ -3,12 +3,12 @@
 set -eux
 
 BINPATH=$(dirname "$0")
-UPGRADES_YML="/app/config/upgrades.yml"
+DAEMON_NAME=${DAEMON_NAME:="appd"}
 
 . ${BINPATH}/entrypoint.sh
 
 get_system_info 
-DAEMON_NAME=${DAEMON_NAME:="appd"}
+mkdir -p ${CV_UPGRADES_DIR}
 
 if [ -f "${UPGRADES_YML}" ]; then
     for tag in $(yq  ".[] | .tag"  ${UPGRADES_YML}); do
