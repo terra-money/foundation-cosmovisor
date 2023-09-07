@@ -78,11 +78,11 @@ jobs:
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
-            type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}
-            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}
-            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}
-            type=semver,pattern={{version},prefix=${{matrix.chains}}-${{matrix.networks}}}
-            type=raw,value=latest,enable={{is_default_branch}},prefix=${{matrix.chains}}-${{matrix.networks}}
+            type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=semver,pattern={{version}},prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=raw,value=latest,enable={{is_default_branch}},prefix=${{matrix.chains}}-${{matrix.networks}}-
 
       - name: Build docker image
         uses: docker/build-push-action@v3
