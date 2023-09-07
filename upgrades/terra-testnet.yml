@@ -1,4 +1,4 @@
-daemon_name: osmosisd
+daemon_name: terrad
 libraries: []
 versions:
   - name: v2.0
