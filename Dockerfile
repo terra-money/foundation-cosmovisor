@@ -5,12 +5,12 @@ FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE} as cosmovisor
 
 ARG COSMOVISOR_VERSION="v1.5.0"
 
-RUN pacman -Syyu --noconfirm file jq lz4 curl unzip vim dumb-init
+RUN pacman -Syyu --noconfirm file jq yq lz4 curl unzip vim
 
 COPY ./bin /usr/local/bin/
 
 RUN set -eux && \
-    curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}}-linux-amd64.tar.gz | \
+    curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin && \
     chmod +x /usr/local/bin/*
 
@@ -41,8 +41,8 @@ CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
 ###############################################################################
 FROM cosmovisor
 
-ARG CHAIN_NAME
-ARG CHAIN_NETWORK
+ARG CHAIN_NAME="osmosis"
+ARG CHAIN_NETWORK="mainnet"
 
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
@@ -50,4 +50,5 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
 COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/config/upgrades.yml
 
 RUN set -eux && \
+    export DEBUG=1 && \
     /usr/local/bin/getbinaries.sh
