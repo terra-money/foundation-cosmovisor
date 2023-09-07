@@ -8,6 +8,7 @@ fi
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_JSON="${DAEMON_HOME}/chain.json"
+UPGRADES_YML="${DAEMON_HOME}/upgrades.yml"
 
 # data directory
 DATA_DIR="${DAEMON_HOME}/data"
@@ -221,7 +222,7 @@ prepare_chain_json_version(){
 
     # get binary details for given version
     upgrade_info=$(get_chain_json_version "${version}" |
-        jq "{\"name\": .name, \"height\": (.height // ${SYNC_BLOCK_HEIGHT:=0}), \"info\": ({\"binaries\": .binaries} | tostring)}"
+        jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
     )
 
     # install binary if found
@@ -293,19 +294,14 @@ create_cv_upgrade(){
     local upgrade_path="${CV_UPGRADES_DIR}/${upgrade_name}"
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
-    logger "Found version ${upgrade_name}, Creating ${upgrade_path}..."
-    mkdir -p "${upgrade_path}"
+    logger "Found version ${upgrade_name}, Checking for ${upgrade_path}..."
     if [ "${binary_url}" != "null" ]; then
+        mkdir -p "${upgrade_path}"
         download_cv_current "${binary_url}" "${binary_file}"
-    fi
-    if [ ${upgrade_height} -gt 0 ]; then
-        logger "Creating ${upgrade_json}..."
-        echo "${upgrade_info}" > "${upgrade_json}"
-        logger "Copying ${upgrade_json} to ${UPGRADE_JSON}..."
-        cp "${upgrade_json}" "${UPGRADE_JSON}"
         link_cv_current "${upgrade_path}"
-    else
-        link_cv_genesis "${upgrade_path}"
+        if [ ${upgrade_height} -le 0 ]; then
+            link_cv_genesis "${upgrade_path}"
+        fi
     fi
 }
 
@@ -326,7 +322,10 @@ link_cv_current(){
 # Link the given cosmosvisor upgrade directory to the cosmovisor genesis directory
 link_cv_genesis(){
     local upgrade_path="$1"
-    if [ -e "${CV_GENESIS_DIR}" ]; then
+    if [ -L "${CV_GENESIS_DIR}" ]; then
+        logger "Removing existing ${CV_GENESIS_DIR}..."
+        rm "${CV_GENESIS_DIR}"
+    elif [ -e "${CV_GENESIS_DIR}" ]; then
         logger "Removing existing ${CV_GENESIS_DIR}..."
         rm -rf "${CV_GENESIS_DIR}"
     fi
@@ -340,21 +339,19 @@ download_cv_current(){
     local binary_file="$2"
     local binary_path="$(dirname "${binary_file}")"
 
-    logger "Downloading ${binary_url} to ${binary_file}..."
-    mkdir -p "${upgrade_path}/bin"
-    case ${binary_url} in
-        *.tar.gz*)
-            curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
-            ;;
-        *.zip*)
-            curl -sSL "${binary_url}" -o /tmp/$(basename "$binary_url")
-            unzip /tmp/$(basename "$binary_url") -d "${binary_path}"
-            rm /tmp/$(basename "$binary_url")
-            ;;
-        *)
-            curl -sSL "${binary_url}" -o "${binary_file}"
-            ;;
-    esac
+    # Only download file if it does not already exist
+    if [ ! -e "${binary_file}" ]; then
+        logger "Downloading ${binary_url} to ${binary_file}..."
+        mkdir -p "${upgrade_path}/bin"
+        case ${binary_url} in
+            *.tar.gz*)
+                curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
+                ;;
+            *)
+                curl -sSL "${binary_url}" -o "${binary_file}"
+                ;;
+        esac
+    fi
     chmod 0755 "${binary_file}"
     if [ "$(file -b ${binary_file})" = "JSON data" ]; then
         binary_url="$(jq -r ".binaries.\"${ARCH}\"" "${binary_file}")"
@@ -384,9 +381,9 @@ download_libraries(){
     if [ -n "${LIBRARY_URLS}" ]; then
         for url in ${LIBRARY_URLS}; do
             logger "Downloading library: $url..."
-            curl -sSLO --output-dir "${DAEMON_HOME}" "${url}"
+            curl -sSLO --output-dir "/usr/local/lib" "${url}"
         done
-        export LD_LIBRARY_PATH="${DAEMON_HOME}"
+        export LD_LIBRARY_PATH="/usr/local/lib"
     fi
 }
 

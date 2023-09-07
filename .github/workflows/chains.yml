@@ -1,4 +1,4 @@
-name: generic-build
+name: chains-build
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - feature/binaries
     tags:
       - 'v*'
 
@@ -18,6 +19,19 @@ env:
 
 jobs:
   build:
+    strategy:
+        matrix:
+          chains: [terra, cosmoshub, osmosis]
+          networks: [mainnet, testnet]
+          include:
+            - chains: terra
+              networks: classic
+          exclude:
+            - chains: cosmoshub
+              networks: testnet
+            - chains: osmosis
+              networks: testnet
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,7 +50,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-region: ${{ env.AWS_REGION }}
 
@@ -64,18 +78,20 @@ jobs:
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
-            type=sha
-            type=edge,branch=test
-            type=semver,pattern={{tag}}
-            type=semver,pattern={{version}}
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=semver,pattern={{version}},prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=raw,value=latest,enable={{is_default_branch}},prefix=${{matrix.chains}}-${{matrix.networks}}-
 
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
           push: ${{ github.event_name != 'pull_request' }}
           file: Dockerfile
-          target: cosmovisor
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
           labels: ${{ env.DOCKER_METADATA_OUTPUT_LABELS }}
+          build-args: |
+            CHAIN_NAME=${{matrix.chains}}
+            CHAIN_NETWORK=${{matrix.networks}}
