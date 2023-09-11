@@ -7,16 +7,17 @@ if [ -n "${DEBUG:=}" ]; then
 fi
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
+CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
 CHAIN_JSON="${DAEMON_HOME}/chain.json"
 UPGRADES_YML="${DAEMON_HOME}/upgrades.yml"
 
 # data directory
-DATA_DIR="${DAEMON_HOME}/data"
+DATA_DIR="${CHAIN_HOME}/data"
 UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
 WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
 
 # Config directory
-CONFIG_DIR="${DAEMON_HOME}/config"
+CONFIG_DIR="${CHAIN_HOME}/config"
 APP_TOML="${CONFIG_DIR}/app.toml"
 CLIENT_TOML="${CONFIG_DIR}/client.toml"
 CONFIG_TOML="${CONFIG_DIR}/config.toml"
@@ -26,7 +27,7 @@ PV_KEY_FILE="${CONFIG_DIR}/priv_validator_key.json"
 ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
 # Cosmovisor directory
-COSMOVISOR_DIR="${DAEMON_HOME}/cosmovisor"
+COSMOVISOR_DIR="$(pwd)/cosmovisor"
 CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
@@ -38,6 +39,7 @@ HALT_HEIGHT=${HALT_HEIGHT:=""}
 EXTRA_ARGS=${EXTRA_ARGS:=""}
 
 main(){
+    ensure_chain_home
     get_system_info
     get_chain_json
     parse_chain_info
@@ -56,6 +58,15 @@ main(){
 
 logger(){
     echo "$*"
+}
+
+ensure_chain_home(){
+  if [ ! -d "$CHAIN_HOME" ]; then
+    mkdir -p "$CHAIN_HOME"
+    echo "Directory $CHAIN_HOME created"
+  else
+    echo "Directory $CHAIN_HOME already exists"
+  fi
 }
 
 # System information
@@ -392,7 +403,7 @@ initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
-        /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${DAEMON_HOME}" --chain-id "${CHAIN_ID}"
+        /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
         rm "${GENESIS_FILE}"
     fi
 }

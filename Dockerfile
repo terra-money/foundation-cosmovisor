@@ -16,6 +16,7 @@ RUN set -eux && \
 
 # Cosmosvisor vars
 ENV DAEMON_HOME=/app \
+    CHAIN_HOME=${CHAIN_HOME:-${DAEMON_HOME}} \
     DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
     DAEMON_RESTART_AFTER_UPGRADE=true \
     UNSAFE_SKIP_BACKUP=true
@@ -36,7 +37,7 @@ USER cosmovisor
 WORKDIR /app
 VOLUME ["/app"]
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
-CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
+CMD [ "cosmovisor", "run", "start", "--home", "${CHAIN_HOME}" ]
 
 ###############################################################################
 FROM cosmovisor
@@ -44,16 +45,26 @@ FROM cosmovisor
 ARG CHAIN_NAME="terra"
 ARG CHAIN_NETWORK="mainnet"
 
+ENV DAEMON_HOME=/app \
+    CHAIN_HOME=${CHAIN_HOME:-${DAEMON_HOME}}
+
 USER root
 
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
-COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml
+COPY ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /${DAEMON_HOME}/upgrades.yml
 
 RUN set -eux && \
     export DEBUG=1 && \
     /usr/local/bin/getbinaries.sh
 
-RUN chown -R cosmovisor:cosmovisor /app
+# Ensure CHAIN_HOME exists and is owned by cosmovisor
+RUN mkdir -p ${CHAIN_HOME} && \
+    chown -R cosmovisor:cosmovisor ${CHAIN_HOME}
+
+#create dummy data folder to satisfy cosmovovisor
+RUN mkdir -p ${DAEMON_HOME}/data
+
+RUN chown -R cosmovisor:cosmovisor ${DAEMON_HOME}
 USER cosmovisor
