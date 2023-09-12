@@ -67,6 +67,11 @@ ensure_chain_home(){
   else
     echo "Directory $CHAIN_HOME already exists"
   fi
+
+  if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then 
+        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data; 
+  fi
+
 }
 
 # System information

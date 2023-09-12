@@ -59,12 +59,6 @@ RUN set -eux && \
     export DEBUG=1 && \
     /usr/local/bin/getbinaries.sh
 
-# Ensure CHAIN_HOME exists and is owned by cosmovisor
-RUN mkdir -p ${CHAIN_HOME} && \
-    chown -R cosmovisor:cosmovisor ${CHAIN_HOME}
-
-#create dummy data folder to satisfy cosmovovisor
-RUN mkdir -p ${DAEMON_HOME}/data
-
 RUN chown -R cosmovisor:cosmovisor ${DAEMON_HOME}
+RUN chown -R cosmovisor:cosmovisor ${CHAIN_HOME}
 USER cosmovisor
