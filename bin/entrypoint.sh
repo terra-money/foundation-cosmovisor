@@ -33,7 +33,6 @@ CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
 
 GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 LIBRARY_URLS=${LIBRARY_URLS:=""}
-BINARY_INFO_URL=${BINARY_INFO_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 EXTRA_ARGS=${EXTRA_ARGS:=""}
 
@@ -177,18 +176,6 @@ prepare_upgrade_json_version(){
     if [ -n "$(jq -r ".info | fromjson | .binaries.\"${ARCH}\"" ${UPGRADE_JSON})" ]; then
         logger "Using info from ${UPGRADE_JSON}..."
         create_cv_upgrade "$(cat ${UPGRADE_JSON})"
-
-    # Otherwise look for missing binary in external file
-    elif [ -n "${BINARY_INFO_URL}" ]; then
-        logger "Binary URL is missing in upgrade-info.json, checking ${BINARY_INFO_URL}..."
-        local name=$(jq  -r ".name" ${UPGRADE_JSON})
-        local upgrade_info=$(curl -sSL "${BINARY_INFO_URL}" | jq ".[\"${CHAIN_ID}\"][] | select(.name == \"${name}\")")
-
-        if [ -n "${upgrade_info}" ]; then
-            create_cv_upgrade "${upgrade_info}"
-        else
-            logger "Binary URL is missing, update ${BINARY_INFO_URL} to continue."
-        fi
     fi
 }
 
