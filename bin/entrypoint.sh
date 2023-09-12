@@ -134,6 +134,7 @@ parse_chain_info(){
     USE_HORCRUX=${USE_HORCRUX:="false"}
     MAX_NUM_INBOUND_PEERS=${MAX_NUM_INBOUND_PEERS:=20}
     MAX_NUM_OUTBOUND_PEERS=${MAX_NUM_OUTBOUND_PEERS:=40}
+    TIMEOUT_COMMIT=${TIMEOUT_COMMIT:=}
 
     # State sync
     WASM_URL=${WASM_URL:=}
@@ -548,6 +549,10 @@ modify_config_toml(){
         sed -e "s|^trust.hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
     fi
     # sed -e "s|^trust_period *=.*|trust_period = \"168h\"|" -i "${CONFIG_TOML}"
+
+    if [ -n "${TIMEOUT_COMMIT}" ]; then
+        sed -e "s|^timeout.commit *=.*|timeout_commit = \"${TIMEOUT_COMMIT}\"|" -i "${CONFIG_TOML}"
+    fi
 }
 
 modify_app_toml(){
