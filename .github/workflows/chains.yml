@@ -21,7 +21,7 @@ jobs:
   build:
     strategy:
         matrix:
-          chains: [terra, cosmoshub, osmosis]
+          chains: [terra, cosmoshub, osmosis, juno]
           networks: [mainnet, testnet]
           include:
             - chains: terra
@@ -30,6 +30,8 @@ jobs:
             - chains: cosmoshub
               networks: testnet
             - chains: osmosis
+              networks: testnet
+            - chains: juno
               networks: testnet
 
     runs-on: ubuntu-latest
@@ -57,8 +59,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        
-      - name: Convert previous steps output to env var 
+
+      - name: Convert previous steps output to env var
         run: |
           echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> ${GITHUB_ENV}
 
