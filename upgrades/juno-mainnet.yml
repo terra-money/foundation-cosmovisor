@@ -8,11 +8,11 @@ versions:
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v9.0.0/junod
   - name: v10
-    tag: v10.0.2
+    tag: v10.1.0
     proposal: 40
     height: 5004269
     binaries:
-      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v10.0.2/junod
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v10.1.0/junod
   - name: v11
     tag: v11.0.0
     proposal: 47
