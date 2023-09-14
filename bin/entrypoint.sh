@@ -68,10 +68,9 @@ ensure_chain_home(){
     echo "Directory $CHAIN_HOME already exists"
   fi
 
-  if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then 
-        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data; 
+  if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ] && [ ! -L "${DAEMON_HOME}/data" ]; then 
+    ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data
   fi
-
 }
 
 # System information
@@ -114,6 +113,7 @@ parse_chain_info(){
     PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
     PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
+    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}
     # choosing nothing as the default pruning strategy
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
@@ -129,6 +129,7 @@ parse_chain_info(){
     DB_BACKEND=${DB_BACKEND:=goleveldb}
     DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
     LOG_FORMAT=${LOG_FORMAT:=json}
+    LOG_LEVEL=${LOG_LEVEL:="info"}
     FAST_SYNC=${FAST_SYNC:="true"}
     TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
     UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
@@ -496,6 +497,7 @@ modify_config_toml(){
     cp "${CONFIG_TOML}" "${CONFIG_TOML}.bak"
     sed -e "s|^laddr *=\s*\"tcp:\/\/127.0.0.1|laddr = \"tcp:\/\/0.0.0.0|" -i "${CONFIG_TOML}"
     sed -e "s|^log.format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^log.level *=.*|log_level = \"${LOG_LEVEL}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
     sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
@@ -574,6 +576,7 @@ modify_app_toml(){
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-interval *=.*|pruning-interval = \"${PRUNING_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-every *=.*|pruning-keep-every = \"${PRUNING_KEEP_EVERY}\"|" -i "${APP_TOML}"
+    sed -e "s|^min.retain.blocks *=.*|min_retain_blocks = ${MIN_RETAIN_BLOCKS}|" -i "${APP_TOML}"    
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
