@@ -26,3 +26,8 @@ versions:
     height: 6272928
     binaries:
       linux/amd64: https://github.com/terra-money/core/releases/download/v2.4.0-rc5/terra_2.4.0-rc5_Linux_x86_64.tar.gz?checksum=sha256:c61c9c4ae8a0bcb9d7f9fc2197d84ba8b75b558c2cee3438ae2142eb97e0d771
+  - name: v2.5
+    tag: v2.6.0-rc6
+    height: 7432000
+    binaries:
+      linux/amd64: https://github.com/terra-money/core/releases/download/v2.5.0-rc6/terra_2.5.0-rc6_Linux_x86_64.tar.gz?checksum=sha256:44c69116d4e13ab5aaa0263860c9b3d5ebea4eaca8566208fb8be0d08f7ed9a8
