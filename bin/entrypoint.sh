@@ -227,7 +227,7 @@ prepare_chain_json_version(){
 
     # get binary details for given version
     upgrade_info=$(get_chain_json_version "${version}" |
-        jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
+        jq "{\"name\": .name, \"height\": (.height // ${SYNC_BLOCK_HEIGHT:=0}), \"info\": ({\"binaries\": .binaries} | tostring)}"
     )
 
     # install binary if found
@@ -351,6 +351,11 @@ download_cv_current(){
         case ${binary_url} in
             *.tar.gz*)
                 curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
+                ;;
+            *.zip*)
+                curl -sSL "${binary_url}" -o /tmp/$(basename "$binary_url")
+                unzip /tmp/$(basename "$binary_url") -d "${binary_path}"
+                rm /tmp/$(basename "$binary_url")
                 ;;
             *)
                 curl -sSL "${binary_url}" -o "${binary_file}"
