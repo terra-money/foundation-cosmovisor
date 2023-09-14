@@ -37,7 +37,7 @@ USER cosmovisor
 WORKDIR /app
 VOLUME ["/app"]
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
-CMD [ "cosmovisor", "run", "start", "--home", "${CHAIN_HOME}" ]
+CMD [ "cosmovisor", "run", "start", "--x-crisis-skip-assert-invariants", "--home", "${CHAIN_HOME}" ]
 
 ###############################################################################
 FROM cosmovisor
