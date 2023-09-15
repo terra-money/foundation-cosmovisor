@@ -12,6 +12,10 @@ get_chain_json(){
     if [ -z "${CHAIN_JSON_URL:=""}" ] && [ -n "${CHAIN_NAME:=""}" ]; then
         CHAIN_JSON_URL=https://raw.githubusercontent.com/cosmos/chain-registry/master/${CHAIN_NAME}/chain.json
     fi
+    if [ -z "${CHAIN_JSON_URL:=""}" ]; then
+        echo "CHAIN_JSON_URL is not set. Exiting..."
+        exit 1
+    fi
     logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
     # always download newest version of chain.json
     curl -sSL "${CHAIN_JSON_URL}" -o "${CHAIN_JSON}"
@@ -25,6 +29,9 @@ create_upgrades_yaml(){
 }
 
 parse_chain_info(){
+    if [ ! -f "${CHAIN_JSON}" ]; then
+        get_chain_json
+    fi
     logger "Parsing chain information..."
     export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
     export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}

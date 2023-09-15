@@ -48,9 +48,10 @@ ENV DAEMON_HOME=/app \
     CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
-COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* ${DAEMON_HOME}/
+COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* /tmp/
 
 RUN set -eux && \
     export DEBUG=1 && \
-    /usr/local/bin/getbinaries.sh \
+    test ! -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml || mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml && \
+    /usr/local/bin/getbinaries.sh && \
     chown -R cosmovisor:cosmovisor ${DAEMON_HOME}
