@@ -96,7 +96,6 @@ ensure_chain_home(){
     fi
 }
 
-
 # Initialize the node
 initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
