@@ -52,6 +52,6 @@ COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* /tmp/
 
 RUN set -eux && \
     export DEBUG=1 && \
-    test ! -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml || mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml && \
+    if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml; fi && \
     /usr/local/bin/getbinaries.sh && \
     chown -R cosmovisor:cosmovisor ${DAEMON_HOME}
