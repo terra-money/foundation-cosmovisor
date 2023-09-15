@@ -1,15 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 
-set -eu
+set -euo pipefail
 
 if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
 
+. /usr/local/bin/getbinaries.sh
+. /usr/local/bin/getchaininfo.sh
+
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
-CHAIN_JSON="${DAEMON_HOME}/chain.json"
-UPGRADES_YML="${DAEMON_HOME}/upgrades.yml"
 
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
@@ -26,24 +27,23 @@ NODE_KEY_FILE="${CONFIG_DIR}/node_key.json"
 PV_KEY_FILE="${CONFIG_DIR}/priv_validator_key.json"
 ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
-# Cosmovisor directory
-COSMOVISOR_DIR="$(pwd)/cosmovisor"
-CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
-CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
-CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
-
 GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 LIBRARY_URLS=${LIBRARY_URLS:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 EXTRA_ARGS=${EXTRA_ARGS:=""}
 
-main(){
-    ensure_chain_home
-    get_system_info
+logger(){
+    echo "$*" | ts '[%Y-%m-%d %H:%M:%S]'
+}
+
+prepare(){
     get_chain_json
     parse_chain_info
-    prepare_versions
+    get_system_info
+    prepare_all_versions
+    prepare_current_version
     download_libraries
+    on_init
     initialize_node
     reset_on_start
     set_node_key
@@ -55,116 +55,17 @@ main(){
     modify_app_toml
 }
 
-logger(){
-    echo "$*"
-}
-
-ensure_chain_home(){
-  if [ ! -d "$CHAIN_HOME" ]; then
-    mkdir -p "$CHAIN_HOME"
-    echo "Directory $CHAIN_HOME created"
-  else
-    echo "Directory $CHAIN_HOME already exists"
-  fi
-
-  if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then 
-        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data; 
-  fi
-
-}
-
-# System information
-get_system_info(){
-    logger "Identifying system architecture..."
-    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-    MACH=$(uname -m)
-    if [ "${MACH}" = "x86_64" ]; then
-        ARCH="${OS}/amd64"
-    elif [ "${MACH}" = "aarch64" ]; then
-        ARCH="${OS}/arm64"
+start(){
+    local command="$*"
+    if [[ "${command}" != *"cosmovisor run start"* ]]; then
+        exec /usr/bin/dumb-init -- "$@"
     fi
-}
-
-# Chain information
-get_chain_json(){
-    logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
-    # always download newest version of chain.json
-    curl -sSL "${CHAIN_JSON_URL}" -o "${CHAIN_JSON}"
-}
-
-parse_chain_info(){
-    logger "Parsing chain information..."
-    export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
-    export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
-
-    # Codebase Versions
-    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
-    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
-    # Prefer recommended version over upgrade.json
-    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
-
-    # app.toml
-    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
-    ENABLE_API=${ENABLE_API:=true}
-    ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
-    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
-    MONIKER=${MONIKER:="moniker"}
-    MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
-    PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
-    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
-    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
-    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=2000}
-    # choosing nothing as the default pruning strategy
-    # to avoid accidentally pruning data on an archival node
-    PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${MIN_RETAIN_BLOCKS}}
-    RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
-
-    # config.toml
-    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
-    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
-    ALLOW_DUPLICATE_IP=${ALLOW_DUPLICATE_IP:=true}
-    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
-    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
-    DB_BACKEND=${DB_BACKEND:=goleveldb}
-    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
-    LOG_FORMAT=${LOG_FORMAT:=json}
-    FAST_SYNC=${FAST_SYNC:="true"}
-    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
-    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
-    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
-    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
-    IS_SEED_NODE=${IS_SEED_NODE:="false"}
-    IS_SENTRY=${IS_SENTRY:="false"}
-    MAX_PAYLOAD=${MAX_PAYLOAD:=}
-    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
-    NODE_KEY=${NODE_KEY:=}
-    NODE_MODE=${NODE_MODE:=}
-    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
-    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
-    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
-    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
-    PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
-    PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
-    UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
-    USE_HORCRUX=${USE_HORCRUX:="false"}
-    MAX_NUM_INBOUND_PEERS=${MAX_NUM_INBOUND_PEERS:=20}
-    MAX_NUM_OUTBOUND_PEERS=${MAX_NUM_OUTBOUND_PEERS:=40}
-    TIMEOUT_COMMIT=${TIMEOUT_COMMIT:=}
-
-    # State sync
-    WASM_URL=${WASM_URL:=}
-    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
-    RESET_ON_START=${RESET_ON_START:="false"}
-    STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
-    STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
-    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
-    SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
-    SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
+    export EXTRA_ARGS=${EXTRA_ARGS:="${command#*cosmovisor run start}"}
+    exec /usr/bin/supervisord -c /etc/supervisord.conf
 }
 
 # Identify and download the binaries for the given upgrades
-prepare_versions(){
+prepare_current_version(){
     local name
     local info
     mkdir -p "${DATA_DIR}"
@@ -188,209 +89,13 @@ prepare_versions(){
     fi
 }
 
-prepare_upgrade_json_version(){
-    # If binary is defined in upgrade-info.json use it
-    if [ -n "$(jq -r ".info | fromjson | .binaries.\"${ARCH}\"" ${UPGRADE_JSON})" ]; then
-        logger "Using info from ${UPGRADE_JSON}..."
-        create_cv_upgrade "$(cat ${UPGRADE_JSON})"
+ensure_chain_home(){
+    mkdir -p "{$CHAIN_HOME}"
+    if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then 
+        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data; 
     fi
 }
 
-prepare_recommended_version(){
-    logger "Preparing recommended version ${RECOMMENDED_VERSION}..."
-    prepare_chain_json_version "${RECOMMENDED_VERSION}"
-    if [ ! -e "${CV_CURRENT_DIR}" ]; then
-        if [ -f "${UPGRADE_JSON}" ]; then
-            logger "Recommended version not found in ${CHAIN_JSON}, falling back to latest version..."
-            prepare_last_available_version
-        else
-            logger "Recommended version not found in ${CHAIN_JSON}, falling back to first version..."
-            prepare_first_available_version
-        fi
-    fi
-}
-
-get_chain_json_version(){
-    local version="$1"
-    if [ -n "$(jq -r ".codebase.versions[] | select(.tag == \"${version}\") | .tag" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.tag == \"${version}\")" ${CHAIN_JSON}
-    elif [ -n "$(jq -r ".codebase.versions[] | select(.name == \"${version}\") | .name" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.name == \"${version}\")" ${CHAIN_JSON}
-    elif [ -n "$(jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\") | .recommended_version" ${CHAIN_JSON})" ]; then
-        jq -r ".codebase.versions[] | select(.recommended_version == \"${version}\")" ${CHAIN_JSON}
-    fi
-}
-
-prepare_chain_json_version(){
-    local version="$1"
-    logger "Looking for version ${version} in ${CHAIN_JSON}..."
-
-    # get binary details for given version
-    upgrade_info=$(get_chain_json_version "${version}" |
-        jq "{\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)}"
-    )
-
-    # install binary if found
-    if [ -n "${upgrade_info}" ]; then
-        create_cv_upgrade "${upgrade_info}"
-    fi
-}
-
-prepare_last_available_version(){
-    local upgrade_info=""
-    logger "Preparing last available version identified in ${CHAIN_JSON}..."
-
-    # try to get version without next_version_name set
-    if [ -n "$(jq -r "first(.codebase.versions[] | .next_version_name // \"\")" ${CHAIN_JSON})" ]; then
-        upgrade_info=$(jq "last(.codebase.versions[] |
-            select(has("next_version_name") | not) |
-            {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
-            "${CHAIN_JSON}")
-    fi
-
-    # if last query fails simplify
-    if [ -n "${upgrade_info}" ]; then
-        upgrade_info="$(jq "last(.codebase.versions[] |
-            {\"name\": .name, \"height\": (.height // 0), \"info\": ({\"binaries\": .binaries} | tostring)})" \
-            "${CHAIN_JSON}" > "${upgrade_json}")"
-    fi
-
-    if [ -n "${upgrade_info}" ]; then
-        create_cv_upgrade "${upgrade_info}"
-    fi
-}
-
-prepare_genesis_version(){
-    if [ -n "${GENESIS_BINARY_URL}" ]; then
-        logger "Preparing genesis version defined with environment variables..."
-        local upgrade_info="{
-            \"name\": \"${GENESIS_VERSION}\",
-            \"height\": 0,
-            \"info\": \"{\\\"binaries\\\":{\\\"linux/amd64\\\":\\\"${GENESIS_BINARY_URL}\\\"}}\"
-        }"
-        create_cv_upgrade "${upgrade_info}"
-    else
-        logger "Preparing genesis version identified in ${CHAIN_JSON}..."
-        prepare_chain_json_version "${GENESIS_VERSION}"
-    fi
-    if [ ! -L "${CV_GENESIS_DIR}" ]; then
-        logger "Genesis version (${GENESIS_VERSION}) not found in ${CHAIN_JSON}, falling back to first version..."
-        prepare_first_available_version
-    else
-        link_cv_current "${CV_GENESIS_DIR}"
-    fi
-}
-
-prepare_first_available_version(){
-    logger "Preparing first available version identified in ${CHAIN_JSON}..."
-    local upgrade_info=$(jq "first(.codebase.versions[] |
-        {\"name\": .name, \"height\": (.height // 0),  \"info\": ({\"binaries\": .binaries} | tostring)})" \
-        "${CHAIN_JSON}")
-    if [ -n "${upgrade_info}" ]; then
-        create_cv_upgrade "${upgrade_info}"
-    fi
-}
-
-create_cv_upgrade(){
-    local upgrade_info="$1"
-    local upgrade_name="$(echo "${upgrade_info}" | jq -r ".name")"
-    local upgrade_height="$(echo "${upgrade_info}" | jq -r ".height")"
-    local binary_url="$(echo "${upgrade_info}" | jq -r ".info | fromjson | .binaries.\"${ARCH}\"")"
-    local upgrade_path="${CV_UPGRADES_DIR}/${upgrade_name}"
-    local upgrade_json="${upgrade_path}/upgrade-info.json"
-    local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
-    logger "Found version ${upgrade_name}, Checking for ${upgrade_path}..."
-    if [ "${binary_url}" != "null" ]; then
-        mkdir -p "${upgrade_path}"
-        download_cv_current "${binary_url}" "${binary_file}"
-        link_cv_current "${upgrade_path}"
-        if [ ${upgrade_height} -le 0 ]; then
-            link_cv_genesis "${upgrade_path}"
-        fi
-    fi
-}
-
-# Link the given cosmosvisor upgrade directory to the cosmovisor current directory
-link_cv_current(){
-    local upgrade_path="$1"
-    if [ -L "${CV_CURRENT_DIR}" ]; then
-        logger "Removing existing ${CV_CURRENT_DIR}..."
-        rm "${CV_CURRENT_DIR}"
-    elif [ -e "${CV_CURRENT_DIR}" ]; then
-        logger "Removing existing ${CV_CURRENT_DIR}..."
-        rm -rf "${CV_CURRENT_DIR}"
-    fi
-    logger "Linking ${CV_CURRENT_DIR} to ${upgrade_path}..."
-    ln -s "${upgrade_path}" "${CV_CURRENT_DIR}"
-}
-
-# Link the given cosmosvisor upgrade directory to the cosmovisor genesis directory
-link_cv_genesis(){
-    local upgrade_path="$1"
-    if [ -L "${CV_GENESIS_DIR}" ]; then
-        logger "Removing existing ${CV_GENESIS_DIR}..."
-        rm "${CV_GENESIS_DIR}"
-    elif [ -e "${CV_GENESIS_DIR}" ]; then
-        logger "Removing existing ${CV_GENESIS_DIR}..."
-        rm -rf "${CV_GENESIS_DIR}"
-    fi
-    logger "Linking ${CV_GENESIS_DIR} to ${upgrade_path}"
-    ln -s "${upgrade_path}" "${CV_GENESIS_DIR}"
-}
-
-# Download the binary for the given upgrade
-download_cv_current(){
-    local binary_url="$1"
-    local binary_file="$2"
-    local binary_path="$(dirname "${binary_file}")"
-
-    # Only download file if it does not already exist
-    if [ ! -e "${binary_file}" ]; then
-        logger "Downloading ${binary_url} to ${binary_file}..."
-        mkdir -p "${upgrade_path}/bin"
-        case ${binary_url} in
-            *.tar.gz*)
-                curl -sSL "${binary_url}" | tar xz -C "${binary_path}"
-                ;;
-            *)
-                curl -sSL "${binary_url}" -o "${binary_file}"
-                ;;
-        esac
-    fi
-    chmod 0755 "${binary_file}"
-    if [ "$(file -b ${binary_file})" = "JSON data" ]; then
-        binary_url="$(jq -r ".binaries.\"${ARCH}\"" "${binary_file}")"
-        download_cv_current "${binary_url}" "${binary_file}"
-    fi
-}
-
-get_upgrade_json_version(){
-    logger "Downloading binary identified in ${UPGRADE_JSON}..."
-    binary_url="$(echo "${info}" | jq -r ".binaries.\"${ARCH}\"")"
-    if [ "${info}" = "{\"binaries\""* ]; then
-        download_version "${name}" "${binary_url}"
-    elif [ "${info}" = http:* ]; then
-        binary_url="${info}"
-        download_version "${name}" "${binary_url}"
-    elif [ -n "$(get_chain_json_version "${name}")" ]; then
-        binary_url="$(get_chain_json_version "${name}")"
-        download_version "${name}" "${binary_url}"
-    else
-        # fallback to recommended version
-        get_recommended_version "${name}"
-    fi
-}
-
-# Download required libraries
-download_libraries(){
-    if [ -n "${LIBRARY_URLS}" ]; then
-        for url in ${LIBRARY_URLS}; do
-            logger "Downloading library: $url..."
-            curl -sSLO --output-dir "/usr/local/lib" "${url}"
-        done
-        export LD_LIBRARY_PATH="/usr/local/lib"
-    fi
-}
 
 # Initialize the node
 initialize_node(){
@@ -609,29 +314,15 @@ reset_on_start(){
     fi
 }
 
-curlverify(){
-    local url="$1"
-    local target="$2"
-    curl -sSL "${url}" -o "${target}"
-
-    local query=$(echo ${orig_url} | sed -e 's/^.*?\?//')
-    case query in
-        checksum=sha256:*)
-            local checksum=$(echo ${query} | sed -e 's/^checksum=sha256://')
-            local actual=$(sha256sum "${target}" | awk '{print $1}')
-            if [ "${actual}" != "${checksum}" ]; then
-                logger "Checksum mismatch: ${actual} != ${checksum}"
-                rm -rf "${target}"
-                exit 1
-            fi
-        ;;
-    esac
+# check to see if this file is being run or sourced from another script
+_is_sourced() {
+	[ "${#FUNCNAME[@]}" -ge 2 ] \
+		&& [ "${FUNCNAME[0]}" = '_is_sourced' ] \
+		&& [ "${FUNCNAME[1]}" = 'source' ]
 }
 
-if [ "$(basename $0)" = "entrypoint.sh" ]; then
-    main
-    if [ -n "${RUN_UNJAIL_SCRIPT:=""}" ]; then
-        (unjail_watcher.sh) &
-    fi
-    exec /bin/sh -c "trap : TERM INT; (while true; do $* ${EXTRA_ARGS} && sleep 3; done) & wait"
+# If we are sourced from elsewhere, don't perform any further actions
+if ! _is_sourced; then
+    prepare && start "$@"
 fi
+
