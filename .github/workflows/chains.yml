@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - feature/binaries
     tags:
       - 'v*'
 
@@ -84,7 +83,7 @@ jobs:
             type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}-
             type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}-
             type=semver,pattern={{version}},prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=raw,value=latest,enable={{is_default_branch}},prefix=${{matrix.chains}}-${{matrix.networks}}-
+            type=raw,value=${{matrix.chains}}-${{matrix.networks}}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build docker image
         uses: docker/build-push-action@v3
