@@ -1,0 +1,49 @@
+chain_name: comdex
+daemon_name: comdex
+network_type: mainnet
+versions:
+  - name: v0.1.1
+    height: '1506060'
+    proposal: '3'
+    binaries: {}
+  - name: v5.0.0
+    height: '5133000'
+    proposal: '9'
+    binaries: {}
+  - name: v6.0.0
+    height: '5447500'
+    proposal: '25'
+    binaries: {}
+  - name: v7.0.0
+    height: '5850600'
+    proposal: '54'
+    binaries: {}
+  - name: v8.1.0
+    height: '6300350'
+    proposal: '82'
+    binaries: {}
+  - name: v9.0.0
+    alias: v9.0.0
+    height: '6548200'
+    proposal: '102'
+    recommended_version: v9.0.0
+    binaries: {}
+  - name: v10.0.0
+    alias: v10.0.0
+    height: '7158500'
+    proposal: '132'
+    recommended_version: v10.0.0
+    binaries: {}
+  - name: v11.5.0
+    alias: v11.5.0
+    height: '8184000'
+    proposal: '154'
+    recommended_version: v11.5.0
+    binaries: {}
+  - name: v9.0.0
+    alias: v9.0.0
+    height: ''
+    proposal: ''
+    recommended_version: v9.0.0
+    tag: ''
+    binaries: {}

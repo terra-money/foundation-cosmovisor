@@ -1,0 +1,15 @@
+chain_name: akash
+daemon_name: akash
+network_type: testnet
+versions:
+  - name: v0.24.0
+    height: '249826'
+    proposal: '2'
+    binaries: {}
+  - name: v0
+    alias: v0
+    height: ''
+    proposal: ''
+    recommended_version: v0.22.0
+    tag: ''
+    binaries: {}

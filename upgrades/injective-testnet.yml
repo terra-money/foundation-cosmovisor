@@ -1,0 +1,67 @@
+chain_name: injective
+daemon_name: injectived
+network_type: testnet
+versions:
+  - name: v1.7
+    height: '2440500'
+    proposal: '32'
+    binaries: {}
+  - name: v1.8
+    height: '5066806'
+    proposal: '35'
+    binaries: {}
+  - name: v1.9
+    height: '6656069'
+    proposal: '61'
+    binaries: {}
+  - name: v1.10
+    height: '8397999'
+    proposal: '64'
+    binaries: {}
+  - name: v1.10.1
+    height: '8677200'
+    proposal: '66'
+    binaries: {}
+  - name: v1.10.2
+    alias: v1.10.2
+    height: '9159850'
+    proposal: '67'
+    recommended_version: v1.10.2
+    binaries:
+      linux/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.10.2-1678712142/linux-amd64.zip
+      darwin/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.10.2-1678712142/darwin-amd64.zip
+  - name: v1.11
+    height: '11740778'
+    proposal: '165'
+    binaries: {}
+  - name: v1.11.1
+    alias: v1.11.1
+    height: '11881100'
+    proposal: '167'
+    recommended_version: v1.11.1
+    binaries:
+      linux/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.11.1-1685205489/linux-amd64.zip
+      darwin/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.11.1-1685205489/darwin-amd64.zip
+  - name: v1.11.2
+    height: '15577555'
+    proposal: '265'
+    binaries: {}
+  - name: v1.11.2
+    height: '43673478'
+    proposal: '264'
+    binaries: {}
+  - name: v1.10.2
+    alias: v1.10.2
+    height: ''
+    proposal: ''
+    recommended_version: v1.10.2
+    tag: ''
+    binaries:
+      linux/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.10.2-1678712142/linux-amd64.zip
+      darwin/amd64: >-
+        https://github.com/InjectiveLabs/testnet/releases/download/v1.10.2-1678712142/darwin-amd64.zip

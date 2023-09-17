@@ -1,0 +1,26 @@
+chain_name: injective
+daemon_name: injectived
+network_type: mainnet
+versions:
+  - name: v1.10
+    alias: v1.10
+    height: ''
+    proposal: ''
+    recommended_version: v1.10
+    tag: ''
+    binaries:
+      linux/amd64: >-
+        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.10.0-1679065799/linux-amd64.zip
+      darwin/amd64: >-
+        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.10.0-1679065799/darwin-amd64.zip
+  - name: v1.11
+    alias: v1.11
+    height: 34775000
+    proposal: 231
+    recommended_version: v1.11.5-1687535916
+    tag: ''
+    binaries:
+      linux/amd64: >-
+        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.5-1687535916/linux-amd64.zip
+      darwin/amd64: >-
+        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.5-1687535916/darwin-amd64.zip

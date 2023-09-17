@@ -1,0 +1,39 @@
+chain_name: noble
+daemon_name: nobled
+network_type: mainnet
+versions:
+  - name: v1.0.0
+    alias: v1.0.0
+    height: 0
+    proposal: ''
+    recommended_version: v1.0.0
+    tag: v1.0.0
+    binaries: {}
+  - name: neon
+    alias: neon
+    height: 119000
+    proposal: ''
+    recommended_version: v2.0.0
+    tag: v2.0.0
+    binaries: {}
+  - name: v0.4.1
+    alias: v0.4.1
+    height: 302000
+    proposal: ''
+    recommended_version: v0.4.1
+    tag: v0.4.2
+    binaries: {}
+  - name: radon
+    alias: radon
+    height: 645000
+    proposal: ''
+    recommended_version: v0.5.1
+    tag: v3.0.0
+    binaries: {}
+  - name: v3.0.0
+    alias: v3.0.0
+    height: 1397000
+    proposal: ''
+    recommended_version: v3.0.0
+    tag: v3.0.0
+    binaries: {}

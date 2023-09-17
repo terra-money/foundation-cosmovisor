@@ -1,0 +1,11 @@
+chain_name: mars
+daemon_name: marsd
+network_type: mainnet
+versions:
+  - name: v1
+    alias: v1
+    height: 0
+    proposal: ''
+    recommended_version: v1.0.2
+    tag: v1.0.0
+    binaries: {}

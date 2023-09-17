@@ -1,0 +1,11 @@
+chain_name: migaloo
+daemon_name: migalood
+network_type: testnet
+versions:
+  - name: v2.0.0
+    alias: v2.0.0
+    height: ''
+    proposal: ''
+    recommended_version: v2.0.0
+    tag: ''
+    binaries: {}

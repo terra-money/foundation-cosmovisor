@@ -1,0 +1,31 @@
+chain_name: osmosis
+daemon_name: osmosisd
+network_type: testnet
+versions:
+  - name: v16
+    height: '1541000'
+    proposal: '39'
+    binaries: {}
+  - name: v17
+    height: '2200500'
+    proposal: '82'
+    binaries: {}
+  - name: v17b
+    height: '2217000'
+    proposal: '84'
+    binaries: {}
+  - name: v18
+    height: '2333500'
+    proposal: '85'
+    binaries: {}
+  - name: v19
+    height: '2428500'
+    proposal: '88'
+    binaries: {}
+  - name: v14.0.0-rc1
+    alias: v14.0.0-rc1
+    height: ''
+    proposal: ''
+    recommended_version: v14.0.0-rc1
+    tag: ''
+    binaries: {}

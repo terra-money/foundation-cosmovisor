@@ -1,0 +1,11 @@
+chain_name: neutron
+daemon_name: neutrond
+network_type: testnet
+versions:
+  - name: v0.4.3
+    alias: v0.4.3
+    height: ''
+    proposal: ''
+    recommended_version: v0.4.3
+    tag: ''
+    binaries: {}

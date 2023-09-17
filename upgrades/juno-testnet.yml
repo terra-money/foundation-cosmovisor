@@ -1,0 +1,11 @@
+chain_name: juno
+daemon_name: junod
+network_type: testnet
+versions:
+  - name: v13.0.0-beta.1
+    alias: v13.0.0-beta.1
+    height: ''
+    proposal: ''
+    recommended_version: v13.0.0-beta.1
+    tag: ''
+    binaries: {}

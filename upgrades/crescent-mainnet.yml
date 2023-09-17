@@ -1,0 +1,57 @@
+chain_name: crescent
+daemon_name: crescentd
+network_type: mainnet
+versions:
+  - name: v1
+    alias: v1
+    height: 0
+    proposal: ''
+    recommended_version: v1.0.0
+    tag: v1.0.0
+    binaries: {}
+  - name: v1.1
+    alias: v1.1
+    height: 48000
+    proposal: ''
+    recommended_version: 1.1.0
+    tag: v1.1.0
+    binaries: {}
+  - name: v2.0.0
+    alias: v2
+    height: '1384100'
+    proposal: '12'
+    recommended_version: v2.3.0
+    tag: v2.3.0
+    binaries: {}
+  - name: v3
+    alias: v3
+    height: '3932000'
+    proposal: '29'
+    recommended_version: v3.0.0
+    tag: v3.0.0
+    binaries: {}
+  - name: v4
+    alias: v4
+    height: '4415902'
+    proposal: '35'
+    recommended_version: v4.0.0
+    tag: v4.0.0
+    binaries: {}
+  - name: v4.1
+    alias: v4.1
+    height: 6500000
+    proposal: ''
+    recommended_version: v4.1.1
+    tag: v4.1.1
+    binaries: {}
+  - name: v4.2
+    alias: v4.2
+    height: 6915000
+    proposal: ''
+    recommended_version: v4.2.0
+    tag: v4.2.0
+    binaries:
+      linux/amd64: >-
+        https://github.com/crescent-network/crescent/releases/download/v4.2.0/crescentd-v4.2.0-linux-amd64
+      darwin/arm64: >-
+        https://github.com/crescent-network/crescent/releases/download/v4.2.0/crescentd-v4.2.0-darwin-arm64
