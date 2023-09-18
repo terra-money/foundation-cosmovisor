@@ -1,6 +1,7 @@
 chain_name: decentr
 daemon_name: decentrd
 network_type: mainnet
+libraries: []
 versions:
   - name: v1.4.6
     height: '145000'

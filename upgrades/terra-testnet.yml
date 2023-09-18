@@ -1,6 +1,7 @@
 chain_name: terra
 daemon_name: terrad
 network_type: testnet
+libraries: []
 versions:
   - name: v2.0
     alias: v2.0

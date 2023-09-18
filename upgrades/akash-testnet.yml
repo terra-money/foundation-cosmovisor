@@ -1,6 +1,7 @@
 chain_name: akash
 daemon_name: akash
 network_type: testnet
+libraries: []
 versions:
   - name: v0.24.0
     height: '249826'

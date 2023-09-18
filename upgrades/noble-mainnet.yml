@@ -1,6 +1,7 @@
 chain_name: noble
 daemon_name: nobled
 network_type: mainnet
+libraries: []
 versions:
   - name: v1.0.0
     alias: v1.0.0

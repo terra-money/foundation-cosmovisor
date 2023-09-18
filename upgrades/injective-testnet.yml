@@ -1,6 +1,7 @@
 chain_name: injective
 daemon_name: injectived
 network_type: testnet
+libraries: []
 versions:
   - name: v1.7
     height: '2440500'

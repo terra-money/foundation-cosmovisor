@@ -5,6 +5,7 @@ set -euo pipefail
 if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
+set -xv
 
 . /usr/local/bin/getchaininfo.sh
 
@@ -17,6 +18,10 @@ COSMOVISOR_DIR="$(pwd)/cosmovisor"
 CV_CURRENT_DIR="${COSMOVISOR_DIR}/current"
 CV_GENESIS_DIR="${COSMOVISOR_DIR}/genesis"
 CV_UPGRADES_DIR="${COSMOVISOR_DIR}/upgrades"
+
+logger(){
+    echo "$*" | ts '[%Y-%m-%d %H:%M:%S]'
+}
 
 # System information
 get_system_info(){
@@ -34,6 +39,9 @@ parse_upgrade_info(){
     logger "Parsing upgrade information..."
     DAEMON_NAME="${DAEMON_NAME:=$(yq -r ".daemon_name" ${UPGRADES_YML})}"
     LIBRARY_URLS="${LIBRARY_URLS:=$(yq -r ".libraries[]" ${UPGRADES_YML})}"
+    if [ "${LIBRARY_URLS}" == "null" ]; then
+        LIBRARY_URLS=""
+    fi
 }
 
 download_binaries(){
@@ -57,7 +65,7 @@ download_binaries(){
 
 # Download required libraries
 download_libraries(){
-    if [ -n "${LIBRARY_URLS}" ]; then
+    if [ -n "${LIBRARY_URLS:=""}" ]; then
         for url in ${LIBRARY_URLS}; do
             logger "Downloading library: $url..."
             curl -sSLO --output-dir "/usr/local/lib" "${url}"
@@ -199,7 +207,7 @@ create_cv_upgrade(){
         mkdir -p "${upgrade_path}"
         download_cv_current "${binary_url}" "${binary_file}"
         link_cv_current "${upgrade_path}"
-        if [ ${upgrade_height} -le 0 ]; then
+        if [ "${upgrade_height}" != "null" ] && [ "${upgrade_height}" -le 0 ]; then
             link_cv_genesis "${upgrade_path}"
         fi
     fi

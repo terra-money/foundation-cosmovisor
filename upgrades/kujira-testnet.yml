@@ -1,6 +1,7 @@
 chain_name: kujira
 daemon_name: kujirad
 network_type: testnet
+libraries: []
 versions:
   - name: v0.5.0
     height: '2055000'

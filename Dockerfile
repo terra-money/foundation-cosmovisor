@@ -8,8 +8,8 @@ ARG COSMOVISOR_VERSION="v1.5.0"
 # Install dependencies
 RUN pacman -Syyu --noconfirm file jq yq lz4 curl unzip
 
-COPY ./bin /usr/local/bin/
 COPY ./etc /etc/
+COPY ./bin /usr/local/bin/
 
 RUN set -eux && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
@@ -44,14 +44,13 @@ FROM cosmovisor
 ARG CHAIN_NAME="terra"
 ARG CHAIN_NETWORK="mainnet"
 
-ENV DAEMON_HOME=/app \
-    CHAIN_NAME=${CHAIN_NAME} \
+ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
 COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* /tmp/
 
 RUN set -eux && \
     export DEBUG=1 && \
-    if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml; fi && \
+    if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml; fi && \ 
     /usr/local/bin/getbinaries.sh && \
     chown -R cosmovisor:cosmovisor ${DAEMON_HOME}

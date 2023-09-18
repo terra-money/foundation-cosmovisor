@@ -1,6 +1,7 @@
 chain_name: juno
 daemon_name: junod
 network_type: testnet
+libraries: []
 versions:
   - name: v13.0.0-beta.1
     alias: v13.0.0-beta.1

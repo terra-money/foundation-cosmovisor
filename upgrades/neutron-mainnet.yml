@@ -1,6 +1,7 @@
 chain_name: neutron
 daemon_name: neutrond
 network_type: mainnet
+libraries: []
 versions:
   - name: v1.0.1
     alias: v1.0.1

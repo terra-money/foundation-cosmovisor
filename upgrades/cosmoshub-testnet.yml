@@ -1,6 +1,7 @@
 chain_name: cosmoshub
 daemon_name: gaiad
 network_type: testnet
+libraries: []
 versions:
   - name: Signal Proposal to Adopt the Liquidity Module onto the Cosmos Hub
     height: '0'
