@@ -9,23 +9,11 @@ UPGRADES_JSON="${DAEMON_HOME}/upgrades.yml"
 
 # Chain information
 get_chain_json(){
-    if [ -z "${CHAIN_JSON_URL:=""}" ] && [ -n "${CHAIN_NAME:=""}" ]; then
-        CHAIN_JSON_URL=https://raw.githubusercontent.com/cosmos/chain-registry/master/${CHAIN_NAME}/chain.json
-    fi
-    if [ -z "${CHAIN_JSON_URL:=""}" ]; then
-        echo "CHAIN_JSON_URL is not set. Exiting..."
-        exit 1
-    fi
-    logger "Retrieving chain information from ${CHAIN_JSON_URL}..."
-    # always download newest version of chain.json
-    curl -sSL "${CHAIN_JSON_URL}" -o "${CHAIN_JSON}"
+    /usr/local/bin/getchaininfo.py
 }
 
-create_upgrades_yaml(){
-    if [ ! -f "${CHAIN_JSON}" ]; then
-        get_chain_json
-    fi
-    jq '{daemon_name: .daemon_name, libraries: [], versions: .codebase.versions}' "${CHAIN_JSON}" > ${UPGRADES_JSON}
+create_upgrades_json(){
+    /usr/local/bin/createupgrades.py
 }
 
 parse_chain_info(){

@@ -46,7 +46,7 @@ parse_upgrade_info(){
 
 download_binaries(){
     for tag in $(jq  ".versions[] | .tag"  ${UPGRADES_JSON}); do    
-        upgrade_info=$(jq ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" ${UPGRADES_JSON})
+        local upgrade_info=$(jq ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" ${UPGRADES_JSON})
         create_cv_upgrade "${upgrade_info}"
     done
 
@@ -200,7 +200,7 @@ create_cv_upgrade(){
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
     logger "Found version ${upgrade_name}, Checking for ${upgrade_path}..."
-    if [ -n "${binary_url}" ]; then
+    if [ -n "${binary_url}" ] && [ "${binary_url}" != *"null"* ]; then
         mkdir -p "${upgrade_path}"
         download_cv_current "${binary_url}" "${binary_file}"
         link_cv_current "${upgrade_path}"
