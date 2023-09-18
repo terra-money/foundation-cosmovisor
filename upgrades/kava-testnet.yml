@@ -1,0 +1,12 @@
+chain_name: kava
+daemon_name: kava
+network_type: testnet
+libraries: []
+versions:
+  - name: v0.21.0
+    alias: v0.21.0
+    height: ''
+    proposal: ''
+    recommended_version: v0.21.0
+    tag: ''
+    binaries: {}

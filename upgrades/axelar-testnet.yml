@@ -1,0 +1,6 @@
+chain_name: axelar
+daemon_name: axelard
+network_type: testnet
+libraries: []
+versions: []
+ 

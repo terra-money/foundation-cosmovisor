@@ -1,0 +1,24 @@
+chain_name: decentr
+daemon_name: decentrd
+network_type: testnet
+libraries: []
+versions:
+  - name: v1.4.6
+    height: '145000'
+    proposal: '2'
+    binaries: {}
+  - name: v1.4.8
+    height: '1688950'
+    proposal: '4'
+    binaries: {}
+  - name: v160
+    height: '5831225'
+    proposal: '7'
+    binaries: {}
+  - name: v1.5.7
+    alias: v1.5.7
+    height: ''
+    proposal: ''
+    recommended_version: v1.5.7
+    tag: ''
+    binaries: {}
