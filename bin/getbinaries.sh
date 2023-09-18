@@ -46,10 +46,9 @@ parse_upgrade_info(){
 
 download_binaries(){
     for tag in $(yq  ".versions[] | .tag"  ${UPGRADES_YML}); do
-        binaries_content=$(yq -e ".versions[] | select(.tag == ${tag}) | .binaries" ${UPGRADES_YML})
-        new_binaries_json="{\"binaries\":${binaries_content}}"
-        binaries_json_encoded=$(echo "${new_binaries_json}" | jq '@json')        
-        upgrade_info=$(yq -e ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": (.height), \"info\": ${binaries_json_encoded}}" ${UPGRADES_YML})
+        binaries_content=$(yq -e ".versions[] | select(.tag == ${tag}) | {"binaries": .binaries}" ${UPGRADES_YML})
+        binaries_json_encoded=$(echo "${binaries_content}" | jq '@json')        
+        upgrade_info=$(yq -e ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": .height, \"info\": ${binaries_json_encoded}}" ${UPGRADES_YML})
         create_cv_upgrade "${upgrade_info}"
     done
 
