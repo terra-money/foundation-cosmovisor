@@ -3,6 +3,13 @@ daemon_name: osmosisd
 network_type: testnet
 libraries: []
 versions:
+  - name: v14.0.0-rc1
+    alias: v14.0.0-rc1
+    tag: 'v14.0.0-rc1'
+    height: '1'
+    proposal: ''
+    recommended_version: v14.0.0-rc1
+    binaries: {}
   - name: v16
     height: '1541000'
     proposal: '39'
@@ -23,10 +30,4 @@ versions:
     height: '2428500'
     proposal: '88'
     binaries: {}
-  - name: v14.0.0-rc1
-    alias: v14.0.0-rc1
-    height: ''
-    proposal: ''
-    recommended_version: v14.0.0-rc1
-    tag: ''
-    binaries: {}
+
