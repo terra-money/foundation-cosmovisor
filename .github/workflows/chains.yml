@@ -19,31 +19,32 @@ env:
 jobs:
   build:
     strategy:
-        matrix:
-          chains: [
-            akash,
-            axelar,
-            carbon,
-            cheqd,
-            chihuahua,
-            comdex,
-            cosmoshub,
-            crescent,
-            decentr,
-            injective,
-            juno,
-            kava,
-            kujira,
-            mars,
-            migaloo,
-            neutron,
-            noble,
-            osmosis,
-            sei,
-            terra,
-            terraclassic,
-          ]
-          networks: [mainnet, testnet]
+      fail-fast: false
+      matrix:
+        chains: [
+          akash,
+          axelar,
+          carbon,
+          cheqd,
+          chihuahua,
+          comdex,
+          cosmoshub,
+          crescent,
+          decentr,
+          injective,
+          juno,
+          kava,
+          kujira,
+          mars,
+          migaloo,
+          neutron,
+          noble,
+          osmosis,
+          sei,
+          terra,
+          terraclassic,
+        ]
+        networks: [mainnet, testnet]
 
     runs-on: ubuntu-latest
     permissions:
