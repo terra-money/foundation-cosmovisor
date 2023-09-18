@@ -3,10 +3,10 @@ daemon_name: axelard
 network_type: mainnet
 libraries: []
 versions:
-  - name: v0.13
-    height: '384000'
-    proposal: '1'
-    binaries: {}
+  # - name: v0.13
+  #   height: '384000'
+  #   proposal: '1'
+  #   binaries: {}
   - name: v0.14
     height: '1060850'
     proposal: '4'

@@ -3,14 +3,14 @@ daemon_name: gaiad
 network_type: testnet
 libraries: []
 versions:
-  - name: Signal Proposal to Adopt the Liquidity Module onto the Cosmos Hub
-    height: '0'
-    proposal: '38'
-    binaries: {}
-  - name: Gravity-DEX
-    height: '6910000'
-    proposal: '51'
-    binaries: {}
+  # - name: Signal Proposal to Adopt the Liquidity Module onto the Cosmos Hub
+  #   height: '0'
+  #   proposal: '38'
+  #   binaries: {}
+  # - name: Gravity-DEX
+  #   height: '6910000'
+  #   proposal: '51'
+  #   binaries: {}
   - name: Vega
     height: '8695000'
     proposal: '59'
