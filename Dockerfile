@@ -14,10 +14,13 @@ COPY ./bin /usr/local/bin/
 RUN set -eux && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin && \
-    chmod +x /usr/local/bin/*
+    chmod +x /usr/local/bin/* && \
+    groupadd -g 1000 cosmovisor && \
+    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor 
 
 # Cosmosvisor vars
-ENV DAEMON_HOME=/app \
+ENV HOME=/app \
+    DAEMON_HOME=/app \
     DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
     DAEMON_RESTART_AFTER_UPGRADE=true \
     UNSAFE_SKIP_BACKUP=true
@@ -30,9 +33,6 @@ EXPOSE 9090
 EXPOSE 26656
 # tendermint rpc
 EXPOSE 26657
-
-RUN groupadd -g 1000 cosmovisor && \
-    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor 
 
 WORKDIR /app
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
