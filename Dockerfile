@@ -6,7 +6,9 @@ FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE} as cosmovisor
 ARG COSMOVISOR_VERSION="v1.5.0"
 
 # Install dependencies
-RUN pacman -Syyu --noconfirm file jq yq lz4 curl unzip
+# RUN pacman -Syyu --noconfirm file jq yq lz4 curl unzip
+
+
 
 COPY ./etc /etc/
 COPY ./bin /usr/local/bin/
@@ -50,7 +52,10 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
 COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* /tmp/
 
 RUN set -eux && \
+    python3 -m pip install --upgrade pip yaml && \
     export DEBUG=1 && \
-    if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml; fi && \ 
+    #if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then \
+    cat /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml | /usr/local/bin/yaml2json > /app/upgrades.json; \
+    #fi && \ 
     /usr/local/bin/getbinaries.sh && \
     chown -R cosmovisor:cosmovisor ${DAEMON_HOME}

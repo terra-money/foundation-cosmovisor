@@ -11,7 +11,7 @@ set -xv
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_JSON="${DAEMON_HOME}/chain.json"
-UPGRADES_YML="${DAEMON_HOME}/upgrades.yml"
+UPGRADES_JSON="${DAEMON_HOME}/upgrades.json"
 
 # Cosmovisor directory
 COSMOVISOR_DIR="$(pwd)/cosmovisor"
@@ -37,18 +37,16 @@ get_system_info(){
 
 parse_upgrade_info(){
     logger "Parsing upgrade information..."
-    DAEMON_NAME="${DAEMON_NAME:=$(yq -r ".daemon_name" ${UPGRADES_YML})}"
-    LIBRARY_URLS="${LIBRARY_URLS:=$(yq -r ".libraries[]" ${UPGRADES_YML})}"
+    DAEMON_NAME="${DAEMON_NAME:=$(jq -r ".daemon_name" ${UPGRADES_JSON})}"
+    LIBRARY_URLS="${LIBRARY_URLS:=$(jq -r ".libraries[]" ${UPGRADES_JSON})}"
     if [ "${LIBRARY_URLS}" == "null" ]; then
         LIBRARY_URLS=""
     fi
 }
 
 download_binaries(){
-    for tag in $(yq  ".versions[] | .tag"  ${UPGRADES_YML}); do
-        binaries_content=$(yq -e ".versions[] | select(.tag == ${tag}) | {"binaries": .binaries}" ${UPGRADES_YML})
-        binaries_json_encoded=$(echo "${binaries_content}" | jq '@json')        
-        upgrade_info=$(yq -e ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": .height, \"info\": ${binaries_json_encoded}}" ${UPGRADES_YML})
+    for tag in $(jq  ".versions[] | .tag"  ${UPGRADES_JSON}); do    
+        upgrade_info=$(jq ".versions[] | select(.tag == ${tag}) | {\"name\": .name, \"height\": .height, \"info\": ({\"binaries\": .binaries} | tostring)}" ${UPGRADES_JSON})
         create_cv_upgrade "${upgrade_info}"
     done
 
@@ -74,7 +72,7 @@ download_libraries(){
 }
 
 get_upgrade_json_version(){
-    logger "Downloading binary identified in ${UPGRADE_JSON}..."
+    logger "Downloading binary identified in ${UPGRADE_INFO_JSON}..."
     binary_url="$(echo "${info}" | jq -r ".binaries.\"${ARCH}\"")"
     if [ "${info}" = "{\"binaries\""* ]; then
         download_version "${name}" "${binary_url}"
@@ -92,9 +90,9 @@ get_upgrade_json_version(){
 
 prepare_upgrade_json_version(){
     # If binary is defined in upgrade-info.json use it
-    if [ -n "$(jq -r ".info | fromjson | .binaries.\"${ARCH}\"" ${UPGRADE_JSON})" ]; then
-        logger "Using info from ${UPGRADE_JSON}..."
-        create_cv_upgrade "$(cat ${UPGRADE_JSON})"
+    if [ -n "$(jq -r ".info | fromjson | .binaries | .\"${ARCH}\"" ${UPGRADE_INFO_JSON})" ]; then
+        logger "Using info from ${UPGRADE_INFO_JSON}..."
+        create_cv_upgrade "$(cat ${UPGRADE_INFO_JSON})"
     fi
 }
 
@@ -102,7 +100,7 @@ prepare_recommended_version(){
     logger "Preparing recommended version ${RECOMMENDED_VERSION}..."
     prepare_chain_json_version "${RECOMMENDED_VERSION}"
     if [ ! -e "${CV_CURRENT_DIR}" ]; then
-        if [ -f "${UPGRADE_JSON}" ]; then
+        if [ -f "${UPGRADE_INFO_JSON}" ]; then
             logger "Recommended version not found in ${CHAIN_JSON}, falling back to latest version..."
             prepare_last_available_version
         else
@@ -202,11 +200,11 @@ create_cv_upgrade(){
     local upgrade_json="${upgrade_path}/upgrade-info.json"
     local binary_file="${upgrade_path}/bin/${DAEMON_NAME}"
     logger "Found version ${upgrade_name}, Checking for ${upgrade_path}..."
-    if [ "${binary_url}" != "null" ]; then
+    if [ -n "${binary_url}" ]; then
         mkdir -p "${upgrade_path}"
         download_cv_current "${binary_url}" "${binary_file}"
         link_cv_current "${upgrade_path}"
-        if [ "${upgrade_height}" != "null" ] && [ "${upgrade_height}" -le 0 ]; then
+        if [ -n "${upgrade_height}" ] && [ "${upgrade_height}" -le 0 ]; then
             link_cv_genesis "${upgrade_path}"
         fi
     fi
@@ -291,7 +289,7 @@ curlverify(){
 }
 
 prepare_all_versions(){
-    if [ ! -f "${UPGRADES_YML}" ]; then
+    if [ ! -f "${UPGRADES_JSON}" ]; then
         create_upgrades_yaml
     fi
     get_system_info 

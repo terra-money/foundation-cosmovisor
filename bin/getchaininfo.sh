@@ -5,7 +5,7 @@ set -euo pipefail
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
 CHAIN_JSON="${DAEMON_HOME}/chain.json"
-UPGRADES_YML="${DAEMON_HOME}/upgrades.yml"
+UPGRADES_JSON="${DAEMON_HOME}/upgrades.yml"
 
 # Chain information
 get_chain_json(){
@@ -25,7 +25,7 @@ create_upgrades_yaml(){
     if [ ! -f "${CHAIN_JSON}" ]; then
         get_chain_json
     fi
-    yq '{daemon_name: .daemon_name, libraries: [], versions: .codebase.versions}' "${CHAIN_JSON}" > ${UPGRADES_YML}
+    jq '{daemon_name: .daemon_name, libraries: [], versions: .codebase.versions}' "${CHAIN_JSON}" > ${UPGRADES_JSON}
 }
 
 parse_chain_info(){

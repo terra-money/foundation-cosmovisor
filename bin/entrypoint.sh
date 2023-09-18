@@ -14,7 +14,7 @@ CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
 
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
-UPGRADE_JSON="${DATA_DIR}/upgrade-info.json"
+UPGRADE_INFO_JSON="${DATA_DIR}/upgrade-info.json"
 WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
 
 # Config directory
@@ -80,7 +80,7 @@ prepare_current_version(){
         get_wasm
 
     # if datadir has upgrade use that version
-    elif [ -f "${UPGRADE_JSON}" ]; then
+    elif [ -f "${UPGRADE_INFO_JSON}" ]; then
         prepare_upgrade_json_version
 
     # presume we are syncing from genesis otherwise

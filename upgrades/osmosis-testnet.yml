@@ -3,7 +3,7 @@ daemon_name: osmosisd
 network_type: testnet
 libraries: []
 versions:
-  - name: v14.0.0-rc1
+  - name: v14
     alias: v14.0.0-rc1
     tag: 'v14.0.0-rc1'
     height: '1'
