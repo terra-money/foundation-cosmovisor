@@ -93,8 +93,6 @@ jobs:
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
             type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}-
             type=semver,pattern={{version}},prefix=${{matrix.chains}}-${{matrix.networks}}-
             type=raw,value=${{matrix.chains}}-${{matrix.networks}}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
