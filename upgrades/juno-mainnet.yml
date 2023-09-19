@@ -1,5 +1,7 @@
-# incomplete
+# current 20220919
+chain_name: juno
 daemon_name: junod
+network_type: mainnet
 libraries: []
 versions:
   - name: v9
