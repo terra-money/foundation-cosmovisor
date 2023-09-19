@@ -1,4 +1,4 @@
-# incomplete
+# current to 20230919
 chain_name: migaloo
 daemon_name: migalood
 network_type: mainnet
@@ -22,6 +22,8 @@ versions:
     alias: v2.0.0
     height: ''
     proposal: ''
-    recommended_version: v2.0.5
+    recommended_version: v2.0.5 #v2.0.5 has source, no binary. Used v2.0.0 instead
     tag: ''
-    binaries: {}
+    binaries: 
+      linux/amd64: >-
+        https://github.com/White-Whale-Defi-Platform/migaloo-chain/releases/download/v2.0.0/migalood
