@@ -2,6 +2,7 @@
 chain_name: axelar
 daemon_name: axelard
 network_type: testnet
+git_repo: https://github.com/axelarnetwork/axelar-core
 libraries: []
 versions: []
  

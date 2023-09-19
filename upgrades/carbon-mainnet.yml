@@ -2,6 +2,7 @@
 chain_name: carbon
 daemon_name: carbond
 network_type: mainnet
+git_repo: https://github.com/Switcheo/carbon-bootstrap
 libraries: []
 versions:
   - name: v2.0.0

@@ -2,6 +2,7 @@
 chain_name: migaloo
 daemon_name: migalood
 network_type: testnet
+git_repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
 libraries: []
 versions:
   - name: v2.0.0

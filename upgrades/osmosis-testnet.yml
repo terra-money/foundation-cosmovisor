@@ -2,6 +2,7 @@
 chain_name: osmosis
 daemon_name: osmosisd
 network_type: testnet
+githu_repo: https://github.com/osmosis-labs/osmosis
 libraries: []
 versions:
   - name: v14

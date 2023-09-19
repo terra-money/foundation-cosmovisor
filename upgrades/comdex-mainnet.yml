@@ -2,50 +2,66 @@
 chain_name: comdex
 daemon_name: comdex
 network_type: mainnet
+git_repo: https://github.com/comdex-official/comdex
 libraries: []
 versions:
+  - name: v0.0.4
+    height: '1'
+    tag: v0.0.4
+    binaries: {}
   - name: v0.1.1
     height: '1506060'
     proposal: '3'
+    tag: v0.1.1
     binaries: {}
   - name: v5.0.0
+    tag: v5.0.0
     height: '5133000'
     proposal: '9'
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v5.0.0/comdex-linux-amd64.tar.gz
   - name: v6.0.0
     height: '5447500'
     proposal: '25'
-    binaries: {}
+    tag: v6.0.2
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v6.0.2/comdex-linux-amd64.tar.gz
   - name: v7.0.0
+    tag: v7.0.0
     height: '5850600'
     proposal: '54'
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v7.0.0/comdex-linux-amd64.tar.gz
   - name: v8.1.0
+    tag: v8.1.0
     height: '6300350'
     proposal: '82'
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v8.1.0/comdex-linux-amd64.tar.gz
   - name: v9.0.0
-    alias: v9.0.0
+    tag: v9.0.0
     height: '6548200'
     proposal: '102'
     recommended_version: v9.0.0
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/Mainnet-v9.0.0/comdex-linux-amd64.tar.gz
   - name: v10.0.0
-    alias: v10.0.0
+    tag: 500b5c666af138c151c56e13e625b0dfcff35272
     height: '7158500'
     proposal: '132'
-    recommended_version: v10.0.0
+    recommended_version: 500b5c666af138c151c56e13e625b0dfcff35272
     binaries: {}
   - name: v11.5.0
-    alias: v11.5.0
+    tag: v11.5.0
     height: '8184000'
     proposal: '154'
     recommended_version: v11.5.0
-    binaries: {}
-  - name: v9.0.0
-    alias: v9.0.0
-    height: ''
-    proposal: ''
-    recommended_version: v9.0.0
-    tag: ''
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v11.5.0/comdex
+      # above version my not be amd64 please test 

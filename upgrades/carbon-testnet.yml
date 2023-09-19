@@ -1,8 +1,9 @@
 # current to 20220919
-# carbon seems to restarttestnet each release?
+# carbon seems to restart testnet each release?
 chain_name: carbon
 daemon_name: carbond
 network_type: testnet
+git_repo: https://github.com/Switcheo/carbon-bootstrap
 libraries: []
 versions:
   - name: v2.0.0

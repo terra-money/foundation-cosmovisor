@@ -2,6 +2,8 @@
 chain_name: akash
 daemon_name: akash
 network_type: mainnet
+git_repo:        https://github.com/akash-network/node
+libraries: []
 versions:
   # - name: akashnet-2-upgrade-1
   #   height: '455200'

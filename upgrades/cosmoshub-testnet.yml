@@ -1,7 +1,8 @@
 # incomplete
 chain_name: cosmoshub
 daemon_name: gaiad
-network_type: testnet
+network_type: mainnet
+git_repo: https://github.com/cosmos/gaia
 libraries: []
 versions:
   # - name: Signal Proposal to Adopt the Liquidity Module onto the Cosmos Hub

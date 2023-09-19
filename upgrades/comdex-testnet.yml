@@ -2,5 +2,6 @@
 chain_name: comdex
 daemon_name: comdex
 network_type: testnet
+git_repo: https://github.com/comdex-official/comdex
 libraries: []
 versions: []
