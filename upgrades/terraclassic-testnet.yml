@@ -1,3 +1,4 @@
+# allnodes may have a testnet we can join   
 chain_name: terraclassic
 daemon_name: terrad
 network_type: testnet
@@ -7,7 +8,7 @@ versions:
     alias: 1.0.5
     height: 0
     proposal: ''
-    recommended_version: ''
+    recommended_version: 'v1.0.5-full-archive'
     tag: v1.0.5-full-archive
     binaries:
       linux/amd64: >-

@@ -1,3 +1,4 @@
+# current to 20220919
 chain_name: osmosis
 daemon_name: osmosisd
 network_type: mainnet
