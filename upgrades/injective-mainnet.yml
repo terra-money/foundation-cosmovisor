@@ -1,27 +1,78 @@
+# https://github.com/InjectiveLabs/injective-chain-releases/blob/master/docs/migration
 chain_name: injective
 daemon_name: injectived
 network_type: mainnet
 libraries: []
 versions:
+  - name: v1.0
+    tag: v1.0.1-1629427973
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.0.1-1629427973/linux-amd64.zip
+  - name: v1.1
+    tag: v1.1.0-1636178708
+    proposal: 65
+    height: 4352000
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.1.0-1636178708/linux-amd64.zip
+  - name: v1.2
+    tag: v1.1.1-1636733798
+    proposal: 70
+    height: 4594100
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.1.1-1636733798/linux-amd64.zip
+  - name: v1.3
+    tag: v1.1.1-1640627705
+    proposal: 93
+    height: 6159200
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.1.1-1640627705/linux-amd64.zip
+  - name: v1.4
+    tag: v1.4.0-1645352045
+    proposal: 106
+    height: 7067700
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.4.0-1645352045/linux-amd64.zip
+  - name: v1.5
+    tag: v1.5.0-1649280277
+    proposal: 133
+    height: 9614200
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.5.0-1649280277/linux-amd64.zip
+  - name: v1.6
+    tag: v1.6.0-1656650662
+    proposal: 159
+    height: 12569420
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.6.0-1656650662/linux-amd64.zip
+  - name: v1.7
+    tag: v1.7.0-1665417543
+    proposal: 170
+    height: 14731000
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.7.0-1665417543/linux-amd64.zip
+  - name: v1.8
+    tag: v1.8.0-1668679102
+    proposal: 182
+    height: 19761600
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.8.0-1668679102/linux-amd64.zip
+  - name: v1.9
+    tag: v1.9.0-1673970775
+    proposal: 198
+    height: 24204000
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.9.0-1673970775/linux-amd64.zip
   - name: v1.10
-    alias: v1.10
-    height: ''
-    proposal: ''
-    recommended_version: v1.10
-    tag: ''
+    tag: v1.10.1-1685036881
+    proposal: 207
+    height: 28864000
     binaries:
-      linux/amd64: >-
-        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.10.0-1679065799/linux-amd64.zip
-      darwin/amd64: >-
-        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.10.0-1679065799/darwin-amd64.zip
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.10.1-1685036881/linux-amd64.zip
   - name: v1.11
-    alias: v1.11
-    height: 34775000
+    tag: v1.11.6-1688984159
     proposal: 231
-    recommended_version: v1.11.5-1687535916
-    tag: ''
+    height: 34775000
     binaries:
-      linux/amd64: >-
-        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.5-1687535916/linux-amd64.zip
-      darwin/amd64: >-
-        https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.5-1687535916/darwin-amd64.zip
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.6-1688984159/linux-amd64.zip
