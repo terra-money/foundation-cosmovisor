@@ -45,10 +45,10 @@ def get_ctx():
     cv_current_dir = os.path.join(cosmovisor_dir, "current")
     cv_genesis_dir = os.path.join(cosmovisor_dir, "genesis")
     cv_upgrades_dir = os.path.join(cosmovisor_dir, "upgrades")
-    
+
     data_dir = os.path.join(chain_home, "data")
     config_dir = os.path.join(chain_home, "config")
-    
+
     return {
         "arch": arch,
         "debug": debug,
@@ -56,7 +56,7 @@ def get_ctx():
         "chain_name": chain_name,
         "daemon_name": daemon_name,
         "chain_json_url": chain_json_url,
-        
+
         "chain_json_path": chain_json_path,
         "upgrades_json_path": upgrades_json_path,
 
@@ -82,11 +82,11 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
 
     if binary_url:
         os.makedirs(upgrade_path, exist_ok=True)
-        download_cv_version(binary_url, binary_file) 
+        download_cv_version(binary_url, binary_file)
         if linkCurrent:
-            link_cv_current(ctx, upgrade_path) 
+            link_cv_current(ctx, upgrade_path)
         if not os.path.exists(ctx["cv_genesis_dir"]):
-            link_cv_genesis(ctx, upgrade_path) 
+            link_cv_genesis(ctx, upgrade_path)
 
 def link_cv_current(ctx, upgrade_path):
     cv_current_dir = ctx["cv_current_dir"]
@@ -116,7 +116,7 @@ def download_cv_version(binary_url, binary_file):
 
     if not os.path.exists(binary_file):
         print(f"Downloading {binary_url} to {binary_file}...")
-        os.makedirs(os.path.join(binary_path, 'bin'), exist_ok=True)
+        os.makedirs(binary_path, exist_ok=True)
 
         if binary_url_split[0].endswith(".tar.gz"):
             response = requests.get(binary_url, stream=True)
@@ -132,7 +132,15 @@ def download_cv_version(binary_url, binary_file):
             with open(zip_path, 'wb') as f:
                 f.write(response.content)
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(binary_path)
+                for zip_info in zip_ref.infolist():
+                    zip_name = zip_info.filename
+                    if zip_name.endswith('/'):
+                        continue
+                    file_content = zip_ref.read(zip_name)
+                    file_path = os.path.join(binary_path, os.path.basename(zip_name))
+                    logging.info(f"Extract: {zip_name} to {file_path}")
+                    with open(file_path, 'wb') as file_handle:
+                        file_handle.write(file_content)
             os.remove(zip_path)
         else:
             response = requests.get(binary_url)
@@ -151,10 +159,10 @@ def download_cv_version(binary_url, binary_file):
 
 def get_upgrade_info_version(ctx):
     logging.info(f"Downloading binary identified in {ctx['upgrade_info_json']}...")
-    
+
     with open(ctx['upgrade_info_json'], 'r') as f:
         data = json.load(f)
-        name = data.get('name', '') 
+        name = data.get('name', '')
         info = data.get('info', '')
         if isinstance(info, str):
             if 'binaries' in info:
