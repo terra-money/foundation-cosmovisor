@@ -1,4 +1,5 @@
-# incomplete
+# incomplete not a single release, only tags: https://github.com/Team-Kujira/core/releases
+# in tags, only source code: https://github.com/Team-Kujira/core/tags
 chain_name: kujira
 daemon_name: kujirad
 network_type: mainnet
