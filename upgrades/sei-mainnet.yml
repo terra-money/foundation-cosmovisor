@@ -1,4 +1,5 @@
 # incomplete
+# no binary in github, only source code https://github.com/sei-protocol/sei-chain/releases?page=1
 chain_name: sei
 daemon_name: seid
 network_type: mainnet
