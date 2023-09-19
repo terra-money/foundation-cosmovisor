@@ -1,4 +1,5 @@
 # incomplete
+# only source no binary. https://github.com/mars-protocol/hub/releases/tag/v1.0.2
 chain_name: mars
 daemon_name: marsd
 network_type: mainnet
