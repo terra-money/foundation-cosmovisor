@@ -1,9 +1,16 @@
-#incomplete 
+# current to 20220919
 chain_name: carbon
 daemon_name: carbond
 network_type: mainnet
 libraries: []
 versions:
+  - name: v2.0.0
+    height: '1'
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.0.3/carbond2.0.3-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.0.3/carbond2.0.3-mainnet.linux-arm64.tar.gz
   - name: v2.1.0
     height: '22587450'
     proposal: '202'
@@ -342,14 +349,3 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.32.0/carbond2.32.0-mainnet.linux-arm64.tar.gz
       any: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.32.0/carbond2.32.0-mainnet.linux-amd64.tar.gz?checksum=sha256:399bd4ab45a1384f1f9e6c8524bbd032eabaaa4659b147160dd8ec59d2d52939
-  - name: v2.24.0
-    alias: v2.24.0
-    height: ''
-    proposal: ''
-    recommended_version: v2.24.5
-    tag: ''
-    binaries:
-      linux/amd64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.24.5/carbond2.24.5-mainnet.linux-amd64.tar.gz
-      linux/arm64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.24.5/carbond2.24.5-mainnet.linux-arm64.tar.gz
