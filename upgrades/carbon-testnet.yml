@@ -15,7 +15,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.0.3/carbond2.0.3-testnet.linux-arm64.tar.gz
   - name: v2.1.0
     height: ''
-    proposal: '202'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.1.0/carbond2.1.0-testnet.linux-amd64.tar.gz?checksum=sha256:ce8cfbd7e4711ff0ac19ae9069a53af73aa1a1fe5322d3c2a4c763afa42b42ca
@@ -25,7 +25,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.1.0/carbond2.1.0-testnet.linux-amd64.tar.gz?checksum=sha256:ce8cfbd7e4711ff0ac19ae9069a53af73aa1a1fe5322d3c2a4c763afa42b42ca
   - name: v2.2.0
     height: ''
-    proposal: '205'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.2.0/carbond2.2.0-testnet.linux-amd64.tar.gz?checksum=sha256:3eb1a3767509fbb87d4324cbd2afcaae9fffe83ea564237779fa06393ff80025
@@ -35,7 +35,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.2.0/carbond2.2.0-testnet.linux-amd64.tar.gz?checksum=sha256:3eb1a3767509fbb87d4324cbd2afcaae9fffe83ea564237779fa06393ff80025
   - name: v2.3.0
     height: ''
-    proposal: '217'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.3.0/carbond2.3.0-testnet.linux-amd64.tar.gz?checksum=sha256:989717c051f25ae9642c34d0fbf63dc07048e6f4c4abebedae3b43682ef63f22
@@ -45,7 +45,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.3.0/carbond2.3.0-testnet.linux-amd64.tar.gz?checksum=sha256:989717c051f25ae9642c34d0fbf63dc07048e6f4c4abebedae3b43682ef63f22
   - name: v2.4.0
     height: ''
-    proposal: '219'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.4.0/carbond2.4.0-testnet.linux-amd64.tar.gz?checksum=sha256:1fd5f88267f9503d9147ac4733e6bc4e6ba49f5aa63590330986656cc60bc4e4
@@ -55,7 +55,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.4.0/carbond2.4.0-testnet.linux-amd64.tar.gz?checksum=sha256:1fd5f88267f9503d9147ac4733e6bc4e6ba49f5aa63590330986656cc60bc4e4
   - name: v2.5.0
     height: ''
-    proposal: '224'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.5.0/carbond2.5.0-testnet.linux-amd64.tar.gz?checksum=sha256:dee49e60adf0c52cd3d0214142bb567b2d03efa2650a9bf7f0bd12d18f5ea5e4
@@ -65,7 +65,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.5.0/carbond2.5.0-testnet.linux-amd64.tar.gz?checksum=sha256:dee49e60adf0c52cd3d0214142bb567b2d03efa2650a9bf7f0bd12d18f5ea5e4
   - name: v2.6.0
     height: ''
-    proposal: '231'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.6.0/carbond2.6.0-testnet.linux-amd64.tar.gz?checksum=sha256:af9b2520483bdc788cdf96d1af2ffc8dafbfa80c540568abe57dfeea9edf7501
@@ -75,7 +75,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.6.0/carbond2.6.0-testnet.linux-amd64.tar.gz?checksum=sha256:af9b2520483bdc788cdf96d1af2ffc8dafbfa80c540568abe57dfeea9edf7501
   - name: v2.7.0
     height: ''
-    proposal: '232'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.7.0/carbond2.7.0-testnet.linux-amd64.tar.gz?checksum=sha256:031562d76068940fb29fb90a70471dc9e38ff19710f601d8ff85e4549c297d5c
@@ -85,7 +85,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.7.0/carbond2.7.0-testnet.linux-amd64.tar.gz?checksum=sha256:031562d76068940fb29fb90a70471dc9e38ff19710f601d8ff85e4549c297d5c
   - name: v2.8.0
     height: ''
-    proposal: '233'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.8.0/carbond2.8.0-testnet.linux-amd64.tar.gz?checksum=sha256:ba63756f62c0a74c1792c9e401740ce1521efa933577e137f43c61932ae682e7
@@ -95,7 +95,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.8.0/carbond2.8.0-testnet.linux-amd64.tar.gz?checksum=sha256:ba63756f62c0a74c1792c9e401740ce1521efa933577e137f43c61932ae682e7
   - name: v2.9.0
     height: ''
-    proposal: '242'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.9.0/carbond2.9.0-testnet.linux-amd64.tar.gz?checksum=sha256:ca2b5276a24c671b994ec6754ebff5bf1ad3c100305b6beabe3bc682818dbae3
@@ -105,7 +105,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.9.0/carbond2.9.0-testnet.linux-amd64.tar.gz?checksum=sha256:ca2b5276a24c671b994ec6754ebff5bf1ad3c100305b6beabe3bc682818dbae3
   - name: v2.10.0
     height: ''
-    proposal: '244'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.10.0/carbond2.10.0-testnet.linux-amd64.tar.gz?checksum=sha256:58594a34c7d9fccdbf48829fe726b66a4a8dd84c78ba6a3615ad0b855305542e
@@ -113,19 +113,19 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.10.0/carbond2.10.0-testnet.linux-arm64.tar.gz?checksum=sha256:5d2143aa8997caa5ff7c694d2acec023630b3486705b4b427e929a3eaaa92e41
       any: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.10.0/carbond2.10.0-testnet.linux-amd64.tar.gz?checksum=sha256:58594a34c7d9fccdbf48829fe726b66a4a8dd84c78ba6a3615ad0b855305542e
-  - name: v2.11.0
-    height: ''
-    proposal: '245'
-    binaries:
-      linux/amd64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-amd64.tar.gz?checksum=sha256:f475079bf2435506eb317c817774f7b136408e6a049b1e4beef3ff1837190f98
-      linux/arm64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-arm64.tar.gz?checksum=sha256:6ccfffdb32fef435c4aaf19f97346cc47429fa69c22f8a67495902a3cb6eb753
-      any: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-amd64.tar.gz?checksum=sha256:f475079bf2435506eb317c817774f7b136408e6a049b1e4beef3ff1837190f98
+  # - name: v2.11.0
+  #   height: ''
+  #   proposal: ''
+  #   binaries:
+  #     linux/amd64: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-amd64.tar.gz?checksum=sha256:f475079bf2435506eb317c817774f7b136408e6a049b1e4beef3ff1837190f98
+  #     linux/arm64: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-arm64.tar.gz?checksum=sha256:6ccfffdb32fef435c4aaf19f97346cc47429fa69c22f8a67495902a3cb6eb753
+  #     any: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.11.0/carbond2.11.0-testnet.linux-amd64.tar.gz?checksum=sha256:f475079bf2435506eb317c817774f7b136408e6a049b1e4beef3ff1837190f98
   - name: v2.12.0
     height: ''
-    proposal: '246'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.12.0/carbond2.12.0-testnet.linux-amd64.tar.gz?checksum=sha256:161a26edd8256db95ee6d70ef46b848c8c6c8d95522c718fc5cac6ffbcc8e28c
@@ -135,7 +135,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.12.0/carbond2.12.0-testnet.linux-amd64.tar.gz?checksum=sha256:161a26edd8256db95ee6d70ef46b848c8c6c8d95522c718fc5cac6ffbcc8e28c
   - name: v2.13.0
     height: ''
-    proposal: '247'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.13.0/carbond2.13.0-testnet.linux-amd64.tar.gz?checksum=sha256:546c44e7d40e945f33467a885c2bb7df41ffa488784b1ca5df1a940e0fd2ff06
@@ -145,7 +145,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.13.0/carbond2.13.0-testnet.linux-amd64.tar.gz?checksum=sha256:546c44e7d40e945f33467a885c2bb7df41ffa488784b1ca5df1a940e0fd2ff06
   - name: v2.14.0
     height: ''
-    proposal: '266'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.14.0/carbond2.14.0-testnet.linux-amd64.tar.gz?checksum=sha256:9d770481a31a98d008ba0b4d87576568cfa96f01741445082472c1625b64490b
@@ -155,7 +155,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.14.0/carbond2.14.0-testnet.linux-amd64.tar.gz?checksum=sha256:9d770481a31a98d008ba0b4d87576568cfa96f01741445082472c1625b64490b
   - name: v2.15.0
     height: ''
-    proposal: '268'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.15.0/carbond2.15.0-testnet.linux-amd64.tar.gz?checksum=sha256:5235b12326f20228ac76e82997577357d2882fd369d9d62dfee90030c9f41777
@@ -165,7 +165,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.15.0/carbond2.15.0-testnet.linux-amd64.tar.gz?checksum=sha256:5235b12326f20228ac76e82997577357d2882fd369d9d62dfee90030c9f41777
   - name: v2.16.0
     height: ''
-    proposal: '271'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.16.0/carbond2.16.0-testnet.linux-amd64.tar.gz?checksum=sha256:fdf387c6e4c3a085e04db1e44070ecdd2745b204659ffa04cb1f6f1a54ff2966
@@ -175,7 +175,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.16.0/carbond2.16.0-testnet.linux-amd64.tar.gz?checksum=sha256:fdf387c6e4c3a085e04db1e44070ecdd2745b204659ffa04cb1f6f1a54ff2966
   - name: v2.17.0
     height: ''
-    proposal: '276'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.17.0/carbond2.17.0-testnet.linux-amd64.tar.gz?checksum=sha256:a35baa460bb2c57b6b96cb7ea42fb2bc185c82285d91bfdf728f34320bc6731b
@@ -185,7 +185,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.17.0/carbond2.17.0-testnet.linux-amd64.tar.gz?checksum=sha256:a35baa460bb2c57b6b96cb7ea42fb2bc185c82285d91bfdf728f34320bc6731b
   - name: v2.18.0
     height: ''
-    proposal: '277'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.18.0/carbond2.18.0-testnet.linux-amd64.tar.gz?checksum=sha256:94afec085b3e7e81ce3759e1c5639b26a47e6c4097ac5ccb82a89cac5fadb2d9
@@ -195,7 +195,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.18.0/carbond2.18.0-testnet.linux-amd64.tar.gz?checksum=sha256:94afec085b3e7e81ce3759e1c5639b26a47e6c4097ac5ccb82a89cac5fadb2d9
   - name: v2.19.0
     height: ''
-    proposal: '278'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.19.0/carbond2.19.0-testnet.linux-amd64.tar.gz?checksum=sha256:322296c8babdd8522ff621dc7d64a43e70e3f5d09a2a24cde53a0a9e4ed1eca1
@@ -205,7 +205,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.19.0/carbond2.19.0-testnet.linux-amd64.tar.gz?checksum=sha256:322296c8babdd8522ff621dc7d64a43e70e3f5d09a2a24cde53a0a9e4ed1eca1
   - name: v2.20.0
     height: ''
-    proposal: '283'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.20.0/carbond2.20.0-testnet.linux-amd64.tar.gz?checksum=sha256:ca32b059ae54fd4bfe32548b7482c59b24286f53d4b3fbfcf050fe12382d10be
@@ -215,7 +215,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.20.0/carbond2.20.0-testnet.linux-amd64.tar.gz?checksum=sha256:ca32b059ae54fd4bfe32548b7482c59b24286f53d4b3fbfcf050fe12382d10be
   - name: v2.21.0
     height: ''
-    proposal: '285'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.21.0/carbond2.21.0-testnet.linux-amd64.tar.gz?checksum=sha256:72a79a048ad152a660101f9855a1b5602bb9bc53160fc71684c2fe680d452c95
@@ -225,7 +225,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.21.0/carbond2.21.0-testnet.linux-amd64.tar.gz?checksum=sha256:72a79a048ad152a660101f9855a1b5602bb9bc53160fc71684c2fe680d452c95
   - name: v2.22.0
     height: ''
-    proposal: '287'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.22.0/carbond2.22.0-testnet.linux-amd64.tar.gz?checksum=sha256:61f76da7ba95fa6b442087b7cd05ba7ee5d434afb795e3acc3174f62dc8691e4
@@ -235,7 +235,7 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.22.0/carbond2.22.0-testnet.linux-amd64.tar.gz?checksum=sha256:61f76da7ba95fa6b442087b7cd05ba7ee5d434afb795e3acc3174f62dc8691e4
   - name: v2.23.0
     height: ''
-    proposal: '288'
+    proposal: ''
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.23.0/carbond2.23.0-testnet.linux-amd64.tar.gz?checksum=sha256:5ef7e082da181a4b940ab79734cc5bcba7b6dea2ac0c0f3ead2bb7803093ad33
@@ -246,7 +246,7 @@ versions:
   - name: v2.24.0
     alias: v2.24.0
     height: ''
-    proposal: '289'
+    proposal: ''
     recommended_version: v2.24.5
     binaries:
       linux/amd64: >-
@@ -258,7 +258,7 @@ versions:
   - name: v2.25.0
     alias: v2.25.0
     height: ''
-    proposal: '292'
+    proposal: ''
     recommended_version: v2.25.0
     binaries:
       linux/amd64: >-
@@ -270,7 +270,7 @@ versions:
   - name: v2.26.0
     alias: v2.26.0
     height: ''
-    proposal: '306'
+    proposal: ''
     recommended_version: v2.26.3
     binaries:
       linux/amd64: >-
@@ -279,22 +279,22 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.26.3/carbond2.26.3-testnet.linux-arm64.tar.gz
       any: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.26.0/carbond2.26.0-testnet.linux-amd64.tar.gz?checksum=sha256:3bbe5550afc44f6a72c9de5156d1b57d113d5fcfc45a08c4c5cb483acd8b79e7
-  - name: v2.27.0
-    alias: v2.27.0
-    height: ''
-    proposal: '307'
-    recommended_version: v2.27.3
-    binaries:
-      linux/amd64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.3/carbond2.27.3-testnet.linux-amd64.tar.gz
-      linux/arm64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.3/carbond2.27.3-testnet.linux-arm64.tar.gz
-      any: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.0/carbond2.27.0-testnet.linux-amd64.tar.gz?checksum=sha256:26f3bd35c11cd4ca27aa7aecfd33052f2d9ca89d1633136668759790358d3514
+  # - name: v2.27.0
+  #   alias: v2.27.0
+  #   height: ''
+  #   proposal: ''
+  #   recommended_version: v2.27.3
+  #   binaries:
+  #     linux/amd64: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.3/carbond2.27.3-testnet.linux-amd64.tar.gz
+  #     linux/arm64: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.3/carbond2.27.3-testnet.linux-arm64.tar.gz
+  #     any: >-
+  #       https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.27.0/carbond2.27.0-testnet.linux-amd64.tar.gz?checksum=sha256:26f3bd35c11cd4ca27aa7aecfd33052f2d9ca89d1633136668759790358d3514
   - name: v2.28.0
     alias: v2.28.0
     height: ''
-    proposal: '308'
+    proposal: ''
     recommended_version: v2.28.1
     binaries:
       linux/amd64: >-
@@ -306,7 +306,7 @@ versions:
   - name: v2.29.0
     alias: v2.29.0
     height: ''
-    proposal: '312'
+    proposal: ''
     recommended_version: v2.29.0
     binaries:
       linux/amd64: >-
@@ -318,7 +318,7 @@ versions:
   - name: v2.30.0
     alias: v2.30.0
     height: ''
-    proposal: '313'
+    proposal: ''
     recommended_version: v2.30.0
     binaries:
       linux/amd64: >-
@@ -330,7 +330,7 @@ versions:
   - name: v2.31.0
     alias: v2.31.0
     height: ''
-    proposal: '316'
+    proposal: ''
     recommended_version: v2.31.0
     binaries:
       linux/amd64: >-
@@ -342,7 +342,7 @@ versions:
   - name: v2.32.0
     alias: v2.32.0
     height: ''
-    proposal: '317'
+    proposal: ''
     recommended_version: v2.32.0
     binaries:
       linux/amd64: >-
