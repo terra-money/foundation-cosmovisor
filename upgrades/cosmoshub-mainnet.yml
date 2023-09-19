@@ -4,8 +4,8 @@ versions:
   - name: v3.0
     tag: v3.0.0
     binaries:
-        linux/amd64: https://github.com/cosmos/gaia/releases/download/v3.0.0/gaiad-v3.0.0-linux-amd64?checksum=sha256:18a0529e37f12a7d00977472f53aaa82ee95c39cff240611d1b758c4b9166fef
-        linux/arm64: https://github.com/cosmos/gaia/releases/download/v3.0.0/gaiad-v3.0.0-linux-arm64?checksum=sha256:05deb0b668a142297243446028ee8136db96930c21470bf0432423909cfc3a5a
+        linux/amd64: https://github.com/cosmos/gaia/releases/download/v3.0.0/gaiad-3.0.0-linux-amd64?checksum=sha256:18a0529e37f12a7d00977472f53aaa82ee95c39cff240611d1b758c4b9166fef
+        linux/arm64: https://github.com/cosmos/gaia/releases/download/v3.0.0/gaiad-3.0.0-linux-arm64?checksum=sha256:05deb0b668a142297243446028ee8136db96930c21470bf0432423909cfc3a5a
   - name: v4.0
     tag: v4.0.6
     binaries:

@@ -6,11 +6,10 @@ if [ -n "${DEBUG:=}" ]; then
     set -x
 fi
 
-. /usr/local/bin/getbinaries.sh
-. /usr/local/bin/getchaininfo.sh
-
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
+CHAIN_JSON="${DAEMON_HOME}/chain.json"
+UPGRADES_JSON="${DAEMON_HOME}/upgrades.yml"
 
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
@@ -32,18 +31,87 @@ LIBRARY_URLS=${LIBRARY_URLS:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 EXTRA_ARGS=${EXTRA_ARGS:=""}
 
+parse_chain_info(){
+    if [ ! -f "${CHAIN_JSON}" ]; then
+        getchaininfo.py
+    fi
+    logger "Parsing chain information..."
+    export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
+    export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
+
+    # Codebase Versions
+    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
+    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
+    # Prefer recommended version over upgrade.json
+    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
+
+    # app.toml
+    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
+    ENABLE_API=${ENABLE_API:=true}
+    ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
+    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
+    MONIKER=${MONIKER:="moniker"}
+    MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
+    PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
+    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
+    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
+    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=2000}
+    # choosing nothing as the default pruning strategy
+    # to avoid accidentally pruning data on an archival node
+    PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${MIN_RETAIN_BLOCKS}}
+    RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
+
+    # config.toml
+    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
+    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
+    ALLOW_DUPLICATE_IP=${ALLOW_DUPLICATE_IP:=true}
+    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
+    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
+    DB_BACKEND=${DB_BACKEND:=goleveldb}
+    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
+    LOG_FORMAT=${LOG_FORMAT:=json}
+    FAST_SYNC=${FAST_SYNC:="true"}
+    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
+    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
+    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
+    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
+    IS_SEED_NODE=${IS_SEED_NODE:="false"}
+    IS_SENTRY=${IS_SENTRY:="false"}
+    MAX_PAYLOAD=${MAX_PAYLOAD:=}
+    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
+    NODE_KEY=${NODE_KEY:=}
+    NODE_MODE=${NODE_MODE:=}
+    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
+    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
+    PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
+    PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
+    UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
+    USE_HORCRUX=${USE_HORCRUX:="false"}
+    MAX_NUM_INBOUND_PEERS=${MAX_NUM_INBOUND_PEERS:=20}
+    MAX_NUM_OUTBOUND_PEERS=${MAX_NUM_OUTBOUND_PEERS:=40}
+    TIMEOUT_COMMIT=${TIMEOUT_COMMIT:=}
+
+    # State sync
+    WASM_URL=${WASM_URL:=}
+    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
+    RESET_ON_START=${RESET_ON_START:="false"}
+    STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
+    STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
+    SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
+    SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
+}
+
 logger(){
     echo "$*" | ts '[%Y-%m-%d %H:%M:%S]'
 }
 
 prepare(){
-    get_chain_json
     parse_chain_info
-    get_system_info
-    prepare_all_versions
-    prepare_current_version
-    download_libraries
-    on_init
+    initversion.py
     initialize_node
     reset_on_start
     set_node_key
@@ -53,6 +121,8 @@ prepare(){
     modify_client_toml
     modify_config_toml
     modify_app_toml
+    chown -R cosmovisor:cosmovisor "${CHAIN_HOME}"
+    chown -R cosmovisor:cosmovisor "${DAEMON_HOME}"
 }
 
 start(){
@@ -62,31 +132,6 @@ start(){
     fi
     export EXTRA_ARGS=${EXTRA_ARGS:="${command#*cosmovisor run start}"}
     exec /usr/bin/supervisord -c /etc/supervisord.conf
-}
-
-# Identify and download the binaries for the given upgrades
-prepare_current_version(){
-    local name
-    local info
-    mkdir -p "${DATA_DIR}"
-
-    # use recommended version from env or set in chain.json
-    if [ "${PREFER_RECOMMENDED_VERSION}" = "true" ] && [ "${STATE_SYNC_ENABLED}" = "false" ]; then
-        prepare_recommended_version
-
-    # if state sync is enabled use recommended (or most recent) version
-    elif [ ${STATE_SYNC_ENABLED} = "true" ]; then
-        prepare_recommended_version
-        get_wasm
-
-    # if datadir has upgrade use that version
-    elif [ -f "${UPGRADE_INFO_JSON}" ]; then
-        prepare_upgrade_json_version
-
-    # presume we are syncing from genesis otherwise
-    else
-        prepare_genesis_version
-    fi
 }
 
 ensure_chain_home(){
@@ -102,7 +147,12 @@ initialize_node(){
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
         /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
-        rm "${GENESIS_FILE}"
+        if [ -f "${GENESIS_FILE}" ]; then
+            rm "${GENESIS_FILE}"
+        else
+            echo "Failed to initialize node." >&2
+            exit $?
+        fi
     fi
 }
 
