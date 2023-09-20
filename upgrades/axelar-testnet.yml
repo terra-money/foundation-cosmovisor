@@ -1,8 +1,14 @@
 # incomplete
+# added verified genesis binary v0.13
 chain_name: axelar
 daemon_name: axelard
 network_type: testnet
 git_repo: https://github.com/axelarnetwork/axelar-core
 libraries: []
-versions: []
- 
+versions:
+  - name: v0.13
+    height: 690489 # initial_height
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/axelarnetwork/axelar-core/releases/download/v0.13.6/axelard-linux-amd64-v0.13.6

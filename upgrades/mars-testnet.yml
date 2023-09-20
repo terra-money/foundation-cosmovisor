@@ -1,7 +1,15 @@
 # incomplete
+# requires to build binaries from source and upload to s3
+# added verified genesis binary v1
 chain_name: mars
 daemon_name: marsd
 network_type: testnet
 git_repo: https://github.com/mars-protocol/hub
 libraries: []
-versions: []
+versions:
+  - name: v1
+    tag: v1.0.2
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/mars/marsd-v1.0.2

@@ -1,17 +1,18 @@
-# incomplete need to reach out to join testnet
+# incomplete
+# added verified genesis binary v15
 chain_name: osmosis
 daemon_name: osmosisd
 network_type: testnet
 githu_repo: https://github.com/osmosis-labs/osmosis
 libraries: []
 versions:
-  - name: v14
-    alias: v14.0.0-rc1
-    tag: 'v14.0.0-rc1'
-    height: '1'
-    proposal: ''
-    recommended_version: v14.0.0-rc1
-    binaries: {}
+  - name: v15
+    tag: v15.0.0
+    height: 1
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v15.0.0/osmosisd-15.0.0-linux-amd64
   - name: v16
     height: '1541000'
     proposal: '39'
@@ -32,4 +33,3 @@ versions:
     height: '2428500'
     proposal: '88'
     binaries: {}
-

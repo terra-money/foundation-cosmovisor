@@ -4,7 +4,7 @@ chain_name: carbon
 daemon_name: carbond
 network_type: testnet
 git_repo: https://github.com/Switcheo/carbon-bootstrap
-libraries: []
+libraries: ["https://tfl-testnets.s3.amazonaws.com/carbon/libleveldb.so.1"]
 versions:
   - name: v2.0.0
     height: '1'
