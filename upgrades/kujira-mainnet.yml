@@ -9,7 +9,7 @@ versions:
   - name: v0.4.1
     tag: v0.4.1
     proposal:
-    height: 0
+    height: 1
     binaries:
       linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.4.1
   - name: v0.5.0

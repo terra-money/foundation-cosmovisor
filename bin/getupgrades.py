@@ -20,7 +20,7 @@ def download_versions(ctx):
         height = version.get("height", "")
         binary_url = version.get("binaries", {}).get(ctx["arch"], "")
         version = {"name": name, "height": height, "binary_url": binary_url}
-        # create_cv_upgrad
+        # create_cv_upgrade
         cvutils.create_cv_upgrade(ctx, version, False)
 
 def download_libraries(ctx):
@@ -29,8 +29,7 @@ def download_libraries(ctx):
     if library_urls:
         for url in library_urls:
             logging.info(f"Downloading library: {url}...")
-            # You might need to adjust the target directory
-            urlretrieve(url, filename=f"/usr/local/lib/{os.path.basename(url)}")
+            urlretrieve(url, filename=f"/usr/lib/{os.path.basename(url)}")
 
 if __name__ == "__main__":
     ctx = cvutils.get_ctx()

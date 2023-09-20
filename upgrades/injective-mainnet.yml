@@ -9,7 +9,7 @@ versions:
   - name: v1.0
     tag: v1.0.1-1629427973
     proposal:
-    height: 0
+    height: 1
     binaries:
       linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.0.1-1629427973/linux-amd64.zip
   - name: v1.1

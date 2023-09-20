@@ -9,6 +9,6 @@ versions:
   - name: v1
     tag: v1.0.2
     proposal:
-    height: 0
+    height: 1
     binaries:
       linux/amd64: https://tfl-mainnets.s3.amazonaws.com/mars/marsd-v1.0.2
