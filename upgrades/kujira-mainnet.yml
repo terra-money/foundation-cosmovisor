@@ -1,4 +1,4 @@
-# current 20220920
+# current 20230919
 # requires to build binaries from source and upload to tfl-mainnets.s3.amazonaws.com
 chain_name: kujira
 daemon_name: kujirad
