@@ -1,5 +1,5 @@
-# incomplete
-# only source no binary. https://github.com/mars-protocol/hub/releases/tag/v1.0.2
+# current 20230920
+# requires to build binaries from source and upload to s3
 chain_name: mars
 daemon_name: marsd
 network_type: mainnet
@@ -7,7 +7,8 @@ git_repo: https://github.com/mars-protocol/hub
 libraries: []
 versions:
   - name: v1
-    alias: v1
-    height: 0
     tag: v1.0.2
-    binaries: {}
+    proposal:
+    height: 0
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/mars/marsd-v1.0.2
