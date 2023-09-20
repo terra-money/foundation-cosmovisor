@@ -1,26 +1,19 @@
-# incomplete
+# current 20230920
 chain_name: decentr
 daemon_name: decentrd
 network_type: mainnet
 git_repo: https://github.com/Decentr-net/decentr
 libraries: []
 versions:
-  - name: v1.4.6
-    height: '145000'
-    proposal: '2'
-    binaries: {}
-  - name: v1.4.8
-    height: '1688950'
-    proposal: '4'
-    binaries: {}
+  - name: v157
+    tag: v1.5.7
+    proposal: 4
+    height: 1688950 # initial_height
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/decentr/decentrd-v1.5.7
   - name: v160
-    height: '5831225'
-    proposal: '7'
-    binaries: {}
-  - name: v1.5.7
-    alias: v1.5.7
-    height: ''
-    proposal: ''
-    recommended_version: v1.5.7
-    tag: ''
-    binaries: {}
+    tag: v1.6.2
+    proposal: 7
+    height: 5831225
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/decentr/decentrd-v1.6.2

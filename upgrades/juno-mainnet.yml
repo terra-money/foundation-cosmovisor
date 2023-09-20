@@ -8,7 +8,7 @@ versions:
   - name: v9
     tag: v9.0.0
     proposal: 28
-    height: 4136532
+    height: 4136532 # initial_height
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v9.0.0/junod
   - name: v10
