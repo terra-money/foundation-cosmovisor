@@ -13,19 +13,15 @@ logging.basicConfig(
 )
 
 def download_versions(ctx):
-    upgrades_data = getchaininfo.get_upgrades_data(ctx)
-    ctx['daemon_name'] = upgrades_data.get("daemon_name", ctx["daemon_name"])
-    for version in upgrades_data["versions"]:
-        name = version.get("name", "")
-        height = version.get("height", "")
-        binary_url = version.get("binaries", {}).get(ctx["arch"], "")
-        version = {"name": name, "height": height, "binary_url": binary_url}
-        # create_cv_upgrade
-        cvutils.create_cv_upgrade(ctx, version, False)
+    codebase_data = getchaininfo.get_codebase_data(ctx)
+    ctx['daemon_name'] = codebase_data.get("daemon_name", ctx["daemon_name"])
+    for version in codebase_data["versions"]:
+        v = cvutils.get_arch_version(ctx, codebase_data, version)
+        cvutils.create_cv_upgrade(ctx, v, False)
 
 def download_libraries(ctx):
-    upgrades_data = getchaininfo.get_upgrades_data(ctx)
-    library_urls = upgrades_data.get("libraries", [])
+    codebase_data = getchaininfo.get_codebase_data(ctx)
+    library_urls = codebase_data.get("libraries", [])
     if library_urls:
         for url in library_urls:
             logging.info(f"Downloading library: {url}...")

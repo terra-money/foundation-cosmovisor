@@ -55,6 +55,7 @@ versions:
   - name: v2.5
     height: '7432000'
     proposal: '177'
+    tag: v2.5.0-rc5
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/core/releases/download/v2.5.0-rc5/terra_2.5.0-rc5_Linux_x86_64.tar.gz?checksum=sha256:d529cd081b57288676b7ba0dbf33470f570022eb13d051e2f296a1c59bb6d0c9

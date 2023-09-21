@@ -7,7 +7,7 @@ ARG COSMOVISOR_VERSION="v1.5.0"
 
 # Install dependencies
 #RUN pacman -Syyu --noconfirm curl file jq lz4 unzip
-RUN pacman -Syyu --noconfirm python-pip python-requests python-yaml
+RUN pacman -Syyu --noconfirm python-pip python-requests python-yaml skopeo
 
 COPY ./etc /etc/
 COPY ./bin/* /usr/local/bin/
