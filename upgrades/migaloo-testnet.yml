@@ -1,0 +1,15 @@
+# incomplete
+# requires to build binaries from source and upload to s3
+# added verified genesis binary v1
+chain_name: migaloo
+daemon_name: migalood
+network_type: testnet
+git_repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
+libraries: []
+versions:
+  - name: v1
+    tag: v1.0.0-rc0
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://tfl-testnets.s3.amazonaws.com/migaloo/migalood-v1.0.0-rc0-linux-amd64

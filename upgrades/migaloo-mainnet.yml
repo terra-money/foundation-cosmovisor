@@ -1,0 +1,25 @@
+# current to 20230920
+chain_name: migaloo
+daemon_name: migalood
+network_type: mainnet
+git_repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
+libraries: []
+versions:
+  - name: v1
+    tag: v1.0.2
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/migaloo/migalood-v1.0.2
+  - name: v2
+    tag: v2.0.6
+    proposal: 2
+    height: 656439
+    binaries:
+      linux/amd64: https://github.com/White-Whale-Defi-Platform/migaloo-chain/releases/download/v2.0.6/migalood?checksum=sha512:e173be6c9263d77a60feb64cdd0d5b27da1df0eac70231f03733707614932610db56bbaafe0c2f953d490e47f63567c58e42c30943213fe477728190c9537fdd
+  - name: v2.2.5
+    tag: v2.2.6
+    proposal: 10
+    height: 2342302
+    binaries:
+      linux/amd64: https://github.com/White-Whale-Defi-Platform/migaloo-chain/releases/download/v2.2.6/migalood?checksum=sha512:9992172b94d175e726f672c58f2eeaf407b0d87467a52fc955bf807aafe9205054b5ddf2bc0b2183cede4c4ea6f6f84392a1c009f23b758c1bde35b424282885

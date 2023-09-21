@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ -n "${DEBUG:=}" ]; then
+    set -x
+fi
+
 PREVIOUS_HEIGHT_FILE=${PREVIOUS_HEIGHT_FILE:="/tmp/previous_height"}
 TENDERMINT_ENDPOINT=${TENDERMINT_ENDPOINT:="localhost:26657"}
 

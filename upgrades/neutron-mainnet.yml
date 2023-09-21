@@ -1,0 +1,14 @@
+# current to 20230919
+chain_name: neutron
+daemon_name: neutrond
+network_type: mainnet
+git_repo: https://github.com/neutron-org/neutron
+libraries: []
+versions:
+  - name: v1.0
+    tag: v1.0.4
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: >-
+        https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64
