@@ -32,18 +32,3 @@ versions:
         https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-amd64.tar.gz
       darwin/arm64: >-
         https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-arm64.tar.gz
-  - name: v1
-    alias: v1
-    height: ''
-    proposal: ''
-    recommended_version: v1.4.4
-    tag: ''
-    binaries:
-      linux/amd64: >-
-        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-linux-amd64.tar.gz
-      linux/arm64: >-
-        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-linux-arm64.tar.gz
-      darwin/amd64: >-
-        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-amd64.tar.gz
-      darwin/arm64: >-
-        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-arm64.tar.gz

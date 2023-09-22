@@ -7,6 +7,8 @@ import json
 import requests
 import shutil
 import logging
+import subprocess
+import tempfile
 
 # Set up logging
 logging.basicConfig(
@@ -93,6 +95,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     upgrade_name = version.get("name", "")
     binary_url = version.get("binary_url", {})
     tag = version.get("tag", "")
+    name = ctx.get("chain_name", "")
 
     upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
     binary_file = os.path.join(upgrade_path, "bin", daemon_name)
@@ -103,7 +106,11 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     if binary_url:
         download_cv_version(binary_url, binary_file)
         
+    if not os.path.exists(binary_file) and name and tag:
+        download_and_extract_image(name, tag.lstrip('v'), binary_file)
+
     if os.path.exists(binary_file):
+        logging.info(f"Successfully added binary {binary_file}")
         if linkCurrent:
             link_cv_current(ctx, upgrade_path)
         if not os.path.exists(ctx["cv_genesis_dir"]):
@@ -198,3 +205,85 @@ def get_upgrade_info_version(ctx):
             if binary_url:
                 return {"name": name, "binary_url": binary_url}
     return None
+
+def download_and_extract_image(name: str, tag: str, binary_file: str):
+    daemon_name = os.path.basename(binary_file)
+    destination = os.path.dirname(binary_file)
+    file_to_extract = f"usr/local/bin/{daemon_name}"
+    image_name = f"terraformlabs/{name}"
+    image = f"{image_name}:{tag}"
+    
+    # Check if the image exists on Docker Hub
+    try:
+        logging.info(f"Checking dockerhub for {image}...")
+        subprocess.run([
+            "skopeo", "inspect",
+            "--override-os=linux",
+            "--override-arch=amd64",
+            f"docker://docker.io/{image}",
+        ], stdout=subprocess.PIPE, check=True)
+    except subprocess.CalledProcessError:
+        logging.info(f"The image {image} does not exist on Docker Hub.")
+        return
+    
+    # Create a temporary directory
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # check if the image exists on Docker Hub
+        try:
+            logging.info(f"Downloading {image} from dockerhub...")
+            # Run the subprocess command within the temporary directory
+            subprocess.run([
+                "skopeo", "inspect",
+                "--override-os=linux",
+                "--override-arch=amd64",
+                f"docker://docker.io/{image}",
+            ], stdout=subprocess.PIPE, check=True)
+        except subprocess.CalledProcessError as e:
+            logging.info(f"Failed to download {image}. Error: {e}")
+
+        # Download the Docker image using skopeo
+        tar_file_name = f"{tmpdir}/{image_name.replace('/', '_')}_{tag}.tar"
+        try:
+            subprocess.run([
+                "skopeo", "copy",
+                "--override-os=linux",
+                "--override-arch=amd64",
+                f"docker://docker.io/{image}", 
+                f"docker-archive:{tar_file_name}",
+            ], stdout=subprocess.PIPE, check=True)
+        except subprocess.CalledProcessError as e:
+            logging.info(f"Failed to download the image {image}. Error: {e}")
+            return
+    
+        # Extract blobs to a temporary directory
+        blob_directory = f"{tmpdir}/blobs"
+        try:
+            logging.info(f"Extracting {tar_file_name} to {blob_directory}...")
+            # Open the tar file in read mode
+            with tarfile.open(tar_file_name, 'r') as tar:
+                # Extract the specified file to the temporary directory
+                tar.extractall(blob_directory)
+        except Exception as e:
+            logging.info(f"Failed to extract {tar_file_name}. Error: {e}")
+            
+        # iterate over the files in the blob directory
+        for filename in os.listdir(blob_directory):
+            if filename.endswith('.tar'):
+                logging.info(f"Checking {filename} for {file_to_extract}...")
+                # Construct the full file path
+                blob_file_path = os.path.join(blob_directory, filename)
+                # Open the tar file in read mode
+                with tarfile.open(blob_file_path, 'r') as blobtar:
+                    try:
+                        member = blobtar.getmember(file_to_extract)
+                        member.name = os.path.basename(member.name)
+                        logging.info(f"Found {file_to_extract} in {filename}...")
+                        # If no KeyError is raised, extract the specific file
+                        blobtar.extract(member, path=destination)
+                        logging.info(f"Successfully extracted {file_to_extract} from {image}")
+                        break
+                    except KeyError:
+                        continue
+                
+
+

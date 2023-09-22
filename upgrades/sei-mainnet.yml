@@ -7,10 +7,12 @@ github_repo: https://github.com/sei-protocol/sei-chain
 libraries: []
 versions:
   - name: 3.0.2
+    tag: 3.0.2
     height: '2016000'
     proposal: '5'
     binaries: {}
   - name: 3.0.3
+    tag: 3.0.3
     height: '3577000'
     proposal: '7'
     binaries: {}
@@ -23,16 +25,18 @@ versions:
     proposal: '9'
     binaries: {}
   - name: 3.0.7
+    tag: 3.0.7
     height: '16203906'
     proposal: '10'
     binaries: {}
   - name: 3.0.8
+    tag: 3.0.8
     height: '17520738'
     proposal: '11'
     recommended_version: 3.0.8
     binaries: {}
   - name: v3.0.9
-    alias: v3.0.9
+    tag: v3.0.9
     height: '25259000'
     proposal: '24'
     recommended_version: v3.0.9

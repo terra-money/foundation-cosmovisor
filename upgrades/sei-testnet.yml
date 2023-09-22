@@ -6,9 +6,8 @@ github_repo: https://github.com/sei-protocol/sei-chain
 libraries: []
 versions:
   - name: 1.0.6beta
-    alias: 1.0.6beta
+    tag: 1.0.6beta
     height: ''
     proposal: ''
     recommended_version: 1.0.6beta
-    tag: ''
     binaries: {}
