@@ -111,6 +111,7 @@ logger(){
 prepare(){
     parse_chain_info
     initversion.py
+    ensure_chain_home
     initialize_node
     reset_on_start
     set_node_key
@@ -135,8 +136,8 @@ start(){
 
 ensure_chain_home(){
     mkdir -p "{$CHAIN_HOME}"
-    if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then 
-        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data; 
+    if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then
+        ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data;
     fi
 }
 
@@ -373,4 +374,3 @@ _is_sourced() {
 if ! _is_sourced; then
     prepare && start "$@"
 fi
-
