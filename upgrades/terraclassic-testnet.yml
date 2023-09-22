@@ -1,0 +1,15 @@
+# allnodes may have a testnet we can join   
+chain_name: terraclassic
+daemon_name: terrad
+network_type: testnet
+github_repo: https://github.com/classic-terra/core
+libraries: []
+versions:
+  - name: 1.0.5
+    alias: 1.0.5
+    height: 0
+    recommended_version: 'v1.0.5-full-archive'
+    tag: v1.0.5-full-archive
+    binaries:
+      linux/amd64: >-
+        https://github.com/terra-money/classic-core/releases/download/v1.0.5-full-archive/terra_1.0.5_Linux_x86_64.tar.gz?checksum=sha256:af3ee3bd99bd719d6d9a93a40af9f0bc49bb3866c68e923e284876784126f38c

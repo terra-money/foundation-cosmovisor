@@ -1,28 +1,61 @@
+# current to 20220919
+chain_name: terra
 daemon_name: terrad
+network_type: testnet
+github_repo: https://github.com/terra-money/core
 libraries: []
 versions:
   - name: v2.0
-    tag: v2.0.0-rc.1
+    alias: v2.0
     height: 1
+    proposal: ''
+    recommended_version: v2.0.0-rc.1
+    tag: v2.0.0-rc.1
     binaries:
-      linux/amd64: https://github.com/terra-money/core/releases/download/v2.0.0-rc.0/terra_2.0.0-rc.0_Linux_x86_64.tar.gz?checksum=sha256:2427cf3aa7934f591eac0708156d424f55d3dbb6062f6f111b770bee8f414c91
-  - name: v2.1
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.0.0-rc.0/terra_2.0.0-rc.0_Linux_x86_64.tar.gz?checksum=sha256:2427cf3aa7934f591eac0708156d424f55d3dbb6062f6f111b770bee8f414c91
+      darwin/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.0.0-rc.0/terra_2.0.0-rc.0_Darwin_x86_64.tar.gz?checksum=sha256:72869d7279362e8d63e2afb02c17e1eef0ad0cb6285a30dfa47c571fa5be1c30
+  - name: 2.1.0
+    alias: v2.1
+    height: '838500'
+    proposal: '18'
+    recommended_version: v2.1.0-beta.1
     tag: v2.1.0-beta.1
-    height: 838500
     binaries:
-      linux/amd64: https://github.com/terra-money/core/releases/download/v2.1.0-beta.1/terra_2.1.0-beta.1_Linux_x86_64.tar.gz?checksum=sha256:c6e6ace1d5b5f3f365f6d71489dbeda645f196ea10f8f03103fb9648131bfec1
-  - name: v2.2
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.1.0-beta.1/terra_2.1.0-beta.1_Linux_x86_64.tar.gz?checksum=sha256:c6e6ace1d5b5f3f365f6d71489dbeda645f196ea10f8f03103fb9648131bfec1
+  - name: 2.2.0
+    alias: v2.2
+    height: '2777777'
+    proposal: '42'
+    recommended_version: v2.2.1
     tag: v2.2.1
-    height: 2777777
     binaries:
-      linux/amd64: https://github.com/terra-money/core/releases/download/v2.2.1/terra_2.2.1_Linux_x86_64.tar.gz?checksum=sha256:8a9353ae3c33a750ce2a9d236f00c12c5449c41fad96e9885a5c0b8678fcf8bc
-  - name: v2.3
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.2.1/terra_2.2.1_Linux_x86_64.tar.gz?checksum=sha256:8a9353ae3c33a750ce2a9d236f00c12c5449c41fad96e9885a5c0b8678fcf8bc
+  - name: 2.3.0
+    alias: v2.3
+    height: '4712048'
+    proposal: '103'
+    recommended_version: v2.3.4
     tag: v2.3.4
-    height: 4712048
     binaries:
-      linux/amd64: https://github.com/terra-money/core/releases/download/v2.3.4/terra_2.3.4_Linux_x86_64.tar.gz?checksum=sha256:3e737e1f1f9b8640ef0e73f412e9e11bedd494ea2c130630a1f5586e00da9ae7
-  - name: v2.4
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.3.4/terra_2.3.4_Linux_x86_64.tar.gz?checksum=sha256:3e737e1f1f9b8640ef0e73f412e9e11bedd494ea2c130630a1f5586e00da9ae7
+  - name: 2.4.0-rc4
+    alias: v2.4
+    height: '6272928'
+    proposal: '130'
+    recommended_version: v2.4.0-rc5
     tag: v2.4.0-rc5
-    height: 6272928
     binaries:
-      linux/amd64: https://github.com/terra-money/core/releases/download/v2.4.0-rc5/terra_2.4.0-rc5_Linux_x86_64.tar.gz?checksum=sha256:c61c9c4ae8a0bcb9d7f9fc2197d84ba8b75b558c2cee3438ae2142eb97e0d771
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.4.0-rc5/terra_2.4.0-rc5_Linux_x86_64.tar.gz?checksum=sha256:c61c9c4ae8a0bcb9d7f9fc2197d84ba8b75b558c2cee3438ae2142eb97e0d771
+  - name: v2.5
+    height: '7432000'
+    proposal: '177'
+    tag: v2.5.0-rc5
+    binaries:
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.5.0-rc5/terra_2.5.0-rc5_Linux_x86_64.tar.gz?checksum=sha256:d529cd081b57288676b7ba0dbf33470f570022eb13d051e2f296a1c59bb6d0c9

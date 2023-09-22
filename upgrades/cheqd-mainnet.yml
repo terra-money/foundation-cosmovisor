@@ -1,0 +1,34 @@
+# incomplete
+chain_name: cheqd
+daemon_name: cheqd-noded
+network_type: mainnet
+git_repo: https://github.com/cheqd/cheqd-node
+libraries: []
+versions:
+  - name: v0.4
+    height: '1171198'
+    proposal: '2'
+    binaries: {}
+  - name: v0.5
+    height: '1971324'
+    proposal: '3'
+    binaries: {}
+  - name: v0.6
+    height: '3561652'
+    proposal: '6'
+    binaries:
+      linux/amd64: https://github.com/cheqd/cheqd-node/releases/download/v0.6.0/cheqd-noded
+  - name: v1
+    alias: v1
+    height: '6427280'
+    proposal: '12'
+    recommended_version: v1.4.4
+    binaries:
+      linux/amd64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-linux-arm64.tar.gz
+      darwin/amd64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-amd64.tar.gz
+      darwin/arm64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v1.4.0/cheqd-noded-1.4.0-darwin-arm64.tar.gz

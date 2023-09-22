@@ -1,0 +1,74 @@
+# incomplete
+chain_name: chihuahua
+daemon_name: chihuahuad
+network_type: testnet
+git_repo: https://github.com/ChihuahuaChain/chihuahua
+libraries: []
+versions:
+  - name: angryandy
+    height: '535000'
+    proposal: '3'
+    binaries: {}
+  - name: chiwawasm
+    height: '3000800'
+    proposal: '23'
+    binaries: {}
+  - name: minpropdeposit
+    height: '3654321'
+    proposal: '32'
+    binaries: {}
+  - name: authz
+    height: '4182410'
+    proposal: '35'
+    binaries: {}
+  - name: burnmech
+    height: '4488444'
+    proposal: '38'
+    binaries: {}
+  - name: v310
+    height: '4673333'
+    proposal: '39'
+    binaries: {}
+  - name: v400
+    height: '4787878'
+    proposal: '40'
+    binaries: {}
+  - name: v410
+    height: '4886666'
+    proposal: '41'
+    binaries: {}
+  - name: v420
+    height: '6039999'
+    proposal: '44'
+    binaries: {}
+  - name: v421
+    alias: v421
+    height: '6376376'
+    proposal: '45'
+    recommended_version: v4.2.3
+    binaries: {}
+  - name: v500
+    alias: v500
+    height: '8711111'
+    proposal: '51'
+    recommended_version: v5.0.0
+    binaries: {}
+  - name: v501
+    alias: v501
+    height: '8813000'
+    proposal: '52'
+    recommended_version: v5.0.1
+    binaries: {}
+  - name: v502
+    alias: v502
+    height: '9180000'
+    proposal: '53'
+    recommended_version: v5.0.2
+    binaries: {}
+  - name: v421
+    alias: v421
+    height: ''
+    proposal: ''
+    recommended_version: v4.2.3
+    tag: ''
+    binaries: {}

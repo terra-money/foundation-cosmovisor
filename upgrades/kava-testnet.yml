@@ -1,0 +1,13 @@
+# incomplete
+chain_name: kava
+daemon_name: kava
+network_type: testnet
+git_repo: https://github.com/Kava-Labs/kava
+libraries: []
+versions:
+  - name: v0.21.0
+    tag: v0.21.0
+    height: ''
+    proposal: ''
+    recommended_version: v0.21.0
+    binaries: {}

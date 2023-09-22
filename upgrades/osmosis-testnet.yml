@@ -1,0 +1,35 @@
+# incomplete
+# added verified genesis binary v15
+chain_name: osmosis
+daemon_name: osmosisd
+network_type: testnet
+githu_repo: https://github.com/osmosis-labs/osmosis
+libraries: []
+versions:
+  - name: v15
+    tag: v15.0.0
+    height: 1
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v15.0.0/osmosisd-15.0.0-linux-amd64
+  - name: v16
+    height: '1541000'
+    proposal: '39'
+    binaries: {}
+  - name: v17
+    height: '2200500'
+    proposal: '82'
+    binaries: {}
+  - name: v17b
+    height: '2217000'
+    proposal: '84'
+    binaries: {}
+  - name: v18
+    height: '2333500'
+    proposal: '85'
+    binaries: {}
+  - name: v19
+    height: '2428500'
+    proposal: '88'
+    binaries: {}

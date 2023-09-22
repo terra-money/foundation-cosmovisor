@@ -1,0 +1,44 @@
+# current 20230920
+# requires to build binaries from source and upload to s3
+chain_name: kujira
+daemon_name: kujirad
+network_type: mainnet
+git_repo: https://github.com/Team-Kujira/core
+libraries: []
+versions:
+  - name: v0.4.1
+    tag: v0.4.1
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.4.1
+  - name: v0.5.0
+    tag: v0.5.0
+    proposal: 25
+    height: 1764000
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.5.0
+  - name: v0.6.0
+    tag: v0.6.4
+    proposal: 49
+    height: 3495000
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.6.4
+  - name: v0.7.1
+    tag: v0.7.1
+    proposal: 81
+    height: 5196234
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.7.1
+  - name: v0.8.3
+    tag: v0.8.3
+    proposal: 301
+    height: 9225000
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.8.3
+  - name: v0.8.4
+    tag: v0.8.7
+    proposal: 302
+    height: 9226200
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.8.7

@@ -1,0 +1,181 @@
+# incomplete
+# added verified genesis binary v0.10
+chain_name: axelar
+daemon_name: axelard
+network_type: mainnet
+git_repo: https://github.com/axelarnetwork/axelar-core
+libraries: []
+versions:
+  - name: v0.10
+    height: 1
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/axelarnetwork/axelar-core/releases/download/v0.10.7/axelard-linux-amd64-v0.10.7
+  # - name: v0.13
+  #   height: '384000'
+  #   proposal: '1'
+  #   binaries: {}
+  - name: v0.14
+    height: '1060850'
+    proposal: '4'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.14.1/axelard-linux-arm64-v0.14.1
+      #.zip?checksum=sha256:93fcec5ab05c4ebcb2ab4fd76d54b69caab0bfc1695c3e77b9d37a16094effa0
+      linux/arm64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.14.1/axelard-linux-arm64-v0.14.1
+      #.zip?checksum=sha256:64ff561f35e3709ee013db9345d7ba6a8501b2525274d0ce9cafa02d8abffe04
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.14.1/axelard-darwin-amd64-v0.14.1
+      #.zip?checksum=sha256:307edf4fc62f562106c0e32262ed196f44aad9b515b4041c2b9d5e132fcd7276
+      darwin/arm64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.14.1/axelard-darwin-arm64-v0.14.1
+      #.zip?checksum=sha256:aca9107d5902a877afbec3779a3c9f577b1f1ed9f54ba0af3f8c6c2c84976c12
+  - name: v0.15
+    height: '1263450'
+    proposal: '5'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.15.0/axelard-linux-amd64-v0.15.0
+      #.zip?checksum=sha256:6a05d14a0bec0820c69e0c50bcc3defd0d46c304f7f4a256002b17f866efb16d
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.15.0/axelard-darwin-amd64-v0.15.0
+      #.zip?checksum=sha256:44f057c4f4b8954d6650519425df664031b015aa9a527568c4e9342ca1f6654d
+  - name: v0.16
+    height: '1336350'
+    proposal: '6'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.16.1/axelard-linux-amd64-v0.16.1
+      #.zip?checksum=sha256:374a05d16cad0bb6c1453ca78d92672126a34e4701ee0b60ac42b473a3409fc9
+      linux/arm64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.16.1/axelard-linux-arm64-v0.16.1
+      #.zip?checksum=sha256:bc03bf7fc18df90705f8f2f23c2156897f6acb594472fb17254e1f7f17e2b7b1
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.16.1/axelard-darwin-amd64-v0.16.1
+      #.zip?checksum=sha256:843ef0e1461e201ba648ade73ad656e0adb08dc505ad07a7e1c12e36d09e767b
+      darwin/arm64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.16.1/axelard-darwin-arm64-v0.16.1
+      #.zip?checksum=sha256:45f33da77a6fe49bf21595dd981553a810ea3a1489e5eb19a4beabf1ea06d3b8
+  - name: v0.17
+    height: '1889000'
+    proposal: '7'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.17.1/axelard-linux-amd64-v0.17.1
+      #.zip?checksum=sha256:01fb2e4783b750a90b2f146e9a1b6650a0094590746224d9110e16f85c2ddf7d
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.17.1/axelard-darwin-amd64-v0.17.1
+      #.zip?checksum=sha256:e2e88c7387abeb8447e350e15d3c69a2f81ec8394501cd866c9aeb247d978cb8
+  - name: v0.18
+    height: '2471750'
+    proposal: '9'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.18.3/axelard-linux-amd64-v0.18.3
+      #.zip?checksum=sha256:7eb487e473483dffcbfc0fb508ee45ff736e19f27a26324992fd2bd9ebf43d0d
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.18.3/axelard-darwin-amd64-v0.18.3
+      #.zip?checksum=sha256:0aa4dab546f9e6a410e84709238f14610bc2488260d3dae0706cbf741c8d57b0
+  - name: v0.19
+    height: '2472290'
+    proposal: '10'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.19.2/axelard-linux-amd64-v0.19.2
+      #.zip?checksum=sha256:62e7321abec82163fc4d2c0f40c8afe5b321124da1de0c3dc15a5e7787056e3f
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.19.2/axelard-darwin-amd64-v0.19.2
+      #.zip?checksum=sha256:a409c1c8d7f075c459c1665b34d7f780176d2ddfc89226fa3aacf28d3cb7c3a2
+  - name: v0.20
+    height: '3331350'
+    proposal: '11'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.20.0/axelard-linux-amd64-v0.20.0
+      #.zip?checksum=sha256:71bbdf41206af4f19a2a02c15b16f17a373dff6b7f2cd20f2b651e23606e66ee
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.20.0/axelard-darwin-amd64-v0.20.0
+      #.zip?checksum=sha256:e44b8a6a71fa786e00fbc22e81e10b955acfc285ab37de03755147dab18507aa
+  - name: v0.21
+    height: '3643500'
+    proposal: '12'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.21.1/axelard-linux-amd64-v0.21.1
+      #.zip?checksum=sha256:5700a09437f55d2a8723c774b46bb9d1c3bc64a19323d24a71e28860630b05d4
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.21.1/axelard-darwin-amd64-v0.21.1
+      #.zip?checksum=sha256:343376c3ed50490d454a2357c1ca312bb2d4bba70eeeb3d093bf4b472179729a
+  - name: v0.24
+    height: '3644000'
+    proposal: '13'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.24.0/axelard-linux-amd64-v0.24.0
+      #.zip?checksum=sha256:e81afbc41ea82227b53532050af7632764fad527b19cd13b138e31535f45894c
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.24.0/axelard-darwin-amd64-v0.24.0
+      #.zip?checksum=sha256:3b0b943163f99a61106acf1aca7fb3ba2beea1424c90361b5d541d56a4cb9794
+  - name: v0.26
+    height: '3852250'
+    proposal: '14'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.26.0/axelard-linux-amd64-v0.26.0
+      #.zip?checksum=sha256:9f096c1f4ca1e7174c5eba7cdc1562606b8082b054d5485e15f2fce18bf5165e
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.26.0/axelard-darwin-amd64-v0.26.0
+      #.zip?checksum=sha256:2dbbc63704e47edf413d9f43129b7062bc065a90ec166f88c5c2230855a501fc
+  - name: v0.28
+    height: '4984950'
+    proposal: '22'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.28.0/axelard-linux-amd64-v0.28.0
+      #.zip?checksum=sha256:38d65fa03088abfa4ddf56736e8097a4c1a67ed1d34a4ed7387ea1d5197bc72a
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.28.0/axelard-darwin-amd64-v0.28.0
+      #.zip?checksum=sha256:a505ec5979400fa4247fadeea712b19d9f0712502dbafdb3acb6b23869d15207
+  - name: v0.29
+    height: '5030000'
+    proposal: '25'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.29.0/axelard-linux-amd64-v0.29.0
+      #.zip?checksum=sha256:41e58a0dae01c1984f56a2650b22114691668cf60326c192db1fce5d61bc6432
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.29.0/axelard-darwin-amd64-v0.29.0
+      #.zip?checksum=sha256:2c7614d9a0b10a011d3f72e6d5d8486ac3dfc55c18a94e9b49ff07bd63ccfaca
+  - name: v0.31
+    height: '5853000'
+    proposal: '31'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.31.2/axelard-linux-amd64-v0.31.2
+      #.zip?checksum=sha256:d152adef78c543a77315a80e45102bd377a7a10c0f2bdbb323a93bf16400d39e
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.31.2/axelard-darwin-amd64-v0.31.2
+      #.zip?checksum=sha256:ead6e4336a496182e142fadf01faf93b15d59d2fefe39ea447f9e8cffecdfd2d
+  - name: v0.33
+    height: '6895400'
+    proposal: '162'
+    recommended_version: v0.33.0
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.33.0/axelard-linux-amd64-v0.33.0
+      #.zip?checksum=sha256:94e2c21bd8266f6b55fd977c6561813b3c1d35c4f513def5747e6c6285df8136
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.33.0/axelard-darwin-amd64-v0.33.0
+      #.zip?checksum=sha256:207616997f34d321d9ed6a56773000d8e618397b9f495c26c052ab0b89fd00ae
+  - name: v0.34
+    height: '9151750'
+    proposal: '179'
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-linux-amd64-v0.34.1
+      #.zip?checksum=sha256:6ae2b112fad22d9fa108f3a481dfc608c5f2458f814a3e2fee835bd5ed2e4528
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-darwin-amd64-v0.34.1
+      #.zip?checksum=sha256:7790c645fe1ebc9244a8d162fc2d80ac53052ec300bfd5aa4bbb683fa3f71884

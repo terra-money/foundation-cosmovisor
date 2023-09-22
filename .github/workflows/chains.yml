@@ -1,6 +1,7 @@
 name: chains-build
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -17,21 +18,30 @@ env:
   AWS_DEFAULT_OUTPUT: "json"
 
 jobs:
+
+  # JOB to run change detection
+  filtered:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    outputs:
+      # Expose matched filters as job output variable
+      upgrades: ${{ steps.filter.outputs.upgrades_files }}
+    steps:
+    - id: filter
+      uses: dorny/paths-filter@v2
+      with:
+        list-files: 'json'
+        filters: |
+          upgrades: 'upgrades/*.yml'
+
   build:
+    needs: filtered
     strategy:
-        matrix:
-          chains: [terra, cosmoshub, osmosis, juno]
-          networks: [mainnet, testnet]
-          include:
-            - chains: terra
-              networks: classic
-          exclude:
-            - chains: cosmoshub
-              networks: testnet
-            - chains: osmosis
-              networks: testnet
-            - chains: juno
-              networks: testnet
+      fail-fast: false
+      matrix: 
+        upgrades: ${{ fromJSON(needs.filtered.outputs.upgrades) }}
 
     runs-on: ubuntu-latest
     permissions:
@@ -70,6 +80,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set env vars
+        shell: bash
+        run: |
+          FILENAME=$(basename ${{matrix.upgrades}} .yml)
+          echo "TAG_PREFIX=${FILENAME}" >> $GITHUB_ENV
+          echo "CHAIN_NAME=${FILENAME%%-*}" >> $GITHUB_ENV
+          echo "CHAIN_NETWORK=${FILENAME#*-}" >> $GITHUB_ENV
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -78,12 +96,10 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
-          tags: |
-            type=sha,prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=edge,branch=test,prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=semver,pattern={{tag}},prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=semver,pattern={{version}},prefix=${{matrix.chains}}-${{matrix.networks}}-
-            type=raw,value=${{matrix.chains}}-${{matrix.networks}}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          tags: >-
+            type=sha,prefix=${{ env.TAG_PREFIX }}-
+            type=semver,pattern={{version}},prefix=${{ env.TAG_PREFIX }}-
+            type=raw,value=${{ env.TAG_PREFIX }}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build docker image
         uses: docker/build-push-action@v3
@@ -94,5 +110,6 @@ jobs:
           tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
           labels: ${{ env.DOCKER_METADATA_OUTPUT_LABELS }}
           build-args: |
-            CHAIN_NAME=${{matrix.chains}}
-            CHAIN_NETWORK=${{matrix.networks}}
+            CHAIN_NAME=${{ env.CHAIN_NAME }}
+            CHAIN_NETWORK=${{ env.CHAIN_NETWORK }}
+  

@@ -1,0 +1,14 @@
+# incomplete
+# added verified genesis binary v11
+chain_name: juno
+daemon_name: junod
+network_type: testnet
+git_repo: https://github.com/CosmosContracts/juno
+libraries: []
+versions:
+  - name: v11
+    tag: v11.0.0
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v11.0.0/junod

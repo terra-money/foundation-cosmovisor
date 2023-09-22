@@ -1,0 +1,33 @@
+# incomplete
+chain_name: kava
+daemon_name: kava
+network_type: mainnet
+git_repo: https://github.com/Kava-Labs/kava
+libraries: []
+versions:
+  - name: v0.17.1
+    tag: v0.17.1
+    height: '1610471'
+    proposal: ''
+    binaries: {}
+  - name: v0.19.0
+    tag: v0.19.0
+    height: '2098400'
+    proposal: ''
+    binaries: {}
+  - name: v0.21.0
+    tag: v0.21.0
+    height: '3607200'
+    proposal: '124'
+    recommended_version: v0.21.0
+    binaries: {}
+  - name: v0.23.0
+    tag: v0.23.0
+    height: '4832500'
+    proposal: '139'
+    binaries: {}
+  - name: v0.24.0
+    tag: v0.24.0
+    height: '5597000'
+    proposal: '146'
+    binaries: {}
