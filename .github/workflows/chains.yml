@@ -27,7 +27,7 @@ jobs:
       pull-requests: read
     outputs:
       # Expose matched filters as job output variable
-      upgrades: ${{ steps.filter.outputs.changes }}
+      upgrades: ${{ steps.filter.outputs.upgrades_files }}
     steps:
     - id: filter
       uses: dorny/paths-filter@v2
