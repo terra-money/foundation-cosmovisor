@@ -6,6 +6,10 @@ network_type: mainnet
 github_repo: https://github.com/sei-protocol/sei-chain
 libraries: []
 versions:
+  - name: 3.0.1
+    tag: 3.0.1
+    height: '1'
+    binaries: {}
   - name: 3.0.2
     tag: 3.0.2
     height: '2016000'
@@ -17,10 +21,12 @@ versions:
     proposal: '7'
     binaries: {}
   - name: 3.0.4
+    tag: 3.0.4
     height: '6685000'
     proposal: '8'
     binaries: {}
   - name: 3.0.6
+    tag: 3.0.6
     height: '12446873'
     proposal: '9'
     binaries: {}
@@ -33,11 +39,9 @@ versions:
     tag: 3.0.8
     height: '17520738'
     proposal: '11'
-    recommended_version: 3.0.8
     binaries: {}
   - name: v3.0.9
     tag: v3.0.9
     height: '25259000'
     proposal: '24'
-    recommended_version: v3.0.9
     binaries: {}
