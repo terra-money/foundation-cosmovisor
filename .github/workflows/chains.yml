@@ -24,11 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     # Required permissions
     permissions:
-      pull-requests: read
+      contents: read
     outputs:
       # Expose matched filters as job output variable
       upgrades: ${{ steps.filter.outputs.upgrades_files }}
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
     - id: filter
       uses: dorny/paths-filter@v2
       with:
