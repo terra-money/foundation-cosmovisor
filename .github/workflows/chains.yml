@@ -29,9 +29,8 @@ jobs:
       # Expose matched filters as job output variable
       upgrades: ${{ steps.filter.outputs.changes }}
     steps:
-    - name: Filter
+    - id: filter
       uses: dorny/paths-filter@v2
-      id: filter
       with:
         filters: |
           upgrades: 'upgrades/*.yml'
