@@ -115,6 +115,9 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
             link_cv_current(ctx, upgrade_path)
         if not os.path.exists(ctx["cv_genesis_dir"]):
             link_cv_genesis(ctx, upgrade_path)
+    else:
+        raise FileNotFoundError(f"Binary {binary_file} not found")
+        
 
 
 def link_cv_current(ctx, upgrade_path):
