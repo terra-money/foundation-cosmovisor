@@ -106,8 +106,8 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
-          tags: >-
-            type=sha,prefix=${{ env.TAG_PREFIX }}-
+          tags: |
+            type=sha,prefix=${{ env.TAG_PREFIX }}- 
             type=semver,pattern={{version}},prefix=${{ env.TAG_PREFIX }}-
             type=raw,value=${{ env.TAG_PREFIX }}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
