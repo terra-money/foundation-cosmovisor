@@ -1,14 +1,13 @@
-# incomplete
+# current to 20230919
 chain_name: neutron
 daemon_name: neutrond
 network_type: testnet
 git_repo: https://github.com/neutron-org/neutron
 libraries: []
 versions:
-  - name: v0.4.3
-    alias: v0.4.3
-    height: ''
-    proposal: ''
-    recommended_version: v0.4.3
-    tag: ''
-    binaries: {}
+  - name: v0.1
+    tag: v0.1.1
+    height: 1
+    binaries:
+      linux/amd64: >-
+        https://github.com/neutron-org/neutron/releases/download/v0.1.1/neutrond-linux-amd64
