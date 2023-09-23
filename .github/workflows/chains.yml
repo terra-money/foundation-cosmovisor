@@ -27,7 +27,7 @@ jobs:
       contents: read
     outputs:
       # Expose matched filters as job output variable
-      upgrades: ${{ steps.filter.outputs.upgrades_files }}
+      upgrades: ${{ steps.choice.outputs.upgrades_files }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -37,6 +37,14 @@ jobs:
         list-files: 'json'
         filters: |
           upgrades: 'upgrades/*.yml'
+    - id: choice
+      shell: bash
+      run: |
+        if [[ "${{ github.event.ref }} == 'refs/tags/v'* ]]; then
+          echo "upgrades_files=$(echo "[\"$(ls upgrades/*.yml | paste -sd ',' | sed -e 's/,/","/g')\"]")" >> "$GITHUB_OUTPUT"
+        else
+          echo "upgrades_files=${{ steps.filter.outputs.upgrades_files }}" >> "$GITHUB_OUTPUT"
+        fi
 
   build:
     needs: filtered
