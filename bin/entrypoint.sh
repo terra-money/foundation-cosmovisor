@@ -135,7 +135,7 @@ start(){
 }
 
 ensure_chain_home(){
-    mkdir -p "{$CHAIN_HOME}"
+    mkdir -p "${CHAIN_HOME}"
     if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then
         ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data;
     fi
