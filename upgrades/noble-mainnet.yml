@@ -6,37 +6,30 @@ git_repo: https://github.com/strangelove-ventures/noble
 libraries: []
 versions:
   - name: v1.0.0
-    alias: v1.0.0
+    alias: v1.0.0 
     height: 0
-    proposal: ''
     recommended_version: v1.0.0
     tag: v1.0.0
-    binaries: {}
+    binaries: 
+      linux/amd64: https://github.com/strangelove-ventures/noble-networks/blob/main/mainnet/noble-1/nobled?checksum=sha256:fc92d3b64b0618238b354bd82b31ed4aa35557129d679d90b070643df34c7c38
   - name: neon
-    alias: neon
+    alias: v2.0.0
     height: 119000
     proposal: ''
-    recommended_version: v2.0.0
     tag: v2.0.0
-    binaries: {}
-  - name: v0.4.1
-    alias: v0.4.1
-    height: 302000
-    proposal: ''
-    recommended_version: v0.4.1
-    tag: v0.4.2
-    binaries: {}
+    binaries: 
+      linux/amd64: https://github.com/strangelove-ventures/noble-networks/blob/main/mainnet/noble-1/chain-upgrades/v2.0.0/nobled?checksum=sha256:184ef72be58dce19e67823f4648c0b522ce282220b4aeb678dc396ae2d3f8675
   - name: radon
-    alias: radon
-    height: 645000
-    proposal: ''
-    recommended_version: v0.5.1
-    tag: v3.0.0
-    binaries: {}
-  - name: v3.0.0
     alias: v3.0.0
-    height: 1397000
+    height: 1296000
     proposal: ''
-    recommended_version: v3.0.0
     tag: v3.0.0
     binaries: {}
+  - name: v3.1.0
+    alias: v3.1.0
+    height: 2672000
+    proposal: ''
+    tag: v3.1.0
+    binaries: 
+      linux/amd64: https://github.com/strangelove-ventures/noble-networks/raw/main/mainnet/noble-1/chain-upgrades/v3.1.0/nobled_linux-amd64?checksum=sha256:742dbfee67ad193f8926b2be259af25f1b8972edcca623a7dea18dd535cd76d7
+      linux/arm64: https://github.com/strangelove-ventures/noble-networks/raw/main/mainnet/noble-1/chain-upgrades/v3.1.0/nobled_linux-arm64?checksum=sha256:1160a1d566f59f82e8a065fcdcd2dcf26c0b09ce94f7fe16a4873d3cc984d59c

@@ -183,12 +183,15 @@ def download_cv_version(binary_url, binary_file):
 
     os.chmod(binary_file, 0o755)
 
-    with open(binary_file, 'rb') as f:
-        if f.read(1) == b'{':
-            with open(binary_file, 'r') as f_json:
-                json_data = json.load(f_json)
-                arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
-                download_cv_version(arch_binary_url, binary_file)
+    # with open(binary_file, 'r') as f_json:
+    #     try:
+    #         # should fail
+    #         json_data = json.load(f_json)
+    #         arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
+    #         download_cv_version(arch_binary_url, binary_file)
+    #     except:
+    #         f_json.close()
+
 
 
 def get_upgrade_info_version(ctx):
