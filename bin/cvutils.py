@@ -183,14 +183,14 @@ def download_cv_version(binary_url, binary_file):
 
     os.chmod(binary_file, 0o755)
 
-    with open(binary_file, 'r') as f_json:
-        try:
-            # should fail
-            json_data = json.load(f_json)
-            arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
-            download_cv_version(arch_binary_url, binary_file)
-        except json.decoder.JSONDecodeError:
-            f_json.close()
+    # with open(binary_file, 'r') as f_json:
+    #     try:
+    #         # should fail
+    #         json_data = json.load(f_json)
+    #         arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
+    #         download_cv_version(arch_binary_url, binary_file)
+    #     except:
+    #         f_json.close()
 
 
 
