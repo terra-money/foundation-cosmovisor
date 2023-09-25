@@ -2,7 +2,7 @@
 chain_name: sei
 daemon_name: seid
 network_type: testnet
-github_repo: https://github.com/sei-protocol/sei-chain
+git_repo: https://github.com/sei-protocol/sei-chain
 libraries: []
 versions:
   - name: 1.0.6beta
