@@ -1,42 +1,46 @@
-# incomplete
+# current 20230920
 chain_name: kujira
 daemon_name: kujirad
 network_type: testnet
 git_repo: https://github.com/Team-Kujira/core
 libraries: []
 versions:
+  - name: v0.4.0
+    tag: 'v0.4.0'
+    height: '1'
+    binaries: {}
   - name: v0.5.0
+    tag: v0.5.0
     height: '2055000'
     proposal: '30'
     binaries: {}
   - name: v0.6.0
+    tag: v0.6.0
     height: '3750000'
     proposal: '53'
     binaries: {}
   - name: v0.7.1
+    tag: v0.7.1
     height: '5635073'
     proposal: '92'
     binaries: {}
   - name: v0.8.0
+    tag: v0.8.0
     height: '9169027'
     proposal: '143'
     binaries: {}
   - name: v0.8.3
+    tag: v0.8.3
     height: '10219084'
     proposal: '151'
     binaries: {}
   - name: v0.8.4
+    tag: v0.8.4
     height: '10500000'
     proposal: '154'
     binaries: {}
   - name: v0.8.5
+    tag: v0.8.5
     height: '10730000'
     proposal: '155'
-    binaries: {}
-  - name: v0.4.0
-    alias: v0.4.0
-    height: ''
-    proposal: ''
-    recommended_version: v0.4.0
-    tag: ''
     binaries: {}
