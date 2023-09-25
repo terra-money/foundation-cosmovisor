@@ -1,5 +1,4 @@
 # current 20230920
-# requires to build binaries from source and upload to s3
 chain_name: mars
 daemon_name: marsd
 network_type: mainnet

@@ -1,5 +1,4 @@
 # incomplete
-# requires to build binaries from source and upload to s3
 # added verified genesis binary v1
 chain_name: mars
 daemon_name: marsd
