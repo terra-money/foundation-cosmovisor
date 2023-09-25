@@ -189,7 +189,7 @@ def download_cv_version(binary_url, binary_file):
             json_data = json.load(f_json)
             arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
             download_cv_version(arch_binary_url, binary_file)
-        finally:
+        except json.decoder.JSONDecodeError:
             f_json.close()
 
 
