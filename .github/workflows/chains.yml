@@ -44,7 +44,7 @@ jobs:
         if [[ "${{ github.event.ref }}" == "refs/tags/v"* ]]; then
           echo "upgrades_files=$(echo "[\"$(ls upgrades/*.yml | paste -sd ',' | sed -e 's/,/","/g')\"]")" >> "$GITHUB_OUTPUT"
         else
-          echo "upgrades_files=\"${{ steps.filter.outputs.upgrades_files }}\"" >> "$GITHUB_OUTPUT"
+          echo 'upgrades_files=${{ steps.filter.outputs.upgrades_files }}' >> "$GITHUB_OUTPUT"
         fi
 
   build:
