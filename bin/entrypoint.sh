@@ -54,11 +54,11 @@ parse_chain_info(){
     PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
     PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
-    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=2000}
-    # choosing nothing as the default pruning strategy
+    # choosing nothing as the default pruning strategy / 0 as min retain blocks
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=${MIN_RETAIN_BLOCKS}}
+    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=2000}
     RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
 
     # config.toml
@@ -321,7 +321,7 @@ modify_app_toml(){
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-interval *=.*|pruning-interval = \"${PRUNING_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-every *=.*|pruning-keep-every = \"${PRUNING_KEEP_EVERY}\"|" -i "${APP_TOML}"
-    sed -e "s|^min-retain-blocks = *=.*|min-retain-blocks = \"${MIN_RETAIN_BLOCKS}\"|" -i "${APP_TOML}"
+    sed -e "s|^min-retain-blocks *=.*|min-retain-blocks = \"${MIN_RETAIN_BLOCKS}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
