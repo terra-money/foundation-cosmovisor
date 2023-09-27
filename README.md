@@ -34,6 +34,10 @@ Docker Cosmovisor container to run any cosmoschain
  docker compose --env-file chains/osmosis-testnet/.env up --build --force-recreate
  docker compose --env-file chains/sei-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/sei-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/terra-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/terra-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/terraclassic-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/terraclassic-testnet/.env up --build --force-recreate
 ```
 
 ## Base container examples
