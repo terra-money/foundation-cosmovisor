@@ -1,5 +1,5 @@
-# incomplete
-# added verified genesis binary v0.13
+# 20230925 = added verified genesis binary v0.13
+# 20230926 - Verifed sync from genesis starts
 chain_name: axelar
 daemon_name: axelard
 network_type: testnet

@@ -1,5 +1,4 @@
-# current 20230919
-# carbon seems to restart testnet each release?
+# Fails with panic: invalid Bech32 prefix; expected swth, got tswth
 chain_name: carbon
 daemon_name: carbond
 network_type: testnet

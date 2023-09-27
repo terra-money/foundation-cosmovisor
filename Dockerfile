@@ -49,11 +49,8 @@ ARG CHAIN_NETWORK="mainnet"
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
-COPY /upgrades/empty ./upgrades/${CHAIN_NAME}-${CHAIN_NETWORK}.yml* /tmp/
+COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /app
 
 RUN set -eux && \
-    if [ -f /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml ]; then \
-    mv /tmp/${CHAIN_NAME}-${CHAIN_NETWORK}.yml /app/upgrades.yml; \
-    fi && \ 
     /usr/local/bin/getupgrades.py && \
     chown -R cosmovisor:cosmovisor ${DAEMON_HOME}

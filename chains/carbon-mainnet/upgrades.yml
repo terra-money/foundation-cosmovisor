@@ -1,4 +1,4 @@
-# current 20230920 - verified sync starts
+# 20230920 - verified sync from genesis starts
 chain_name: carbon
 daemon_name: carbond
 network_type: mainnet

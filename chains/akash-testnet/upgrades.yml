@@ -1,18 +1,19 @@
-# incomplete
+# Akash discord: https://discord.com/invite/akash
+# 20230926 - Sync from Genesis fails, no peers
 chain_name: akash
 daemon_name: akash
 network_type: testnet
-git_repo:        https://github.com/akash-network/node
+git_repo: https://github.com/akash-network/node
 libraries: []
 versions:
-  - name: v0.23.1-rc0
-    tag: v0.23.1-rc0
+  - name: v0.22.7
+    tag: v0.22.7
     height: '0'
     binaries:
       linux/amd64: >-
-        https://github.com/akash-network/node/releases/download/v0.23.1-rc0/akash_linux_amd64.zip
+        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
       linux/arm64: >-
-        https://github.com/akash-network/node/releases/download/v0.23.1-rc0/akash_linux_arm64.zip
+        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_arm64.zip
   - name: v0.24.0
     height: '249826'
     proposal: '2'
