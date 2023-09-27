@@ -1,8 +1,42 @@
 # docker-cosmovisor
 
-Docker Cosmovisor container designed to run any cosmoschain
+Docker Cosmovisor container to run any cosmoschain
 
-## Examples ()
+## Chain specific build examples
+```sh
+ docker compose --env-file chains/akash-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/akash-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/axelar-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/axelar-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/carbon-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/carbon-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/cheqd-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/cheqd-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/cosmoshub-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/cosmoshub-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/injective-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/injective-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/juno-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/juno-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/kava-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/kava-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/kujira-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/kujira-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/mars-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/mars-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/migaloo-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/migaloo-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/neutron-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/neutron-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/noble-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/noble-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/osmosis-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/osmosis-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/sei-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/sei-testnet/.env up --build --force-recreate
+```
+
+## Base container examples
 
 ### Terra pisco-1 testnet from genesis
 
