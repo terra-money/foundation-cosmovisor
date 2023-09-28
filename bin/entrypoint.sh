@@ -41,7 +41,6 @@ parse_chain_info(){
     # Codebase Versions
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
     RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
-    # Prefer recommended version over upgrade.json
     PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
 
     # app.toml
