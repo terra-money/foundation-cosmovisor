@@ -41,7 +41,7 @@ parse_chain_info(){
     # Codebase Versions
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
     RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
-    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
+    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:=""}
 
     # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
