@@ -55,7 +55,7 @@ def main(ctx):
         version = get_recommended_version(ctx)
     elif os.path.exists(upgrade_info_json_path):
         logging.info("Existing upgrade_info.json found, using upgrade version.")
-        version = getchaininfo.get_upgrade_info_version(ctx)
+        version = cvutils.get_upgrade_info_version(ctx)
     else:
         logging.info("No version overides found, assuming sync from genesis.")
         version = get_genesis_version(ctx)
