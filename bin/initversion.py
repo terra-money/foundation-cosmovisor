@@ -39,7 +39,7 @@ def get_recommended_version(ctx):
 def main(ctx):
     os.makedirs(ctx["data_dir"], exist_ok=True)
     
-    upgrade_info_json_path = os.path.join(ctx["data_dir"], "upgrade_info.json")
+    upgrade_info_json_path = os.path.join(ctx["data_dir"], "upgrade-info.json")
     recommended_version = os.environ.get("RECOMMENDED_VERSION", "")
     prefer_recommended_version = os.environ.get("PREFER_RECOMMENDED_VERSION", False)
     state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
