@@ -44,3 +44,8 @@ versions:
     height: '25259000'
     proposal: '24'
     binaries: {}
+  - name: v3.1.1
+    tag: v3.1.1
+    height: '29772820'
+    proposal: '32'
+    binaries: {}
