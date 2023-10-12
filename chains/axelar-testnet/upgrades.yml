@@ -1,0 +1,25 @@
+# 20230925 = added verified genesis binary v0.13
+# 20230926 - Verifed sync from genesis starts
+chain_name: axelar
+daemon_name: axelard
+network_type: testnet
+git_repo: https://github.com/axelarnetwork/axelar-core
+libraries: []
+versions:
+  - name: v0.13
+    height: 690489 # initial_height
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/axelarnetwork/axelar-core/releases/download/v0.13.6/axelard-linux-amd64-v0.13.6
+  - name: v0.34
+    tag: v0.34.1
+    height: ''
+    proposal: ''
+    binaries:
+      linux/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-linux-amd64-v0.34.1
+      #.zip?checksum=sha256:6ae2b112fad22d9fa108f3a481dfc608c5f2458f814a3e2fee835bd5ed2e4528
+      darwin/amd64: >-
+        https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-darwin-amd64-v0.34.1
+      #.zip?checksum=sha256:7790c645fe1ebc9244a8d162fc2d80ac53052ec300bfd5aa4bbb683fa3f71884

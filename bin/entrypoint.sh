@@ -41,8 +41,7 @@ parse_chain_info(){
     # Codebase Versions
     GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
     RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
-    # Prefer recommended version over upgrade.json
-    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:="false"}
+    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:=""}
 
     # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
@@ -110,6 +109,9 @@ logger(){
 
 prepare(){
     parse_chain_info
+    export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
+    GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
+    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
     initversion.py
     ensure_chain_home
     initialize_node

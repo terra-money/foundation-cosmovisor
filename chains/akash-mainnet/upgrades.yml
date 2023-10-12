@@ -1,0 +1,64 @@
+# Akash discord: https://discord.com/invite/akash
+# 20230926 - Sync from Genesis fails, no peers
+chain_name: akash
+daemon_name: akash
+network_type: mainnet
+git_repo: https://github.com/akash-network/node
+libraries: []
+versions:
+  # - name: akashnet-2-upgrade-1
+  #   height: '455200'
+  #   proposal: '5'
+  #   binaries: 
+  # not sure which rc to use for 0.15.0
+  # - name: akash_v0.15.0_cosmos_v0.44.x
+  #   height: '5629650'
+  #   proposal: '19'
+  #   binaries:
+  #     linux/amd64: >-
+  #       https://github.com/akash-network/node/releases/download/v0.15.0-rc17/akash_0.15.0-rc17_linux_amd64.zip
+  - name: v0.18.0
+    height: '8526250'
+    proposal: '27'
+    binaries:
+      linux/amd64: >-
+        https://github.com/akash-network/node/releases/download/v0.18.0/akash_linux_amd64.zip?checksum=sha256:1c0582bdbe7ce1c90eb6df5c29632fc08c07df7254399f98eb6e51fd8a1091ce
+      linux/arm64: >-
+        https://github.com/akash-network/node/releases/download/v0.18.0/akash_linux_arm64.zip?checksum=sha256:2e098b803adbbc28c1555d02d83dfebd46f95a95be3b5648c65c0f47ff26a8b4
+  - name: v0.20.0
+    height: '8998907'
+    proposal: '29'
+    binaries:
+      linux/amd64: >-
+        https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_amd64.zip
+      linux/arm64: >-
+        https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_arm64.zip
+  - name: v0.22.0
+    tag: v0.22.7
+    height: '0'
+    recommended_version: v0.22.7
+    binaries:
+      linux/amd64: >-
+        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
+      linux/arm64: >-
+        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_arm64.zip
+  - name: v0.24.0
+    alias: v0.24.0
+    height: '12606074'
+    proposal: '224'
+    recommended_version: v0.24.0
+    binaries:
+      linux/amd64: >-
+        https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_amd64.zip
+      linux/arm64: >-
+        https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_arm64.zip
+  - name: v0.26.0
+    alias: v0.26.1
+    height: '12992204'
+    proposal: '231'
+    recommended_version: v0.24.0
+    binaries:
+      darwin/amd64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
+      darwin/arm64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
+      linux/amd64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_linux_amd64.zip?checksum=sha256:5a2b406e1df0144ef23a184837c5f6bf5e704271ecb94f94d7f705a4f90f2580
+      linux/arm64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_linux_arm64.zip?checksum=sha256:583ff9c6586014e4cf9a6a14529d53385a3d16857f89d571c50606f389eb47dc

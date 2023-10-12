@@ -22,6 +22,7 @@ def get_ctx():
     daemon_home = os.environ.get("DAEMON_HOME", os.getcwd())
     chain_home = os.environ.get("CHAIN_HOME", daemon_home)
     chain_name = os.environ.get('CHAIN_NAME', 'terra')
+    chain_network = os.environ.get('CHAIN_NETWORK', 'mainnet')
     daemon_name = os.environ.get("DAEMON_NAME", f"{chain_name}d")
     chain_json_url = os.environ.get('CHAIN_JSON_URL', None)
 
@@ -41,6 +42,7 @@ def get_ctx():
         "debug": debug,
         "daemon_home": daemon_home,
         "chain_name": chain_name,
+        "chain_network": chain_network,
         "daemon_name": daemon_name,
         "chain_json_url": chain_json_url,
 
@@ -145,43 +147,45 @@ def link_cv_genesis(ctx, upgrade_path):
 
 def download_cv_version(binary_url, binary_file):
     binary_path = os.path.dirname(binary_file)
+    daemon_name = os.path.basename(binary_file)
     binary_url_split = binary_url.split('?')
+    binary_url_fname = os.path.basename(binary_url_split[0])
 
     if not os.path.exists(binary_file):
         print(f"Downloading {binary_url} to {binary_file}...")
         os.makedirs(binary_path, exist_ok=True)
 
-        if binary_url_split[0].endswith(".tar.gz"):
-            response = requests.get(binary_url, stream=True)
-            response.raise_for_status()
-            with tarfile.open(mode='r|gz', fileobj=response.raw) as tar:
-                tar.extractall(path=binary_path)
-        elif binary_url_split[0].endswith(".zip"):
-            # this code does not work consistently
+        with tempfile.TemporaryDirectory() as tmpdir:
             response = requests.get(binary_url)
             response.raise_for_status()
-            zip_path = os.path.join("/tmp", os.path.basename(binary_url_split[0]))
-            logging.error(f"Downloading {binary_url} to {zip_path}...")
-            with open(zip_path, 'wb') as f:
+            tmp_path = os.path.join(tmpdir, binary_url_fname)
+            logging.error(f"Downloading {binary_url} to {tmp_path}...")
+            with open(tmp_path, 'wb') as f:
                 f.write(response.content)
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                for zip_info in zip_ref.infolist():
-                    zip_name = zip_info.filename
-                    if zip_name.endswith('/'):
-                        continue
-                    file_content = zip_ref.read(zip_name)
-                    file_path = os.path.join(binary_path, os.path.basename(zip_name))
-                    logging.info(f"Extract: {zip_name} to {file_path}")
-                    with open(file_path, 'wb') as file_handle:
-                        file_handle.write(file_content)
-            os.remove(zip_path)
-        else:
-            response = requests.get(binary_url)
-            response.raise_for_status()
-            with open(binary_file, 'wb') as f:
-                f.write(response.content)
+            
+            if binary_url_fname.endswith(".tar.gz"):
+                with tarfile.open(tmp_path ,mode='r:gz') as tar:
+                    for member in tar.getmembers():
+                        if member.name.endswith(daemon_name):
+                            member.name = daemon_name
+                            tar.extract(member, path=binary_path)
+                            subprocess.run(["ls", "-al", binary_path])
+            elif binary_url_fname.endswith(".zip"):
+                # this code does not work consistently
+                with zipfile.ZipFile(tmp_path, 'r') as zip_ref:
+                    for zip_info in zip_ref.infolist():
+                        zip_name = zip_info.filename
+                        if zip_name.endswith('/'):
+                            continue
+                        file_content = zip_ref.read(zip_name)
+                        logging.info(f"Extract: {zip_name} to {binary_file}")
+                        with open(binary_file, 'wb') as file_handle:
+                            file_handle.write(file_content)
+                            break
+            else:
+                shutil.copy(tmp_path, binary_file)
 
-    os.chmod(binary_file, 0o755)
+        os.chmod(binary_file, 0o755)
 
     # with open(binary_file, 'r') as f_json:
     #     try:

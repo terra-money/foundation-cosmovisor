@@ -1,0 +1,18 @@
+version: "3.9"
+
+networks:
+  default:
+
+services:
+  node:
+    image: terraformlabs/cosmovisor:${CHAIN_NAME}-${CHAIN_NETWORK}-edge
+    platform: linux/amd64
+    build:
+      dockerfile: Dockerfile
+      args:
+        CHAIN_NAME: ${CHAIN_NAME}
+        CHAIN_NETWORK: ${CHAIN_NETWORK}
+    env_file:
+      - chains/${CHAIN_NAME}-${CHAIN_NETWORK}/.env
+    networks:
+      - default
