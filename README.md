@@ -12,8 +12,14 @@ Docker Cosmovisor container to run any cosmoschain
  docker compose --env-file chains/carbon-testnet/.env up --build --force-recreate
  docker compose --env-file chains/cheqd-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/cheqd-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/chihuahua-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/chihuahua-testnet/.env up --build --force-recreate
  docker compose --env-file chains/cosmoshub-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/cosmoshub-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/crescent-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/crescent-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/decentr-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/decentr-testnet/.env up --build --force-recreate
  docker compose --env-file chains/injective-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/injective-testnet/.env up --build --force-recreate
  docker compose --env-file chains/juno-mainnet/.env up --build --force-recreate
