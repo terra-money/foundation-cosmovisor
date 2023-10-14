@@ -47,7 +47,7 @@ def main(ctx):
     # symlink upgrades dir
     if os.path.exists('/opt/cosmovisor/upgrades'):
         os.makedirs(ctx["cosmovisor_dir"], exist_ok=True)
-        os.symlink('/opt/cosmovisor/upgrades', f'${ctx["cosmovisor_dir"]}/upgrades')
+        os.symlink('/opt/cosmovisor/upgrades', f'{ctx["cosmovisor_dir"]}/upgrades')
     
     version = None
     # we use prefer recommended version here beacause recommended_version is set by chain.json
