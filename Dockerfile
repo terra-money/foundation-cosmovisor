@@ -41,10 +41,10 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
 
 ###############################################################################
-FROM cosmovisor
+FROM cosmovisor as final
 
-ARG CHAIN_NAME="terra"
-ARG CHAIN_NETWORK="mainnet"
+ARG CHAIN_NAME
+ARG CHAIN_NETWORK
 
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
@@ -52,5 +52,8 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
 COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /app
 
 RUN set -eux && \
+    mkdir -p /app/cosmovisor && \
+    mkdir -p /opt/cosmovisor/upgrades && \
+    ln -s /opt/cosmovisor/upgrades /app/cosmovisor/upgrades && \
     /usr/local/bin/getupgrades.py && \
-    chown -R cosmovisor:cosmovisor ${DAEMON_HOME}
+    chown -R cosmovisor:cosmovisor /opt/cosmovisor/upgrades

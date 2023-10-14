@@ -5,17 +5,8 @@ network_type: mainnet
 git_repo: https://github.com/cosmos/gaia
 libraries: []
 versions:
-  # - name: Signal Proposal to Adopt the Liquidity Module onto the Cosmos Hub
-  #   height: '0'
-  #   proposal: '38'
-  #   binaries: {}
-  # - name: Gravity-DEX
-  #   height: '6910000'
-  #   proposal: '51'
-  #   binaries: {}
   - name: Vega
-    height: '8695000'
-    proposal: '59'
+    height: '0'
     binaries:
       linux/amd64: >-
         https://github.com/cosmos/gaia/releases/download/v6.0.0/gaiad-v6.0.0-linux-amd64?checksum=sha256:d9b4391065a338107ca240f29539d62572fe1e85a6c455576afc5e93dba7f402
@@ -113,20 +104,4 @@ versions:
         https://github.com/cosmos/gaia/releases/download/v12.0.0/gaiad-v12.0.0-windows-amd64.exe
       windows/arm64: >-
         https://github.com/cosmos/gaia/releases/download/v12.0.0/gaiad-v12.0.0-windows-arm64.exe
-  - name: v9.0.1
-    alias: v9.0.1
-    height: ''
-    proposal: ''
-    recommended_version: v9.0.1
-    tag: ''
-    binaries:
-      linux/amd64: >-
-        https://github.com/cosmos/gaia/releases/download/v9.0.1/gaiad-v9.0.1-linux-amd64
-      linux/arm64: >-
-        https://github.com/cosmos/gaia/releases/download/v9.0.1/gaiad-v9.0.1-linux-arm64
-      darwin/amd64: >-
-        https://github.com/cosmos/gaia/releases/download/v9.0.1/gaiad-v9.0.1-darwin-amd64
-      darwin/arm64: >-
-        https://github.com/cosmos/gaia/releases/download/v9.0.1/gaiad-v9.0.1-darwin-arm64
-      windows/amd64: >-
-        https://github.com/cosmos/gaia/releases/download/v9.0.1/gaiad-v9.0.1-windows-amd64.exe
+

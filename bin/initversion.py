@@ -43,6 +43,11 @@ def main(ctx):
     recommended_version = os.environ.get("RECOMMENDED_VERSION", "")
     prefer_recommended_version = os.environ.get("PREFER_RECOMMENDED_VERSION", False)
     state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
+
+    # symlink upgrades dir
+    if os.path.exists('/opt/cosmovisor/upgrades'):
+        os.makedirs(ctx["cosmovisor_dir"], exist_ok=True)
+        os.symlink('/opt/cosmovisor/upgrades', f'${ctx["cosmovisor_dir"]}/upgrades')
     
     version = None
     # we use prefer recommended version here beacause recommended_version is set by chain.json

@@ -65,8 +65,6 @@ jobs:
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
             type=sha
-            type=edge,branch=test
-            type=semver,pattern={{tag}}
             type=semver,pattern={{version}}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 

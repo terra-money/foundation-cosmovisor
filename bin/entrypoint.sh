@@ -109,11 +109,11 @@ logger(){
 
 prepare(){
     parse_chain_info
+    ensure_chain_home
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
     GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
     PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
     initversion.py
-    ensure_chain_home
     initialize_node
     reset_on_start
     set_node_key
