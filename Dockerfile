@@ -55,5 +55,6 @@ RUN set -eux && \
     mkdir -p /app/cosmovisor && \
     mkdir -p /opt/cosmovisor/upgrades && \
     ln -s /opt/cosmovisor/upgrades /app/cosmovisor/upgrades && \
+    ln -s /opt/cosmovisor/genesis /app/cosmovisor/genesis && \
     /usr/local/bin/getupgrades.py && \
     chown -R cosmovisor:cosmovisor /opt/cosmovisor/upgrades
