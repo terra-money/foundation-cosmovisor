@@ -49,7 +49,7 @@ ARG CHAIN_NETWORK
 ENV CHAIN_NAME=${CHAIN_NAME} \
     CHAIN_NETWORK=${CHAIN_NETWORK}
 
-COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /app
+COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /etc/default/
 
 RUN set -eux && \
     mkdir -p /app/cosmovisor && \

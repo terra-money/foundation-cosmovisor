@@ -35,7 +35,7 @@ def get_chain_json(ctx):
         
     print(f"Retrieving chain information from {chain_json_url}...")
     
-    chain_json_path = os.path.join(daemon_home, 'chain.json')
+    chain_json_path = ctx.get('chain_json_path')
     response = requests.get(chain_json_url)
     with open(chain_json_path, 'wb') as f:
         f.write(response.content)
@@ -51,19 +51,22 @@ def get_upgrades_yaml(ctx, upgrades_yaml_path):
     return codebase_data
 
 def get_codebase_data(ctx):
-    daemon_home = ctx.get('daemon_home', os.getcwd())
-    upgrades_yaml_path = ctx.get('upgrades_yaml_path', os.path.join(daemon_home, 'upgrades.yml'))
+    upgrades_yaml_path = ctx.get('upgrades_yaml_path')
     if os.path.exists(upgrades_yaml_path):
+        logging.info(f"Retrieving codebase data from {upgrades_yaml_path}...")
         return get_upgrades_yaml(ctx, upgrades_yaml_path)
     
-    upgrades_json_path = ctx.get('upgrades_json_path', os.path.join(daemon_home, 'upgrades.json'))
+    upgrades_json_path = ctx.get('upgrades_json_path') 
+    logging.info(f"Retrieving codebase data from {upgrades_json_path}...")
     if os.path.exists(upgrades_json_path):
+        logging.info(f"Retrieving codebase data from {upgrades_json_path}...")
         return get_upgrades_json(ctx, upgrades_json_path)
     
-    chain_json_path = ctx.get('chain_json_path', os.path.join(daemon_home, 'chain.json'))
+    chain_json_path = ctx.get('chain_json_path')
     if not os.path.exists(chain_json_path):
         get_chain_json(ctx)
         
+    logging.info(f"Retrieving codebase data from {chain_json_path}...")
     with open(chain_json_path, 'r') as f:
         chain_data = json.load(f)
 

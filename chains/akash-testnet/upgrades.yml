@@ -1,5 +1,4 @@
 # Akash discord: https://discord.com/invite/akash
-# 20230926 - Sync from Genesis fails, no peers
 chain_name: akash
 daemon_name: akash
 network_type: testnet

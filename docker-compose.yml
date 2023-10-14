@@ -12,6 +12,8 @@ services:
       args:
         CHAIN_NAME: ${CHAIN_NAME}
         CHAIN_NETWORK: ${CHAIN_NETWORK}
+    volumes:
+      - /app
     env_file:
       - chains/${CHAIN_NAME}-${CHAIN_NETWORK}/.env
     networks:

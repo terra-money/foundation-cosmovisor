@@ -2,6 +2,7 @@
 
 import os
 import sys
+import shutil
 import logging
 import cvutils
 import getchaininfo
@@ -36,22 +37,47 @@ def get_recommended_version(ctx):
         return getchaininfo.get_chain_json_version(ctx, recomended_version)
     return getchaininfo.get_chain_json_recommended_version(ctx)
 
+
+def check_cv_path(ctx, source_path):
+    destination_path = f"{ctx['cosmovisor_dir']}/$(basename {source_path}))"
+    source_dev = os.stat(source_path).st_dev
+    
+    # nothing to do if the source does not exist
+    if not os.path.exists(source_path):
+        return
+    
+    # Check if the link_path exists
+    if not os.path.exists(destination_path):
+        destination_dev = os.stat(ctx['cosmovisor_dir']).st_dev
+        logging.info(f"Error: Path '{destination_path}' does not exist.")
+        if source_dev != destination_dev:
+            os.makedirs(destination_path, exist_ok=True)
+        else:
+            logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
+            os.symlink(destination_path, source_path)
+    
+    # dir is link but not pointing to the correct target        
+    if os.path.islink(destination_path):
+        actual_target = os.readlink(destination_path)
+        if actual_target != source_path:
+            logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
+            shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+            return 
+
+    if source_dev != os.stat(destination_path).st_dev:
+        logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
+        shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+        return 
+
 def main(ctx):
     os.makedirs(ctx["data_dir"], exist_ok=True)
     os.makedirs(ctx["cosmovisor_dir"], exist_ok=True)
+    check_cv_path(ctx, "/opt/cosmovisor/upgrades")
     
     upgrade_info_json_path = os.path.join(ctx["data_dir"], "upgrade-info.json")
     recommended_version = os.environ.get("RECOMMENDED_VERSION", "")
     prefer_recommended_version = os.environ.get("PREFER_RECOMMENDED_VERSION", False)
     state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
-
-    # symlink genesis dir
-    if os.path.exists('/opt/cosmovisor/genesis'):
-        os.symlink('/opt/cosmovisor/genesis', f'{ctx["cosmovisor_dir"]}/genesis')
-        
-    # symlink upgrades dir
-    if os.path.exists('/opt/cosmovisor/upgrades'):
-        os.symlink('/opt/cosmovisor/upgrades', f'{ctx["cosmovisor_dir"]}/upgrades')
 
     version = None
     # we use prefer recommended version here beacause recommended_version is set by chain.json

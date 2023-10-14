@@ -26,8 +26,9 @@ def get_ctx():
     daemon_name = os.environ.get("DAEMON_NAME", f"{chain_name}d")
     chain_json_url = os.environ.get('CHAIN_JSON_URL', None)
 
-    chain_json_path = os.path.join(daemon_home, 'chain.json')
-    upgrades_json_path = os.path.join(daemon_home, 'upgrades.json')
+    chain_json_path = os.path.join('/etc/default', 'chain.json')
+    upgrades_yaml_path = os.path.join('/etc/default', 'upgrades.yml')
+    upgrades_json_path = os.path.join('/etc/default', 'upgrades.json')
 
     cosmovisor_dir = os.path.join(daemon_home, "cosmovisor")
     cv_current_dir = os.path.join(cosmovisor_dir, "current")
@@ -48,6 +49,7 @@ def get_ctx():
 
         "chain_json_path": chain_json_path,
         "upgrades_json_path": upgrades_json_path,
+        "upgrades_yaml_path": upgrades_yaml_path,
 
         "cosmovisor_dir": cosmovisor_dir,
         "cv_current_dir": cv_current_dir,

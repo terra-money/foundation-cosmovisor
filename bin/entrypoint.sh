@@ -8,8 +8,8 @@ fi
 
 DAEMON_HOME=${DAEMON_HOME:="$(pwd)"}
 CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
-CHAIN_JSON="${DAEMON_HOME}/chain.json"
-UPGRADES_JSON="${DAEMON_HOME}/upgrades.yml"
+CHAIN_JSON="/etc/default/chain.json"
+UPGRADES_JSON="/etc/default/upgrades.yml"
 
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
