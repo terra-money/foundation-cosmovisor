@@ -35,8 +35,9 @@ def get_ctx():
     cv_genesis_dir = os.path.join(cosmovisor_dir, "genesis")
     cv_upgrades_dir = os.path.join(cosmovisor_dir, "upgrades")
 
-    data_dir = os.path.join(chain_home, "data")
     config_dir = os.path.join(chain_home, "config")
+    data_dir = os.path.join(chain_home, "data")
+    upgrade_info_json = os.path.join(data_dir, "upgrade-info.json")
 
     return {
         "arch": arch,
@@ -50,6 +51,7 @@ def get_ctx():
         "chain_json_path": chain_json_path,
         "upgrades_json_path": upgrades_json_path,
         "upgrades_yaml_path": upgrades_yaml_path,
+        "upgrade_info_json": upgrade_info_json,
 
         "cosmovisor_dir": cosmovisor_dir,
         "cv_current_dir": cv_current_dir,
