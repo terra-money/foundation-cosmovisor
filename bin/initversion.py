@@ -39,7 +39,7 @@ def get_recommended_version(ctx):
 
 
 def check_cv_path(ctx, source_path):
-    destination_path = f"{ctx['cosmovisor_dir']}/$(basename {source_path}))"
+    destination_path = f"{ctx['cosmovisor_dir']}/{os.path.basename(source_path)}"
     source_dev = os.stat(source_path).st_dev
     
     # nothing to do if the source does not exist
