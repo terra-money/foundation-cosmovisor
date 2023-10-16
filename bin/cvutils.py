@@ -106,6 +106,15 @@ def check_cv_path(ctx):
         return
     
     source_dev = os.stat(source_path).st_dev
+
+    # dir is link but not pointing to the expected target        
+    if os.path.islink(destination_path):
+        actual_target = os.readlink(destination_path)
+        logging.info(f"{actual_target}")
+        if actual_target != source_path:
+            os.path.unlink(destination_path)
+            
+            
     # Check if the link_path exists
     if not os.path.exists(destination_path):
         logging.info(f"Error: Path '{destination_path}' does not exist.")
@@ -115,18 +124,11 @@ def check_cv_path(ctx):
             logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
             os.symlink(destination_path, source_path)
     
-    # dir is link but not pointing to the expected target        
-    if os.path.islink(destination_path):
-        actual_target = os.readlink(destination_path)
-        if actual_target != source_path:
-            logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
-            shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
-            return 
-
     # dir is not a link but is not empty
     if source_dev != os.stat(destination_path).st_dev:
         logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
-        shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+        # TODO: *nix only should implement custom copytree
+        os.system(f"cp -rf {source_path} {destination_path}")
         return 
 
 def create_cv_upgrade(ctx, version, linkCurrent=True):

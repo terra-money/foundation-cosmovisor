@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euo pipefail 
 
 if [ -n "${DEBUG:=}" ]; then
     set -x
@@ -113,7 +113,7 @@ prepare(){
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
     GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
     PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
-    initversion.py
+    initversion
     initialize_node
     reset_on_start
     set_node_key
@@ -177,6 +177,13 @@ create_genesis(){
                 curl -sSL "${GENESIS_URL}" -o "${GENESIS_FILE}"
                 ;;
         esac
+    fi
+}
+
+initversion(){
+    initversion.py
+    if [ $? != 0 ]; then
+        exit $?
     fi
 }
 

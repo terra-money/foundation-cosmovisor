@@ -2,7 +2,6 @@
 
 import os
 import sys
-import shutil
 import logging
 import cvutils
 import getchaininfo
@@ -67,6 +66,7 @@ def main(ctx):
     else:
         logging.error("No version found. Exiting...")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     ctx = cvutils.get_ctx()
