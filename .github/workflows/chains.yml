@@ -94,7 +94,7 @@ jobs:
       - name: Set env vars
         shell: bash
         run: |
-          FILENAME=$(basename ${{ matrix.upgrades }})
+          FILENAME=$(basename $(dirname ${{ matrix.upgrades }}))
           echo "TAG_PREFIX=${FILENAME}" >> $GITHUB_ENV
           echo "CHAIN_NAME=${FILENAME%%-*}" >> $GITHUB_ENV
           echo "CHAIN_NETWORK=${FILENAME#*-}" >> $GITHUB_ENV
