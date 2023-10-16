@@ -30,6 +30,7 @@ def get_ctx():
     upgrades_yaml_path = os.path.join('/etc/default', 'upgrades.yml')
     upgrades_json_path = os.path.join('/etc/default', 'upgrades.json')
 
+    opt_cosmovisor_dir = os.path.join('/opt', "cosmovisor")
     cosmovisor_dir = os.path.join(daemon_home, "cosmovisor")
     cv_current_dir = os.path.join(cosmovisor_dir, "current")
     cv_genesis_dir = os.path.join(cosmovisor_dir, "genesis")
@@ -53,6 +54,7 @@ def get_ctx():
         "upgrades_yaml_path": upgrades_yaml_path,
         "upgrade_info_json": upgrade_info_json,
 
+        "opt_cosmovisor_dir": opt_cosmovisor_dir,
         "cosmovisor_dir": cosmovisor_dir,
         "cv_current_dir": cv_current_dir,
         "cv_genesis_dir": cv_genesis_dir,
@@ -94,6 +96,38 @@ def get_arch_version(ctx, codebase, version):
         "recommended_version": recommended_version,
         "binary_url": binary_url,
     }
+
+def check_cv_path(ctx):
+    source_path = ctx['opt_cosmovisor_dir'] 
+    destination_path = ctx['cosmovisor_dir']
+    
+    # nothing to do if the source does not exist
+    if not os.path.exists(source_path):
+        return
+    
+    source_dev = os.stat(source_path).st_dev
+    # Check if the link_path exists
+    if not os.path.exists(destination_path):
+        logging.info(f"Error: Path '{destination_path}' does not exist.")
+        if source_dev != os.stat(ctx['daemon_home']).st_dev:
+            os.makedirs(destination_path, exist_ok=True)
+        else:
+            logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
+            os.symlink(destination_path, source_path)
+    
+    # dir is link but not pointing to the expected target        
+    if os.path.islink(destination_path):
+        actual_target = os.readlink(destination_path)
+        if actual_target != source_path:
+            logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
+            shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+            return 
+
+    # dir is not a link but is not empty
+    if source_dev != os.stat(destination_path).st_dev:
+        logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
+        shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+        return 
 
 def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(ctx["cv_upgrades_dir"], exist_ok=True)

@@ -1,2 +1,3 @@
 .vscode/
 bin/test.py
+bin/__pycache__
