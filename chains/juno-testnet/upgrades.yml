@@ -7,14 +7,44 @@ git_repo: https://github.com/CosmosContracts/juno
 libraries: []
 versions:
   - name: v11
-    tag: v11.0.0
+    tag: v11.0.0-alpha
     proposal:
     height: 1
     binaries:
-      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v11.0.0/junod
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v11.0.0-alpha/junod
   - name: v12
-    tag: v12.0.0
-    proposal:
-    height: 1
+    tag: v12.0.0-beta.1
+    proposal: 1
+    height: 23400
     binaries:
-      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v12.0.0/junod
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v12.0.0-beta.1/junod
+  - name: v13
+    tag: v13.0.0-beta.1
+    proposal:
+    height: 262300
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v13.0.0-beta.1/junod
+  - name: v14
+    tag: v14.0.0-alpha.1
+    proposal: 8
+    height: 770462
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v14.0.0-alpha.1/junod
+  - name: v15
+    tag: v15.0.0-alpha.1
+    proposal: 9
+    height: 1619811
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v15.0.0-alpha.1/junod
+  - name: v16
+    tag: v16.0.0-alpha.1
+    proposal: 16
+    height: 2401803
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v16.0.0-alpha.1/junod
+  - name: v17
+    tag: v17.0.0-alpha.1
+    proposal: 34
+    height: 3040483
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v17.0.0-alpha.1/junod
