@@ -12,3 +12,9 @@ versions:
     height: 1
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v11.0.0/junod
+  - name: v12
+    tag: v12.0.0
+    proposal:
+    height: 1
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v12.0.0/junod

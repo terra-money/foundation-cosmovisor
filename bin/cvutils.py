@@ -244,7 +244,9 @@ def get_upgrade_info_version(ctx):
     with open(ctx['upgrade_info_json'], 'r') as f:
         data = json.load(f)
         name = data.get('name', '')
+        logging.info(f"upgrade name is {name}")
         info = data.get('info', '')
+        logging.info(f"upgrade info is {info}")
         if isinstance(info, str):
             if 'binaries' in info:
                 info = json.loads(info)

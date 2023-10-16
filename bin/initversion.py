@@ -63,10 +63,9 @@ def main(ctx):
     
     if version:
         cvutils.create_cv_upgrade(ctx, version)
-    else:
-        logging.error("No version found. Exiting...")
-        sys.exit(1)
-
+    
+    # do not exit if version = None, we want to keep the container running
+    return 
 
 if __name__ == "__main__":
     ctx = cvutils.get_ctx()
