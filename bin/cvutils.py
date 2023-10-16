@@ -214,10 +214,9 @@ def get_upgrade_info_version(ctx):
                 info = json.loads(info)
                 binaries = info.get('binaries', {})
                 binary_url = binaries.get(ctx["arch"], None)
-            elif 'http:' in info:
-                binary_url = info
-            if binary_url:
                 return {"name": name, "binary_url": binary_url}
+            elif 'http:' in info:
+                return {"name": name, "binary_url": info}
     return None
 
 def download_and_extract_image(name: str, tag: str, binary_file: str):
