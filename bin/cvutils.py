@@ -119,7 +119,8 @@ def check_cv_path(ctx):
     if not os.path.exists(destination_path):
         logging.info(f"Error: Path '{destination_path}' does not exist.")
         if source_dev != os.stat(ctx['daemon_home']).st_dev:
-            os.makedirs(destination_path, exist_ok=True)
+            logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
+            shutil.copytree(source_path, destination_path)
         else:
             logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
             os.symlink(destination_path, source_path)
@@ -127,9 +128,14 @@ def check_cv_path(ctx):
     # dir is not a link but is not empty
     if source_dev != os.stat(destination_path).st_dev:
         logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
-        # TODO: *nix only should implement custom copytree
-        os.system(f"cp -rf {source_path} {destination_path}")
-        return 
+        for subpath in os.listdir(f"{source_path}/upgrades"):
+            if os.path.exists(f"{destination_path}/upgrades/{subpath}"):
+                shutil.rmtree(f"{destination_path}/upgrades/{subpath}")
+            if not os.path.exists(f"{destination_path}/upgrades/{subpath}"):
+                os.makedirs(f"{destination_path}/upgrades/{subpath}")
+                shutil.copytree(f"{source_path}/upgrades/{subpath}", f"{destination_path}/upgrades/{subpath}", dirs_exist_ok=True)
+                
+    return 
 
 def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(ctx["cv_upgrades_dir"], exist_ok=True)
