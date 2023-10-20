@@ -4,10 +4,10 @@ daemon_name: seid
 network_type: testnet
 git_repo: https://github.com/sei-protocol/sei-chain
 libraries: []
-versions:
-  - name: 2.0.40beta
-    tag: 2.0.40beta
-    height: ''
-    proposal: ''
-    recommended_version: 2.0.40beta
-    binaries: {}
+versions: []
+  # - name: 2.0.40beta
+  #   tag: 2.0.40beta
+  #   height: ''
+  #   proposal: ''
+  #   recommended_version: 2.0.40beta
+  #   binaries: {}
