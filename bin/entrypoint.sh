@@ -168,7 +168,7 @@ create_genesis(){
         logger "Downloading genesis file from ${GENESIS_URL}..."
         case "${GENESIS_URL}" in
             *.tar.gz)
-                curl -sSL "${GENESIS_URL}" | tar -xzO > "${GENESIS_FILE}"
+                curl -sSL "${GENESIS_URL}" | tar -xz -C "${CONFIG_DIR}" 2>/dev/null
                 ;;
             *.gz)
                 curl -sSL "${GENESIS_URL}" | zcat > "${GENESIS_FILE}"

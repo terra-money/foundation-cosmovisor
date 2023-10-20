@@ -27,11 +27,11 @@ versions:
     alias: v2
     height: '1384100'
     proposal: '12'
-    recommended_version: v2.3.0
-    tag: v2.3.0
+    recommended_version: v2.1.0
+    tag: v2.1.0
     binaries:
       linux/amd64: >-
-        https://github.com/crescent-network/crescent/releases/download/v2.3.0/crescentd-v2.3.0-linux-amd64
+        https://github.com/crescent-network/crescent/releases/download/v2.1.0/crescentd-v2.1.0-linux-amd64
   - name: v3
     alias: v3
     height: '3932000'
@@ -48,16 +48,9 @@ versions:
     recommended_version: v4.0.0
     tag: v4.0.0
     binaries: {}
-  - name: v4.1
-    alias: v4.1
-    height: 6500000
-    proposal: ''
-    recommended_version: v4.1.1
-    tag: v4.1.1
-    binaries: {}
   - name: v4.2
     alias: v4.2
-    height: 6915000
+    height: '6915000'
     proposal: ''
     recommended_version: v4.2.0
     tag: v4.2.0
