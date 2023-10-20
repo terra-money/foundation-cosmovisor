@@ -1,9 +1,10 @@
-# incomplete
+# ready 20231020
+# https://github.com/comdex-official/networks/tree/main/mainnet/releaseNotes
 chain_name: comdex
 daemon_name: comdex
 network_type: mainnet
 git_repo: https://github.com/comdex-official/comdex
-libraries: []
+libraries: ["https://github.com/comdex-official/comdex/releases/download/v11.5.0/libwasmvm.x86_64.so"]
 versions:
   - name: v0.0.4
     height: '1'
@@ -13,7 +14,9 @@ versions:
     height: '1506060'
     proposal: '3'
     tag: v0.1.3
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v0.1.3/comdex
   - name: v5.0.0
     tag: v5.0.0
     height: '5133000'
@@ -43,18 +46,18 @@ versions:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v8.1.0/comdex-linux-amd64.tar.gz
   - name: v9.0.0
-    tag: v9.0.0
+    tag: v9.1.2
     height: '6548200'
     proposal: '102'
-    recommended_version: v9.0.0
+    recommended_version: v9.1.2
     binaries:
       linux/amd64: >-
-        https://github.com/comdex-official/comdex/releases/download/Mainnet-v9.0.0/comdex-linux-amd64.tar.gz
+        https://github.com/comdex-official/comdex/releases/download/v9.1.2/comdex
   - name: v10.0.0
-    tag: 500b5c666af138c151c56e13e625b0dfcff35272
+    tag: v10.0.0
     height: '7158500'
     proposal: '132'
-    recommended_version: 500b5c666af138c151c56e13e625b0dfcff35272
+    recommended_version: v10.0.0
     binaries: {}
   - name: v11.5.0
     tag: v11.5.0
@@ -64,4 +67,3 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v11.5.0/comdex
-      # above version my not be amd64 please test 
