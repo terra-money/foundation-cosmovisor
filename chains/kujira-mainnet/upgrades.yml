@@ -41,3 +41,9 @@ versions:
     height: 9226200
     binaries:
       linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.8.7
+  - name: v0.9.0
+    tag: v0.9.0
+    proposal: 483
+    height: 14783000
+    binaries:
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.9.0

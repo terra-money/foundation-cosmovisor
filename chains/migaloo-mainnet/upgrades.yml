@@ -20,3 +20,8 @@ versions:
     proposal: 10
     height: 2342302
     binaries: {}
+  - name: v3.0.0
+    tag: v3.0.0
+    proposal: ''
+    height: 3574316
+    binaries: {}
