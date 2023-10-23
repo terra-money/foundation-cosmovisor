@@ -16,6 +16,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 
+
 def get_ctx():
     arch = get_system_arch()
     debug = os.environ.get("DEBUG", None)
@@ -64,6 +65,7 @@ def get_ctx():
         "config_dir": config_dir,
     }
 
+
 def get_system_arch():
     logging.info("Identifying system architecture...")
     os_name = os.uname().sysname.lower()
@@ -79,6 +81,7 @@ def get_system_arch():
         arch = f"{os_name}/amd64"
     return arch
 
+
 def get_arch_version(ctx, codebase, version):
     name = version.get("name", "")
     height = version.get("height", "")
@@ -88,33 +91,33 @@ def get_arch_version(ctx, codebase, version):
     binaries = version.get("binaries", {})
     binary_url = binaries.get(ctx["arch"], "")
     return {
-        "name": name, 
-        "height": height, 
+        "name": name,
+        "height": height,
         "tag": tag,
-        "git_repo": git_repo, 
-        "tag": tag, 
+        "git_repo": git_repo,
+        "tag": tag,
         "recommended_version": recommended_version,
         "binary_url": binary_url,
     }
 
+
 def check_cv_path(ctx):
-    source_path = ctx['opt_cosmovisor_dir'] 
+    source_path = ctx['opt_cosmovisor_dir']
     destination_path = ctx['cosmovisor_dir']
-    
+
     # nothing to do if the source does not exist
     if not os.path.exists(source_path):
         return
-    
+
     source_dev = os.stat(source_path).st_dev
 
-    # dir is link but not pointing to the expected target        
+    # dir is link but not pointing to the expected target
     if os.path.islink(destination_path):
         actual_target = os.readlink(destination_path)
         logging.info(f"{actual_target}")
         if actual_target != source_path:
             os.path.unlink(destination_path)
-            
-            
+
     # Check if the link_path exists
     if not os.path.exists(destination_path):
         logging.info(f"Error: Path '{destination_path}' does not exist.")
@@ -124,7 +127,7 @@ def check_cv_path(ctx):
         else:
             logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
             os.symlink(destination_path, source_path)
-    
+
     # dir is not a link but is not empty
     if source_dev != os.stat(destination_path).st_dev:
         logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
@@ -134,8 +137,9 @@ def check_cv_path(ctx):
             if not os.path.exists(f"{destination_path}/upgrades/{subpath}"):
                 os.makedirs(f"{destination_path}/upgrades/{subpath}")
                 shutil.copytree(f"{source_path}/upgrades/{subpath}", f"{destination_path}/upgrades/{subpath}", dirs_exist_ok=True)
-                
-    return 
+
+    return
+
 
 def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(ctx["cv_upgrades_dir"], exist_ok=True)
@@ -153,7 +157,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(upgrade_path, exist_ok=True)
     if binary_url:
         download_cv_version(binary_url, binary_file)
-        
+
     if not os.path.exists(binary_file) and name and tag:
         download_and_extract_image(name, tag.lstrip('v'), binary_file)
 
@@ -165,7 +169,6 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
             link_cv_genesis(ctx, upgrade_path)
     else:
         raise FileNotFoundError(f"Binary {binary_file} not found")
-        
 
 
 def link_cv_current(ctx, upgrade_path):
@@ -191,6 +194,7 @@ def link_cv_genesis(ctx, upgrade_path):
     logging.info(f"Linking {cv_genesis_dir} to {upgrade_path}")
     os.symlink(upgrade_path, cv_genesis_dir)
 
+
 def download_cv_version(binary_url, binary_file):
     binary_path = os.path.dirname(binary_file)
     daemon_name = os.path.basename(binary_file)
@@ -208,7 +212,7 @@ def download_cv_version(binary_url, binary_file):
             logging.error(f"Downloading {binary_url} to {tmp_path}...")
             with open(tmp_path, 'wb') as f:
                 f.write(response.content)
-            
+
             if binary_url_fname.endswith(".tar.gz"):
                 with tarfile.open(tmp_path ,mode='r:gz') as tar:
                     for member in tar.getmembers():
@@ -243,7 +247,6 @@ def download_cv_version(binary_url, binary_file):
     #         f_json.close()
 
 
-
 def get_upgrade_info_version(ctx):
     logging.info(f"Downloading binary identified in {ctx['upgrade_info_json']}...")
 
@@ -263,13 +266,14 @@ def get_upgrade_info_version(ctx):
                 return {"name": name, "binary_url": info}
     return None
 
+
 def download_and_extract_image(name: str, tag: str, binary_file: str):
     daemon_name = os.path.basename(binary_file)
     destination = os.path.dirname(binary_file)
     file_to_extract = f"usr/local/bin/{daemon_name}"
-    image_name = f"terraformlabs/{name}"
+    image_name = f"terramoney/{name}"
     image = f"{image_name}:{tag}"
-    
+
     # Check if the image exists on Docker Hub
     try:
         logging.info(f"Checking dockerhub for {image}...")
@@ -282,7 +286,7 @@ def download_and_extract_image(name: str, tag: str, binary_file: str):
     except subprocess.CalledProcessError:
         logging.info(f"The image {image} does not exist on Docker Hub.")
         return
-    
+
     # Create a temporary directory
     with tempfile.TemporaryDirectory() as tmpdir:
         # check if the image exists on Docker Hub
@@ -311,7 +315,7 @@ def download_and_extract_image(name: str, tag: str, binary_file: str):
         except subprocess.CalledProcessError as e:
             logging.info(f"Failed to download the image {image}. Error: {e}")
             return
-    
+
         # Extract blobs to a temporary directory
         blob_directory = f"{tmpdir}/blobs"
         try:
@@ -322,7 +326,7 @@ def download_and_extract_image(name: str, tag: str, binary_file: str):
                 tar.extractall(blob_directory)
         except Exception as e:
             logging.info(f"Failed to extract {tar_file_name}. Error: {e}")
-            
+
         # iterate over the files in the blob directory
         for filename in os.listdir(blob_directory):
             if filename.endswith('.tar'):
@@ -341,6 +345,3 @@ def download_and_extract_image(name: str, tag: str, binary_file: str):
                         break
                     except KeyError:
                         continue
-                
-
-
