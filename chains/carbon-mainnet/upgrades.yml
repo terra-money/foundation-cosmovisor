@@ -350,3 +350,16 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.32.0/carbond2.32.0-mainnet.linux-arm64.tar.gz
       any: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.32.0/carbond2.32.0-mainnet.linux-amd64.tar.gz?checksum=sha256:399bd4ab45a1384f1f9e6c8524bbd032eabaaa4659b147160dd8ec59d2d52939
+  - name: v2.33.0
+    alias: v2.33.0
+    height: 47592681
+    proposal: 318
+    recommended_version: v2.33.0
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.33.0/carbond2.33.0-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.33.0/carbond2.33.0-mainnet.linux-arm64.tar.gz
+      any: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.33.0/carbond2.33.0-mainnet.linux-amd64.tar.gz
+ 
