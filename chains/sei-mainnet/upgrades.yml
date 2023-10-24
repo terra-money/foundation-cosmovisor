@@ -8,7 +8,9 @@ versions:
   - name: 2.0.48beta
     tag: 2.0.48beta
     height: '1'
-    binaries: {}
+    binaries:
+      linux/amd64: >-
+        https://tfl-mainnets.s3.amazonaws.com/sei/seid-2.0.48beta
   - name: 3.0.2
     tag: 3.0.2
     height: '2016000'
