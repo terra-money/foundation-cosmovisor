@@ -13,6 +13,7 @@ RUN pacman -Syyu --noconfirm \
     python-requests \
     python-yaml \
     skopeo \
+    tmux \
     wget
 
 COPY ./etc /etc/
