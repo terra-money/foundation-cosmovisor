@@ -50,9 +50,9 @@ parse_chain_info(){
     KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
     MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
-    PRUNING_INTERVAL=${PRUNING_INTERVAL:=2000}
-    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=5}
-    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=2000}
+    PRUNING_INTERVAL=${PRUNING_INTERVAL:=10}
+    PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=100}
+    PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
     # choosing nothing as the default pruning strategy / 0 as min retain blocks
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
@@ -249,7 +249,6 @@ modify_config_toml(){
     sed -e "s|^laddr *=\s*\"tcp:\/\/127.0.0.1|laddr = \"tcp:\/\/0.0.0.0|" -i "${CONFIG_TOML}"
     sed -e "s|^log.format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
     sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^fast.sync *=.*|fast_sync = \"${FAST_SYNC}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS}\"|" -i "${CONFIG_TOML}"
@@ -265,11 +264,23 @@ modify_config_toml(){
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
 
+    if [ -n "${RPC_CORS_ALLOWED_ORIGIN:-}" ]; then
+        sed -e "s|^cors.allowed.origins *=.*|cors_allowed_origins = ${RPC_CORS_ALLOWED_ORIGIN}|" -i "${CONFIG_TOML}"
+    fi
+
     if [ -n "${NODE_MODE}" ]; then
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_PAYLOAD}" ]; then
+    if [ -n "${MAX_BODY_BYTES:-}" ]; then
+        sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
+    fi
+
+    if [ -n "${MAX_HEADER_BYTES:-}" ]; then
+        sed -e "s|^max.header.bytes *=.*|max_header_bytes = ${MAX_HEADER_BYTES}|" -i "${CONFIG_TOML}"
+    fi
+
+    if [ -n "${MAX_PAYLOAD:-}" ]; then
         sed -e "s|^max.packet.msg.payload.size *=.*|max_packet_msg_payload_size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
     fi
 

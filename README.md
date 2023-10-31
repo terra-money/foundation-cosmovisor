@@ -3,13 +3,18 @@
 Docker Cosmovisor container to run any cosmoschain
 
 ## Chain specific build examples
+
 ```sh
  docker compose --env-file chains/akash-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/akash-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/archway-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/archway-testnet/.env up --build --force-recreate
  docker compose --env-file chains/axelar-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/axelar-testnet/.env up --build --force-recreate
  docker compose --env-file chains/carbon-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/carbon-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/celestia-mainnet/.env up --build --force-recreate
+ docker compose --env-file chains/celestia-testnet/.env up --build --force-recreate
  docker compose --env-file chains/cheqd-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/cheqd-testnet/.env up --build --force-recreate
  docker compose --env-file chains/chihuahua-mainnet/.env up --build --force-recreate
