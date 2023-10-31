@@ -1,4 +1,4 @@
-# current 20230920
+# current 20231031
 chain_name: kujira
 daemon_name: kujirad
 network_type: mainnet
@@ -9,41 +9,39 @@ versions:
     tag: v0.4.1
     proposal:
     height: 1
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.4.1
+    binaries: {}
   - name: v0.5.0
     tag: v0.5.0
     proposal: 25
     height: 1764000
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.5.0
+    binaries: {}
   - name: v0.6.0
     tag: v0.6.4
     proposal: 49
     height: 3495000
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.6.4
+    binaries: {}
   - name: v0.7.1
     tag: v0.7.1
     proposal: 81
     height: 5196234
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.7.1
+    binaries: {}
   - name: v0.8.3
     tag: v0.8.3
     proposal: 301
     height: 9225000
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.8.3
+    binaries: {}
   - name: v0.8.4
     tag: v0.8.7
     proposal: 302
     height: 9226200
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.8.7
+    binaries: {}
   - name: v0.9.0
     tag: v0.9.0
     proposal: 483
     height: 14783000
-    binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/kujira/kujirad-v0.9.0
+    binaries: {}
+  - name: v0.9.1
+    tag: v0.9.1
+    proposal: 488
+    height: 15205000
+    binaries: {}
