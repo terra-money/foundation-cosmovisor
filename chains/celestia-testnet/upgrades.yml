@@ -1,0 +1,6 @@
+chain_name: celestia
+daemon_name: celestiad
+network_type: mainnet
+git_repo: https://github.com/celestiaorg/celestia-node
+libraries: []
+versions: {}

@@ -1,0 +1,8 @@
+# Akash discord: https://discord.com/invite/akash
+chain_name: archway
+daemon_name: archwayd
+network_type: testnet
+git_repo: https://github.com/archway-network/archway
+libraries: []
+versions: {}
+        

@@ -1,0 +1,12 @@
+chain_name: celestia
+daemon_name: celestiad
+network_type: mainnet
+git_repo: https://github.com/celestiaorg/celestia-node
+libraries: []
+versions:
+  - name: v0.12.0
+    tag: v0.12.0
+    height: 0
+    binaries: {} # retrieved from docker image
+
+        
