@@ -264,7 +264,7 @@ modify_config_toml(){
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
 
-    if [ -n "${RPC_CORS_ALLOWED_ORIGIN}" ]; then
+    if [ -n "${RPC_CORS_ALLOWED_ORIGIN:-}" ]; then
         sed -e "s|^cors.allowed.origins *=.*|cors_allowed_origins = ${RPC_CORS_ALLOWED_ORIGIN}|" -i "${CONFIG_TOML}"
     fi
 
@@ -272,15 +272,15 @@ modify_config_toml(){
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_BODY_BYTES}" ]; then
+    if [ -n "${MAX_BODY_BYTES:-}" ]; then
         sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_HEADER_BYTES}" ]; then
+    if [ -n "${MAX_HEADER_BYTES:-}" ]; then
         sed -e "s|^max.header.bytes *=.*|max_header_bytes = ${MAX_HEADER_BYTES}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_PAYLOAD}" ]; then
+    if [ -n "${MAX_PAYLOAD:-}" ]; then
         sed -e "s|^max.packet.msg.payload.size *=.*|max_packet_msg_payload_size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
     fi
 
