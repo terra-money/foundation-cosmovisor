@@ -1,12 +1,14 @@
 chain_name: celestia
-daemon_name: celestia
+daemon_name: celestia-appd
 network_type: mainnet
-git_repo: https://github.com/celestiaorg/celestia-node
+git_repo: https://github.com/celestiaorg/celestia-app
 libraries: []
 versions:
-  - name: v0.12.0
-    tag: v0.12.0
+  - name: v1.3.0
+    tag: v1.3.0
     height: 0
-    binaries: {} # retrieved from docker image
+    binaries:
+      linux/amd64: >-
+        https://github.com/celestiaorg/celestia-app/releases/download/v1.3.0/celestia-app_Linux_x86_64.tar.gz
 
         
