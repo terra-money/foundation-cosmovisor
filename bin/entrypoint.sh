@@ -284,6 +284,10 @@ modify_config_toml(){
         sed -e "s|^max.packet.msg.payload.size *=.*|max_packet_msg_payload_size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
     fi
 
+    if [ -n "${INDEXER:-}" ]; then
+        sed -e "s|^indexer *=.*|indexer = "${INDEXER}"|" -i "${CONFIG_TOML}"
+    fi
+
     if [ "${IS_SEED_NODE}" = "true" ]; then
         sed -e "s|^seed.mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
     fi
