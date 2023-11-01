@@ -60,10 +60,10 @@ versions:
     recommended_version: v10.0.0
     binaries: {}
   - name: v11.5.0
-    tag: v11.5.0
+    tag: v11.5.1
     height: '8184000'
     proposal: '154'
-    recommended_version: v11.5.0
+    recommended_version: v11.5.1
     binaries:
       linux/amd64: >-
-        https://github.com/comdex-official/comdex/releases/download/v11.5.0/comdex
+        https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex
