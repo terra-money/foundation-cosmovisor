@@ -66,4 +66,4 @@ versions:
     recommended_version: v11.5.1
     binaries:
       linux/amd64: >-
-        https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex
+        https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex-linux-amd64.tar.gz
