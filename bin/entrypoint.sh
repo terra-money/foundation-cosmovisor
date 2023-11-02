@@ -285,7 +285,7 @@ modify_config_toml(){
     fi
 
     if [ -n "${INDEXER:-}" ]; then
-        sed -e "s|^indexer *=.*|indexer = "${INDEXER}"|" -i "${CONFIG_TOML}"
+        sed -e "s|^indexer *=.*|indexer = "\"${INDEXER}\""|" -i "${CONFIG_TOML}"
     fi
 
     if [ "${IS_SEED_NODE}" = "true" ]; then
