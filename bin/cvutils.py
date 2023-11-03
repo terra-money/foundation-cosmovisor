@@ -89,7 +89,7 @@ def get_arch_version(ctx, codebase, version):
     tag = version.get("tag", name)
     recommended_version = version.get("recommended_version", tag)
     binaries = version.get("binaries", {})
-    binary_url = binaries.get(ctx["arch"], "")
+    binary_url = binaries.get(ctx["arch"], binaries.get("docker/" + ctx["arch"], ""))
     return {
         "name": name,
         "height": height,
@@ -158,9 +158,6 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     if binary_url:
         download_cv_version(binary_url, binary_file)
 
-    if not os.path.exists(binary_file) and name and tag:
-        download_and_extract_image(name, tag.lstrip('v'), binary_file)
-
     if os.path.exists(binary_file):
         logging.info(f"Successfully added binary {binary_file}")
         if linkCurrent:
@@ -198,42 +195,45 @@ def link_cv_genesis(ctx, upgrade_path):
 def download_cv_version(binary_url, binary_file):
     binary_path = os.path.dirname(binary_file)
     daemon_name = os.path.basename(binary_file)
-    binary_url_split = binary_url.split('?')
-    binary_url_fname = os.path.basename(binary_url_split[0])
 
     if not os.path.exists(binary_file):
         print(f"Downloading {binary_url} to {binary_file}...")
         os.makedirs(binary_path, exist_ok=True)
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            response = requests.get(binary_url)
-            response.raise_for_status()
-            tmp_path = os.path.join(tmpdir, binary_url_fname)
-            logging.error(f"Downloading {binary_url} to {tmp_path}...")
-            with open(tmp_path, 'wb') as f:
-                f.write(response.content)
-
-            if binary_url_fname.endswith(".tar.gz"):
-                with tarfile.open(tmp_path ,mode='r:gz') as tar:
-                    for member in tar.getmembers():
-                        if member.name.endswith(daemon_name):
-                            member.name = daemon_name
-                            tar.extract(member, path=binary_path)
-                            subprocess.run(["ls", "-al", binary_path])
-            elif binary_url_fname.endswith(".zip"):
-                # this code does not work consistently
-                with zipfile.ZipFile(tmp_path, 'r') as zip_ref:
-                    for zip_info in zip_ref.infolist():
-                        zip_name = zip_info.filename
-                        if zip_name.endswith('/'):
-                            continue
-                        file_content = zip_ref.read(zip_name)
-                        logging.info(f"Extract: {zip_name} to {binary_file}")
-                        with open(binary_file, 'wb') as file_handle:
-                            file_handle.write(file_content)
-                            break
+            if binary_url.startswith("docker://"):
+                download_and_extract_image(binary_url, binary_file)
             else:
-                shutil.copy(tmp_path, binary_file)
+                binary_url_split = binary_url.split('?')
+                binary_url_fname = os.path.basename(binary_url_split[0])
+                response = requests.get(binary_url)
+                response.raise_for_status()
+                tmp_path = os.path.join(tmpdir, binary_url_fname)
+                logging.error(f"Downloading {binary_url} to {tmp_path}...")
+                with open(tmp_path, 'wb') as f:
+                    f.write(response.content)
+
+                if binary_url_fname.endswith(".tar.gz"):
+                    with tarfile.open(tmp_path ,mode='r:gz') as tar:
+                        for member in tar.getmembers():
+                            if member.name.endswith(daemon_name):
+                                member.name = daemon_name
+                                tar.extract(member, path=binary_path)
+                                subprocess.run(["ls", "-al", binary_path])
+                elif binary_url_fname.endswith(".zip"):
+                    # this code does not work consistently
+                    with zipfile.ZipFile(tmp_path, 'r') as zip_ref:
+                        for zip_info in zip_ref.infolist():
+                            zip_name = zip_info.filename
+                            if zip_name.endswith('/'):
+                                continue
+                            file_content = zip_ref.read(zip_name)
+                            logging.info(f"Extract: {zip_name} to {binary_file}")
+                            with open(binary_file, 'wb') as file_handle:
+                                file_handle.write(file_content)
+                                break
+                else:
+                    shutil.copy(tmp_path, binary_file)
 
         os.chmod(binary_file, 0o755)
 
@@ -268,54 +268,57 @@ def get_upgrade_info_version(ctx):
     return None
 
 
-def download_and_extract_image(name: str, tag: str, binary_file: str):
+def download_and_extract_image(image_url: str, binary_file: str):
     daemon_name = os.path.basename(binary_file)
     destination = os.path.dirname(binary_file)
-    file_to_extract = f"usr/local/bin/{daemon_name}"
-    image_name = f"terramoney/{name}"
-    image = f"{image_name}:{tag}"
+    file_to_extract = daemon_name
+    image = os.path.basename(image_url)
+    image_name = image.split('[:@]', 1)[0]
+
 
     # Check if the image exists on Docker Hub
     try:
-        logging.info(f"Checking dockerhub for {image}...")
+        logging.info(f"Checking for {image_url}...")
         subprocess.run([
             "skopeo", "inspect",
             "--override-os=linux",
             "--override-arch=amd64",
-            f"docker://docker.io/{image}",
+            image_url,
         ], stdout=subprocess.PIPE, check=True)
     except subprocess.CalledProcessError:
-        logging.info(f"The image {image} does not exist on Docker Hub.")
+        logging.info(f"The image {image_url} could not be found.")
         return
 
     # Create a temporary directory
     with tempfile.TemporaryDirectory() as tmpdir:
         # check if the image exists on Docker Hub
         try:
-            logging.info(f"Downloading {image} from dockerhub...")
+            logging.info(f"Downloading {image_url}...")
             # Run the subprocess command within the temporary directory
             subprocess.run([
                 "skopeo", "inspect",
                 "--override-os=linux",
                 "--override-arch=amd64",
-                f"docker://docker.io/{image}",
+                image_url,
             ], stdout=subprocess.PIPE, check=True)
         except subprocess.CalledProcessError as e:
-            logging.info(f"Failed to download {image}. Error: {e}")
+            logging.info(f"Failed to download {image_url}. Error: {e}")
 
         # Download the Docker image using skopeo
-        tar_file_name = f"{tmpdir}/{image_name.replace('/', '_')}_{tag}.tar"
+        tar_file_name = f"{tmpdir}/{image_name.replace(':', '_')}.tar"
         try:
             subprocess.run([
                 "skopeo", "copy",
                 "--override-os=linux",
                 "--override-arch=amd64",
-                f"docker://docker.io/{image}", 
+                image_url, 
                 f"docker-archive:{tar_file_name}",
             ], stdout=subprocess.PIPE, check=True)
         except subprocess.CalledProcessError as e:
             logging.info(f"Failed to download the image {image}. Error: {e}")
             return
+        
+        print(os.listdir(tmpdir))
 
         # Extract blobs to a temporary directory
         blob_directory = f"{tmpdir}/blobs"
@@ -336,13 +339,11 @@ def download_and_extract_image(name: str, tag: str, binary_file: str):
                 blob_file_path = os.path.join(blob_directory, filename)
                 # Open the tar file in read mode
                 with tarfile.open(blob_file_path, 'r') as blobtar:
-                    try:
-                        member = blobtar.getmember(file_to_extract)
-                        member.name = os.path.basename(member.name)
-                        logging.info(f"Found {file_to_extract} in {filename}...")
-                        # If no KeyError is raised, extract the specific file
-                        blobtar.extract(member, path=destination)
-                        logging.info(f"Successfully extracted {file_to_extract} from {image}")
-                        break
-                    except KeyError:
-                        continue
+                    for member in blobtar.getmembers():
+                        if member.isfile() and member.name.split('/')[-1] == file_to_extract:
+                            member.name = os.path.basename(member.name)
+                            logging.info(f"Found {file_to_extract} in {filename}...")
+                            # If no KeyError is raised, extract the specific file
+                            blobtar.extract(member, path=destination)
+                            logging.info(f"Successfully extracted {file_to_extract} from {image}")
+                            break

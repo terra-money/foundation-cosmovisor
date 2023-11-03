@@ -9,7 +9,9 @@ versions:
   - name: v0.0.4
     height: '1'
     tag: v0.0.4
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/comdex:0.0.4
   - name: v0.1.1
     height: '1506060'
     proposal: '3'
@@ -58,7 +60,9 @@ versions:
     height: '7158500'
     proposal: '132'
     recommended_version: v10.0.0
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/comdex:10.0.0
   - name: v11.5.0
     tag: v11.5.1
     height: '8184000'

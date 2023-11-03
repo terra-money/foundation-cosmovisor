@@ -17,15 +17,18 @@ RUN pacman -Syyu --noconfirm \
     tmux \
     wget
 
-COPY ./etc /etc/
-COPY ./bin/* /usr/local/bin/
-
 # install grpcurl and cosmovisor
 RUN set -eux && \
     curl -sSL https://github.com/fullstorydev/grpcurl/releases/download/v1.8.8/grpcurl_1.8.8_linux_$(uname -m).tar.gz | \
     tar -xz -C /usr/local/bin/ grpcurl && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
-    tar -xz -C /usr/local/bin cosmovisor && \
+    tar -xz -C /usr/local/bin cosmovisor
+
+COPY ./etc /etc/
+COPY ./bin/* /usr/local/bin/
+
+# set permissions and create user
+RUN set -eux && \
     chmod +x /usr/local/bin/* && \
     groupadd -g 1000 cosmovisor && \
     useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor 

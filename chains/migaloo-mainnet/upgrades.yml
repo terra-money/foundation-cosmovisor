@@ -9,19 +9,34 @@ versions:
     tag: v1.0.2
     proposal:
     height: 1
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:1.0.2
   - name: v2
     tag: v2.0.6
     proposal: 2
     height: 656439
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:2.0.6
   - name: v2.2.5
     tag: v2.2.6
     proposal: 10
     height: 2342302
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:2.2.6
   - name: v3.0.0
-    tag: v3.0.0
-    proposal: ''
+    tag: v3.0.1-hotfix
+    proposal: 13
     height: 3574316
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:v3.0.1-hotfix
+  - name: v3.0.2
+    tag: v3.0.2
+    proposal: 18
+    height: 3982667
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:v3.0.1-hotfix

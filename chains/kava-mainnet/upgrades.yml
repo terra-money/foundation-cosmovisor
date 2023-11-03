@@ -9,32 +9,41 @@ versions:
   - name: v0.17.0
     tag: v0.17.7
     height: '0'
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.17.7
   - name: v0.18.0
     tag: v0.18.2
     height: '974570'
     proposal: ''
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.18.2
   - name: v0.19.0
     tag: v0.19.2
     height: '2098400'
     proposal: '102'
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.19.2
   - name: v0.21.0
     tag: v0.21.1
     height: '3607200'
     proposal: '124'
     recommended_version: v0.21.0
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.21.1
   - name: v0.23.0
     tag: v0.23.3
     height: '4832500'
-    proposal: '139'
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.23.3
   - name: v0.24.0
-    tag: v0.24.0
+    tag: v0.24.1
     height: '5597000'
     proposal: '146'
     binaries:
       linux/amd64: >-
-        https://github.com/Kava-Labs/kava/releases/download/v0.24.0/kava-v0.24.0-linux-amd64
+        https://github.com/Kava-Labs/kava/releases/download/v0.24.1/kava-v0.24.1-linux-amd64

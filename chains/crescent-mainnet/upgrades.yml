@@ -47,7 +47,9 @@ versions:
     proposal: '35'
     recommended_version: v4.0.0
     tag: v4.0.0
-    binaries: {}
+    binaries: 
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/crescent:4.0.0
   - name: v4.2
     alias: v4.2
     height: '6915000'

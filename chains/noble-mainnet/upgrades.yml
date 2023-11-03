@@ -10,19 +10,25 @@ versions:
     height: 0
     recommended_version: v1.0.0
     tag: v1.0.0
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/noble:1.0.0
   - name: neon
     alias: v2.0.0
     height: 119000
     proposal: ''
     tag: v2.0.0
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/noble:2.0.0
   - name: radon
     alias: v3.0.0
     height: 1296000
     proposal: ''
     tag: v3.0.0
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/noble:3.0.0
   - name: v3.1.0
     alias: v3.1.0
     height: 2672000

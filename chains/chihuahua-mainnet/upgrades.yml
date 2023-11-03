@@ -7,62 +7,86 @@ libraries: []
 versions:
   - name: genesis
     tag: v1.0.0
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:1.0.0
   - name: angryandy
     tag: v1.1.0
     height: '535000'
     proposal: '3'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:1.1.0
   - name: chiwawasm
     tag: v2.0.1
     height: '3000800'
     proposal: '23'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:2.0.1
   - name: minpropdeposit
     tag: v2.0.2
     height: '3654321'
     proposal: '32'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:2.0.2
   - name: authz
     tag: v2.1.0
     height: '4182410'
     proposal: '35'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:2.1.0
   - name: burnmech
     tag: v2.2.1
     height: '4488444'
     proposal: '38'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:2.2.1
   - name: v310
     tag: v3.1.0
     height: '4673333'
     proposal: '39'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:3.1.0
   - name: v400
     tag: v4.0.0
     height: '4787878'
     proposal: '40'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:4.0.0
   - name: v410
     tag: v4.1.0
     height: '4886666'
     proposal: '41'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:4.1.0
   - name: v420
     tag: v4.2.0
     height: '6039999'
     proposal: '44'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:4.2.0
   - name: v421
     tag: v4.2.3
     height: '6376376'
     proposal: '45'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:4.2.3
   - name: v500
     tag: v5.0.0
     height: '8711111'
     proposal: '51'
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:5.0.0
   - name: v501
     tag: v5.0.1
     height: '8813000'

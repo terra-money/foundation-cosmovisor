@@ -9,39 +9,55 @@ versions:
     tag: v0.4.1
     proposal:
     height: 1
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.4.1
   - name: v0.5.0
     tag: v0.5.0
     proposal: 25
     height: 1764000
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.5.0
   - name: v0.6.0
     tag: v0.6.4
     proposal: 49
     height: 3495000
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.6.4
   - name: v0.7.1
     tag: v0.7.1
     proposal: 81
     height: 5196234
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.7.1
   - name: v0.8.3
     tag: v0.8.3
     proposal: 301
     height: 9225000
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.8.3
   - name: v0.8.4
     tag: v0.8.7
     proposal: 302
     height: 9226200
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.8.7
   - name: v0.9.0
     tag: v0.9.0
     proposal: 483
     height: 14783000
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.9.0
   - name: v0.9.1
     tag: v0.9.1
     proposal: 488
     height: 15205000
-    binaries: {}
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.9.1
