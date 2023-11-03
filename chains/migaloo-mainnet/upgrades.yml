@@ -32,11 +32,11 @@ versions:
     height: 3574316
     binaries:
       docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:v3.0.1-hotfix
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:3.0.1-hotfix
   - name: v3.0.2
     tag: v3.0.2
     proposal: 18
     height: 3982667
     binaries:
       docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:v3.0.1-hotfix
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:3.0.2
