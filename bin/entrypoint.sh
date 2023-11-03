@@ -351,6 +351,12 @@ modify_app_toml(){
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
     sed -e "s|^rpc-max-body-bytes *=.*|rpc-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
 
+    sed -e "s|^address *=.*:1317.*$|address = \"tcp:\/\/0.0.0.0:1317\"|" \
+        -e "s|^address *=.*:8080.*$|address = \"0.0.0.0:8080\"|" \
+        -e "s|^address *=.*:9090.*$|address = \"0.0.0.0:9090\"|" \
+        -e "s|^address *=.*:9091.*$|address = \"0.0.0.0:9091\"|" \
+        -i "${APP_TOML}"
+
     if [ -n "${DB_BACKEND}" ]; then
         sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND}\"|" -i "${APP_TOML}"
     fi

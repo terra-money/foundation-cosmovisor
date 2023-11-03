@@ -155,6 +155,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     logging.info(f"Found version {upgrade_name}, Checking for {upgrade_path}...")
 
     os.makedirs(upgrade_path, exist_ok=True)
+    os.makedirs(f"{upgrade_path}/lib", exist_ok=True)
     if binary_url:
         download_cv_version(binary_url, binary_file)
 
