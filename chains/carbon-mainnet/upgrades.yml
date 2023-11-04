@@ -362,4 +362,43 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.33.0/carbond2.33.0-mainnet.linux-arm64.tar.gz
       any: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.33.0/carbond2.33.0-mainnet.linux-amd64.tar.gz
+  - name: v2.34.0
+    alias: v2.34.0
+    height: 48331411
+    proposal: 318
+    recommended_version: v2.34.0
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.0/carbond2.34.0-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.0/carbond2.34.0-mainnet.linux-arm64.tar.gz
+      any: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.0/carbond2.34.0-mainnet.linux-amd64.tar.gz
+  - name: v2.34.1
+    alias: v2.34.1
+    height: 48335316
+    proposal: 319
+    recommended_version: v2.34.1
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.1/carbond2.34.1-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.1/carbond2.34.1-mainnet.linux-arm64.tar.gz
+      any: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.34.1/carbond2.34.1-mainnet.linux-amd64.tar.gz
+  - name: v2.35.0
+    alias: v2.35.0
+    height: 49398331
+    proposal: 321
+    recommended_version: v2.35.0
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.35.0/carbond2.35.0-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.35.0/carbond2.35.0-mainnet.linux-arm64.tar.gz
+      any: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.35.0/carbond2.35.0-mainnet.linux-amd64.tar.gz
+ 
+ 
+ 
  
