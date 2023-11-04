@@ -64,6 +64,6 @@ versions:
     tag: v2.5.1
     binaries:
       linux/amd64: >-
-        https://github.com/terra-money/core/releases/download/v2.5.1/terra_2.5.1_Linux_x86_64.tar.gz
+        https://github.com/terra-money/core/releases/download/v2.5.1/terra_2.5.1_Linux_x86_64.tar.gz?checksum=sha256:c2d5ad5156cc3849cacfa41dd1c2083ddd1295f1f3e44eb1bc4894bd9a48b2a1
       linux/arm64: >-
         https://github.com/terra-money/core/releases/download/v2.5.1/terra_2.5.1_Linux_arm64.tar.gz
