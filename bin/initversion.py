@@ -4,7 +4,6 @@ import os
 import logging
 import cvutils
 import getchaininfo
-import pprint
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -63,7 +62,6 @@ def main(ctx):
     else:
         logging.info("No version overides found, assuming sync from genesis.")
         version = get_genesis_version(ctx)
-    pprint.pprint(version)
     if version:
         cvutils.create_cv_upgrade(ctx, version)
     
