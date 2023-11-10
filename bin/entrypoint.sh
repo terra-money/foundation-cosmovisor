@@ -403,13 +403,29 @@ get_snapshot() {
         # Extract based on file extension
         case "${FILE_EXT}" in
             "zip")
-                unzip "${TEMP_FILE}" -d "${DATA_DIR}"
+                # Check if zip contains a 'data' directory
+                if unzip -l "${TEMP_FILE}" | grep -q '^.* data/'; then
+                    unzip -j "${TEMP_FILE}" "data/*" -d "${DATA_DIR}"
+                else
+                    unzip "${TEMP_FILE}" -d "${DATA_DIR}"
+                fi
                 ;;
-            "gz")
-                tar -xzf "${TEMP_FILE}" -C "${DATA_DIR}"
-                ;;
-            "lz4")
-                lz4 -c -d "${TEMP_FILE}" | tar -x -C "${DATA_DIR}"
+            "gz"|"lz4")
+                # Create a temporary extraction directory
+                TEMP_DIR=$(mktemp -d)
+                if [ "${FILE_EXT}" = "gz" ]; then
+                    tar -xzf "${TEMP_FILE}" -C "${TEMP_DIR}"
+                else
+                    lz4 -c -d "${TEMP_FILE}" | tar -x -C "${TEMP_DIR}"
+                fi
+                # Check if extracted contents include a 'data' directory
+                if [ -d "${TEMP_DIR}/data" ]; then
+                    mv "${TEMP_DIR}/data"/* "${DATA_DIR}"
+                else
+                    mv "${TEMP_DIR}"/* "${DATA_DIR}"
+                fi
+                # Remove the temporary directory
+                rm -rf "${TEMP_DIR}"
                 ;;
             *)
                 logger "Unsupported file format: ${FILE_EXT}"
@@ -421,6 +437,7 @@ get_snapshot() {
         rm "${TEMP_FILE}"
     fi
 }
+
 
 reset_on_start(){
     if [ "${RESET_ON_START}" = "true" ]; then
