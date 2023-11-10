@@ -389,11 +389,36 @@ get_wasm(){
     fi
 }
 
-get_snapshot(){
+get_snapshot() {
     if [ -n "${SNAPSHOT_URL}" ]; then
         logger "Downloading snapshot files from ${SNAPSHOT_URL}"
-        aria2c -s 10 -x 10 -o - "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
-        #curl -sSL "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
+
+        # Determine the file extension
+        FILE_EXT="${SNAPSHOT_URL##*.}"
+
+        # Download the file to a temporary location
+        TEMP_FILE="/tmp/snapshot.${FILE_EXT}"
+        aria2c -s 10 -x 10 -d /tmp -o "snapshot.${FILE_EXT}" "${SNAPSHOT_URL}"
+
+        # Extract based on file extension
+        case "${FILE_EXT}" in
+            "zip")
+                unzip "${TEMP_FILE}" -d "${DATA_DIR}"
+                ;;
+            "gz")
+                tar -xzf "${TEMP_FILE}" -C "${DATA_DIR}"
+                ;;
+            "lz4")
+                lz4 -c -d "${TEMP_FILE}" | tar -x -C "${DATA_DIR}"
+                ;;
+            *)
+                logger "Unsupported file format: ${FILE_EXT}"
+                return 1
+                ;;
+        esac
+
+        # Remove the temporary file
+        rm "${TEMP_FILE}"
     fi
 }
 
