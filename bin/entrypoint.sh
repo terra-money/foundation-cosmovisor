@@ -101,6 +101,11 @@ parse_chain_info(){
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
+    
+    # Snapshot bootstrap
+    SNAPSHOT_URL=${SNAPSHOT_URL:=}
+    SNAPSHOT_BOOTRAP_ENABLED=${SNAPSHOT_BOOTRAP_ENABLED:="$([ -n "${SNAPSHOT_URL}" ] && echo "true" || echo "false")"}
+
 }
 
 logger(){
@@ -113,6 +118,7 @@ prepare(){
     initversion
     initialize_node
     reset_on_start
+    get_snapshot
     set_node_key
     set_private_validator_key
     create_genesis
@@ -180,7 +186,7 @@ create_genesis(){
 initversion(){
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
     GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
-    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
+    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED SNAPSHOT_BOOTRAP_ENABLED
     initversion.py
     if [ $? != 0 ]; then
         exit $?
@@ -380,6 +386,13 @@ get_wasm(){
         wasm_base_dir=$(dirname ${WASM_DIR})
         mkdir -p "${wasm_base_dir}"
         curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
+    fi
+}
+
+get_snapshot(){
+    if [ -n "${SNAPSHOT_URL}" ]; then
+        logger "Downloading snapshot files from ${SNAPSHOT_URL}"
+        curl -sSL "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
     fi
 }
 
