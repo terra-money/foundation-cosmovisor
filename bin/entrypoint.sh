@@ -435,6 +435,11 @@ get_snapshot() {
 
         # Remove the temporary file
         rm "${TEMP_FILE}"
+        # Delete upgrade-info.json if present
+        if [ -f "${DATA_DIR}/upgrade-info.json" ]; then
+            logger "Removing upgrade-info.json from ${DATA_DIR}"
+            rm "${DATA_DIR}/upgrade-info.json"
+        fi        
     fi
 }
 
