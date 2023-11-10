@@ -392,7 +392,8 @@ get_wasm(){
 get_snapshot(){
     if [ -n "${SNAPSHOT_URL}" ]; then
         logger "Downloading snapshot files from ${SNAPSHOT_URL}"
-        curl -sSL "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
+        aria2c -s 10 -x 10 -o - "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
+        #curl -sSL "${SNAPSHOT_URL}" | lz4 -c -d | tar -x -C "${DATA_DIR}"
     fi
 }
 
