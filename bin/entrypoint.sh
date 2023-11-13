@@ -30,7 +30,7 @@ GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
 HALT_HEIGHT=${HALT_HEIGHT:=""}
 EXTRA_ARGS=${EXTRA_ARGS:=""}
 DAYS_TO_RETAIN=${DAYS_TO_RETAIN:=}
-
+PROFILE=${PROFILE:=}
 MEAN_BLOCK_TIME=${MEAN_BLOCK_TIME:=6} # Mean block time in seconds
 
 parse_chain_info(){
@@ -112,7 +112,7 @@ prepare(){
     set_node_key
     set_private_validator_key
     create_genesis
-    set_prune_profile
+    set_pruning
     download_addrbook
     modify_client_toml
     modify_config_toml
@@ -214,24 +214,26 @@ parse_unbonding_period() {
     fi
 }
 
-set_prune_profile(){
+set_pruning(){
     UNBONDING_PERIOD=${UNBONDING_PERIOD:-$(parse_unbonding_period)}
     # Profile-based configuration
     if [ -n "${PROFILE}" ]; then
         local seconds_per_day=86400
+        logger "Pruning profile set to ${PROFILE}"
         case "${PROFILE}" in
             read)
                 if [ -z "${UNBONDING_PERIOD}" ]; then
                     echo "Error: UNBONDING_PERIOD must be defined for ${PROFILE} profile."
                     exit 1
                 fi
+                # For read profile, want to be able to set the retention in days, default is 30
                 DAYS_TO_RETAIN=${DAYS_TO_RETAIN:=30}
                 # Set variables for read profile
-                PRUNING_INTERVAL=10
-                PRUNING_KEEP_RECENT=$((DAYS_TO_RETAIN * seconds_per_day / MEAN_BLOCK_TIME))                
-                PRUNING_KEEP_EVERY="${SNAPSHOT_INTERVAL}" # Set equal to SNAPSHOT_INTERVAL
-                PRUNING_STRATEGY="custom"
-                MIN_RETAIN_BLOCKS=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}" "${DAYS_TO_RETAIN}")                
+                PRUNING_INTERVAL=${PRUNING_INTERVAL:=10}
+                PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=$((DAYS_TO_RETAIN * seconds_per_day / MEAN_BLOCK_TIME))}             
+                PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=${SNAPSHOT_INTERVAL}}
+                PRUNING_STRATEGY=${PRUNING_STRATEGY:="custom"}
+                MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}" "${DAYS_TO_RETAIN}")}                                
                 INDEXER="kv"
                 ;;
             write)
@@ -240,37 +242,42 @@ set_prune_profile(){
                     exit 1
                 fi            
                 # Set variables for write profile
-                PRUNING_INTERVAL=10
-                PRUNING_KEEP_RECENT=100
-                PRUNING_KEEP_EVERY="${SNAPSHOT_INTERVAL}" # Set equal to SNAPSHOT_INTERVAL
-                PRUNING_STRATEGY="custom"
-                MIN_RETAIN_BLOCKS=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}")
+                PRUNING_INTERVAL=${PRUNING_INTERVAL:=10}
+                PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=100}
+                PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:="${SNAPSHOT_INTERVAL}"}
+                PRUNING_STRATEGY=${PRUNING_STRATEGY:="custom"}
+                MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}")}
                 INDEXER="null"
                 ;;
             archive)
                 # Set variables for archive profile
-                PRUNING_INTERVAL=0
-                PRUNING_KEEP_RECENT=0
-                PRUNING_KEEP_EVERY=0 # Set equal to SNAPSHOT_INTERVAL
-                PRUNING_STRATEGY="nothing"
-                MIN_RETAIN_BLOCKS=0
+                PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
+                PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=0}
+                PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
+                PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
+                MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}
                 INDEXER="kv"
                 ;;
             *)
-                echo "Unknown profile: ${PROFILE}"
-                exit 1
+                logger "Unknown profile: ${PROFILE}, setting default pruning settings"
+                set_default_pruning
                 ;;
         esac
-    fi 
-    
-     
+    else
+        set_default_pruning
+    fi
+}
+
+set_default_pruning() {
+    logger "Setting default pruning settings"
+    #If profile is not set, use the defaults
     PRUNING_INTERVAL=${PRUNING_INTERVAL:=10}
     PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=100}
     PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=0}
     # choosing nothing as the default pruning strategy / 0 as min retain blocks
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
-    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}
+    MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}    
 }
 
 # Create the genesis file
