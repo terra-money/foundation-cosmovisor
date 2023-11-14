@@ -45,5 +45,5 @@ versions:
     height: '5597000'
     proposal: '146'
     binaries:
-      linux/amd64: >-
+      docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.24.1
