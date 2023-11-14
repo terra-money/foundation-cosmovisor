@@ -46,4 +46,4 @@ versions:
     proposal: '146'
     binaries:
       linux/amd64: >-
-        https://github.com/Kava-Labs/kava/releases/download/v0.24.1/kava-v0.24.1-linux-amd64
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.24.1
