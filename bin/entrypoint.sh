@@ -398,7 +398,7 @@ get_snapshot() {
 
         # Download the file to a temporary location
         TEMP_FILE="/tmp/snapshot.${FILE_EXT}"
-        aria2c -s 10 -x 10 -d /tmp -o "snapshot.${FILE_EXT}" "${SNAPSHOT_URL}"
+        aria2c -s 16 -x 16 -d /tmp -o "snapshot.${FILE_EXT}" "${SNAPSHOT_URL}"
 
         # Extract based on file extension
         case "${FILE_EXT}" in
@@ -410,22 +410,31 @@ get_snapshot() {
                     unzip "${TEMP_FILE}" -d "${DATA_DIR}"
                 fi
                 ;;
-            "gz"|"lz4")
-                # Create a temporary extraction directory
-                TEMP_DIR=$(mktemp -d)
-                if [ "${FILE_EXT}" = "gz" ]; then
-                    tar -xzf "${TEMP_FILE}" -C "${TEMP_DIR}"
-                else
-                    lz4 -c -d "${TEMP_FILE}" | tar -x -C "${TEMP_DIR}"
-                fi
+            "gz")
+                # Create a temporary extraction directory for gz
+                TEMP_DIR_GZ=$(mktemp -d)
+                tar -xzf "${TEMP_FILE}" -C "${TEMP_DIR_GZ}"
                 # Check if extracted contents include a 'data' directory
-                if [ -d "${TEMP_DIR}/data" ]; then
-                    mv "${TEMP_DIR}/data"/* "${DATA_DIR}"
+                if [ -d "${TEMP_DIR_GZ}/data" ]; then
+                    mv "${TEMP_DIR_GZ}/data"/* "${DATA_DIR}"
                 else
-                    mv "${TEMP_DIR}"/* "${DATA_DIR}"
+                    mv "${TEMP_DIR_GZ}"/* "${DATA_DIR}"
                 fi
-                # Remove the temporary directory
-                rm -rf "${TEMP_DIR}"
+                # Remove the temporary directory for gz
+                rm -rf "${TEMP_DIR_GZ}"
+                ;;
+            "lz4")
+                # Create a temporary extraction directory for lz4
+                TEMP_DIR_LZ4=$(mktemp -d)
+                lz4 -c -d "${TEMP_FILE}" | tar -x -C "${TEMP_DIR_LZ4}"
+                # Check if extracted contents include a 'data' directory
+                if [ -d "${TEMP_DIR_LZ4}/data" ]; then
+                    mv "${TEMP_DIR_LZ4}/data"/* "${DATA_DIR}"
+                else
+                    mv "${TEMP_DIR_LZ4}"/* "${DATA_DIR}"
+                fi
+                # Remove the temporary directory for lz4
+                rm -rf "${TEMP_DIR_LZ4}"
                 ;;
             *)
                 logger "Unsupported file format: ${FILE_EXT}"
@@ -435,11 +444,12 @@ get_snapshot() {
 
         # Remove the temporary file
         rm "${TEMP_FILE}"
+
         # Delete upgrade-info.json if present
         if [ -f "${DATA_DIR}/upgrade-info.json" ]; then
             logger "Removing upgrade-info.json from ${DATA_DIR}"
             rm "${DATA_DIR}/upgrade-info.json"
-        fi        
+        fi
     fi
 }
 
