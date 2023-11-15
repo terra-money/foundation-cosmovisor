@@ -40,12 +40,12 @@ versions:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v2.1.1/terra_2.1.1_Linux_x86_64.tar.gz?checksum=sha256:9bf91be244af95f1afcf7fc1ddb1852aa96651adf94e9668c16c7df5596100d6
   - name: v5
-    alias: '2.2.2'
+    alias: '2.2.1'
     height: '14514000'
     proposal: '11766'
-    tag: v2.2.2
+    tag: v2.2.1
     binaries:
       linux/amd64: >-
-        https://github.com/terra-money/classic-core/releases/download/v2.2.2/terra_2.2.2_Linux_x86_64.tar.gz?checksum=sha256:5beafbccaa478bc19d0c4d9b9d2425ca9632a806948cdc82d0226171437b5a8f
+        https://github.com/terra-money/classic-core/releases/download/v2.2.1/terra_2.2.1_Linux_x86_64.tar.gz?checksum=sha256:6050a2be39b51f86de1ad1ffd7d7d45020d6db1481cdacbfea733d20f7d8b47b
       linux/arm64: >-
-        https://github.com/terra-money/classic-core/releases/download/v2.2.2/terra_2.2.2_Linux_arm64.tar.gz?checksum=sha256:7504afa1b924f1d050fee0dac03d8edf041c064a4ddb8d5d7651a8d13965d313
+        https://github.com/terra-money/classic-core/releases/download/v2.2.1/terra_2.2.1_Linux_arm64.tar.gz?checksum=sha256:86d457e2a6ee819e1526f41bb80e2be7911798d35ebaedb698aea66e1ff9ecd7
