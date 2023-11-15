@@ -42,7 +42,6 @@ def main(ctx):
     recommended_version = os.environ.get("RECOMMENDED_VERSION", "")
     prefer_recommended_version = os.environ.get("PREFER_RECOMMENDED_VERSION", False)
     state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
-    snapshot_bootstrap_enabled = os.environ.get("SNAPSHOT_BOOTRAP_ENABLED", "false")
     
     version = None
     # we use prefer recommended version here because recommended_version is set by chain.json
@@ -52,9 +51,6 @@ def main(ctx):
         version = get_recommended_version(ctx)
     elif state_sync_enabled == "true":
         logging.info("State sync is enabled, using recommended verison.")
-        version = get_recommended_version(ctx)
-    elif snapshot_bootstrap_enabled == "true":
-        logging.info("Snapshot bootstrap is enabled, using recommended verison.")
         version = get_recommended_version(ctx)        
     elif os.path.exists(upgrade_info_json_path):
         logging.info("Existing upgrade_info.json found, using upgrade version.")

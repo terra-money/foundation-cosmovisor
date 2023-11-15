@@ -186,7 +186,7 @@ create_genesis(){
 initversion(){
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
     GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
-    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED SNAPSHOT_BOOTRAP_ENABLED
+    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
     initversion.py
     if [ $? != 0 ]; then
         exit $?
@@ -445,11 +445,6 @@ get_snapshot() {
         # Remove the temporary file
         rm "${TEMP_FILE}"
 
-        # Delete upgrade-info.json if present
-        if [ -f "${DATA_DIR}/upgrade-info.json" ]; then
-            logger "Removing upgrade-info.json from ${DATA_DIR}"
-            rm "${DATA_DIR}/upgrade-info.json"
-        fi
     fi
 }
 
