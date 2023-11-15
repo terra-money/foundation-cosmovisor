@@ -4,7 +4,6 @@ import os
 import logging
 import cvutils
 import getchaininfo
-
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -43,23 +42,22 @@ def main(ctx):
     recommended_version = os.environ.get("RECOMMENDED_VERSION", "")
     prefer_recommended_version = os.environ.get("PREFER_RECOMMENDED_VERSION", False)
     state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
-
+    
     version = None
-    # we use prefer recommended version here beacause recommended_version is set by chain.json
+    # we use prefer recommended version here because recommended_version is set by chain.json
     # do not make this an or statement or we will cannot sync from genesis
     if (bool(prefer_recommended_version) and recommended_version):
         logging.info("Prefer recommended version is set, using recommended version.")
         version = get_recommended_version(ctx)
     elif state_sync_enabled == "true":
         logging.info("State sync is enabled, using recommended verison.")
-        version = get_recommended_version(ctx)
+        version = get_recommended_version(ctx)        
     elif os.path.exists(upgrade_info_json_path):
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = cvutils.get_upgrade_info_version(ctx)
     else:
         logging.info("No version overides found, assuming sync from genesis.")
         version = get_genesis_version(ctx)
-    
     if version:
         cvutils.create_cv_upgrade(ctx, version)
     

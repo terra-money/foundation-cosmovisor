@@ -97,6 +97,11 @@ parse_chain_info(){
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
+    
+    # Snapshot bootstrap
+    SNAPSHOT_URL=${SNAPSHOT_URL:=}
+    SNAPSHOT_BOOTRAP_ENABLED=${SNAPSHOT_BOOTRAP_ENABLED:="$([ -n "${SNAPSHOT_URL}" ] && echo "true" || echo "false")"}
+
 }
 
 logger(){
@@ -109,6 +114,7 @@ prepare(){
     initversion
     initialize_node
     reset_on_start
+    get_snapshot
     set_node_key
     set_private_validator_key
     create_genesis
@@ -507,6 +513,66 @@ get_wasm(){
         curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
 }
+
+get_snapshot() {
+    if [ -n "${SNAPSHOT_URL}" ]; then
+        logger "Downloading snapshot files from ${SNAPSHOT_URL}"
+
+        # Determine the file extension
+        FILE_EXT="${SNAPSHOT_URL##*.}"
+
+        # Download the file to a temporary location
+        TEMP_FILE="/tmp/snapshot.${FILE_EXT}"
+        aria2c -s 16 -x 16 -d /tmp -o "snapshot.${FILE_EXT}" "${SNAPSHOT_URL}"
+
+        # Extract based on file extension
+        case "${FILE_EXT}" in
+            "zip")
+                # Check if zip contains a 'data' directory
+                if unzip -l "${TEMP_FILE}" | grep -q '^.* data/'; then
+                    unzip -j "${TEMP_FILE}" "data/*" -d "${DATA_DIR}"
+                else
+                    unzip "${TEMP_FILE}" -d "${DATA_DIR}"
+                fi
+                ;;
+            "gz")
+                # Create a temporary extraction directory for gz
+                TEMP_DIR_GZ=$(mktemp -d)
+                tar -xzf "${TEMP_FILE}" -C "${TEMP_DIR_GZ}"
+                # Check if extracted contents include a 'data' directory
+                if [ -d "${TEMP_DIR_GZ}/data" ]; then
+                    mv "${TEMP_DIR_GZ}/data"/* "${DATA_DIR}"
+                else
+                    mv "${TEMP_DIR_GZ}"/* "${DATA_DIR}"
+                fi
+                # Remove the temporary directory for gz
+                rm -rf "${TEMP_DIR_GZ}"
+                ;;
+            "lz4")
+                # Create a temporary extraction directory for lz4
+                TEMP_DIR_LZ4=$(mktemp -d)
+                lz4 -c -d "${TEMP_FILE}" | tar -x -C "${TEMP_DIR_LZ4}"
+                # Check if extracted contents include a 'data' directory
+                if [ -d "${TEMP_DIR_LZ4}/data" ]; then
+                    mv "${TEMP_DIR_LZ4}/data"/* "${DATA_DIR}"
+                else
+                    mv "${TEMP_DIR_LZ4}"/* "${DATA_DIR}"
+                fi
+                # Remove the temporary directory for lz4
+                rm -rf "${TEMP_DIR_LZ4}"
+                ;;
+            *)
+                logger "Unsupported file format: ${FILE_EXT}"
+                return 1
+                ;;
+        esac
+
+        # Remove the temporary file
+        rm "${TEMP_FILE}"
+
+    fi
+}
+
 
 reset_on_start(){
     if [ "${RESET_ON_START}" = "true" ]; then
