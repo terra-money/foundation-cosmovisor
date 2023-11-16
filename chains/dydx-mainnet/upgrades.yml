@@ -1,0 +1,12 @@
+chain_name: dydx
+daemon_name: dydxprotocold
+network_type: mainnet
+git_repo: https://github.com/dydxprotocol/v4-chain/
+libraries: []
+versions:
+  - name: v1
+    tag: v1.0.1
+    height: 1 
+    binaries:
+      linux/amd64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv1.0.1/dydxprotocold-v1.0.1-linux-arm64.tar.gz

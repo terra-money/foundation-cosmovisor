@@ -25,6 +25,7 @@ Docker Cosmovisor container to run any cosmoschain
  docker compose --env-file chains/crescent-testnet/.env up --build --force-recreate
  docker compose --env-file chains/decentr-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/decentr-testnet/.env up --build --force-recreate
+ docker compose --env-file chains/dydx-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/injective-mainnet/.env up --build --force-recreate
  docker compose --env-file chains/injective-testnet/.env up --build --force-recreate
  docker compose --env-file chains/juno-mainnet/.env up --build --force-recreate

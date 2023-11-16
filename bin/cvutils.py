@@ -5,10 +5,12 @@ import tarfile
 import zipfile
 import json
 import requests
-import shutil
 import logging
 import subprocess
+import platform
+import shutil
 import tempfile
+
 
 # Set up logging
 logging.basicConfig(
@@ -67,19 +69,27 @@ def get_ctx():
 
 
 def get_system_arch():
+    """
+    Identifies the system architecture.
+
+    Returns:
+        A string representing the system architecture in the format "<os_name>/<arch>".
+    """
     logging.info("Identifying system architecture...")
-    os_name = os.uname().sysname.lower()
-    mach = os.uname().machine
+    os_name = platform.system().lower()
+    mach = platform.machine()
     logging.info(f"OS: {os_name}")
     logging.info(f"Machine: {mach}")
-    arch = None
-    if mach == "arm64":
-        arch = f"{os_name}/arm64"
-    elif mach == "aarch64":
-        arch = f"{os_name}/arm64"
+    if mach == "arm64" or mach == "aarch64":
+        arch = "arm64"
     elif mach == "x86_64":
-        arch = f"{os_name}/amd64"
-    return arch
+        arch = "amd64"
+    else:
+        arch = None
+    if arch:
+        return f"{os_name}/{arch}"
+    else:
+        return None
 
 
 def get_arch_version(ctx, codebase, version):
@@ -102,23 +112,22 @@ def get_arch_version(ctx, codebase, version):
 
 
 def check_cv_path(ctx):
-    source_path = ctx['opt_cosmovisor_dir']
-    destination_path = ctx['cosmovisor_dir']
+    source_path = destination_path = ctx['cosmovisor_dir']
 
-    # nothing to do if the source does not exist
+    # Check if source path exists
     if not os.path.exists(source_path):
         return
 
     source_dev = os.stat(source_path).st_dev
 
-    # dir is link but not pointing to the expected target
+    # Check if destination path is a symbolic link and pointing to the expected target
     if os.path.islink(destination_path):
         actual_target = os.readlink(destination_path)
-        logging.info(f"{actual_target}")
+        logging.info(f"Actual target: {actual_target}")
         if actual_target != source_path:
-            os.path.unlink(destination_path)
+            os.unlink(destination_path)
 
-    # Check if the link_path exists
+    # Check if destination path exists
     if not os.path.exists(destination_path):
         logging.info(f"Error: Path '{destination_path}' does not exist.")
         if source_dev != os.stat(ctx['daemon_home']).st_dev:
@@ -126,19 +135,21 @@ def check_cv_path(ctx):
             shutil.copytree(source_path, destination_path)
         else:
             logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
-            os.symlink(destination_path, source_path)
+            os.symlink(source_path, destination_path)
 
-    # dir is not a link but is not empty
+    # Check if destination path is not a symbolic link but not empty
     if source_dev != os.stat(destination_path).st_dev:
         logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
         for subpath in os.listdir(f"{source_path}/upgrades"):
-            if os.path.exists(f"{destination_path}/upgrades/{subpath}"):
-                shutil.rmtree(f"{destination_path}/upgrades/{subpath}")
-            if not os.path.exists(f"{destination_path}/upgrades/{subpath}"):
-                os.makedirs(f"{destination_path}/upgrades/{subpath}")
-                shutil.copytree(f"{source_path}/upgrades/{subpath}", f"{destination_path}/upgrades/{subpath}", dirs_exist_ok=True)
+            subpath_destination = f"{destination_path}/upgrades/{subpath}"
+            if os.path.exists(subpath_destination):
+                shutil.rmtree(subpath_destination)
+            if not os.path.exists(subpath_destination):
+                os.makedirs(subpath_destination)
+                shutil.copytree(f"{source_path}/upgrades/{subpath}", subpath_destination, dirs_exist_ok=True)
 
     return
+
 
 
 def create_cv_upgrade(ctx, version, linkCurrent=True):
@@ -146,6 +157,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     daemon_name = ctx.get("daemon_name")
     upgrade_name = version.get("name", "")
     binary_url = version.get("binary_url", {})
+    library_urls = version.get("libraries", [])
     tag = version.get("tag", "")
     name = ctx.get("chain_name", "")
 
@@ -154,11 +166,20 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
 
     logging.info(f"Found version {upgrade_name}, Checking for {upgrade_path}...")
 
+    # add binary
     os.makedirs(upgrade_path, exist_ok=True)
-    os.makedirs(f"{upgrade_path}/lib", exist_ok=True)
     if binary_url:
-        download_cv_version(binary_url, binary_file)
-
+        download_file(binary_url, binary_file)
+        os.chmod(binary_file, 0o755)
+    
+    # add libraries
+    os.makedirs(f"{upgrade_path}/lib", exist_ok=True)
+    for library_url in library_urls:
+        logging.info(f"Downloading library: {library_url}...")
+        library_file = os.path.join(upgrade_path, "lib", os.path.basename(library_url.split('?')[0]))
+        download_file(library_url, library_file)
+        
+    # link if binary exists
     if os.path.exists(binary_file):
         logging.info(f"Successfully added binary {binary_file}")
         if linkCurrent:
@@ -193,50 +214,51 @@ def link_cv_genesis(ctx, upgrade_path):
     os.symlink(upgrade_path, cv_genesis_dir)
 
 
-def download_cv_version(binary_url, binary_file):
-    binary_path = os.path.dirname(binary_file)
-    daemon_name = os.path.basename(binary_file)
-
-    if not os.path.exists(binary_file):
-        print(f"Downloading {binary_url} to {binary_file}...")
-        os.makedirs(binary_path, exist_ok=True)
+def download_file(url, file):
+    path = os.path.dirname(file)
+    name = os.path.basename(file)
+    
+    if not os.path.exists(file):
+        print(f"Downloading {url} to {file}...")
+        os.makedirs(path, exist_ok=True)
+        if url.startswith("docker://"):
+            download_and_extract_image(url, file)
+            return
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            if binary_url.startswith("docker://"):
-                download_and_extract_image(binary_url, binary_file)
+            url_split = url.split('?')
+            url_fname = os.path.basename(url_split[0])
+            response = requests.get(url)
+            response.raise_for_status()
+            tmp_path = os.path.join(tmpdir, url_fname)
+            logging.error(f"Downloading {url} to {tmp_path}...")
+            with open(tmp_path, 'wb') as f:
+                f.write(response.content)
+
+            if url_fname.endswith(".tar.gz"):
+                with tarfile.open(tmp_path ,mode='r:gz') as tar:
+                    for member in tar.getmembers():
+                        member_basename = os.path.basename(member.name)
+                        if member.name.endswith(name) or member_basename.startswith(name):
+                            logging.info(f"Extracting: {member.name} to {file}")
+                            member.name = name
+                            tar.extract(member, path=path)
+                            subprocess.run(["ls", "-al", path])
+            elif url_fname.endswith(".zip"):
+                # this code does not work consistently
+                with zipfile.ZipFile(tmp_path, 'r') as zip_ref:
+                    for zip_info in zip_ref.infolist():
+                        zip_name = zip_info.filename
+                        if zip_name.endswith('/'):
+                            continue
+                        file_content = zip_ref.read(zip_name)
+                        logging.info(f"Extract: {zip_name} to {file}")
+                        with open(file, 'wb') as file_handle:
+                            file_handle.write(file_content)
+                            break
             else:
-                binary_url_split = binary_url.split('?')
-                binary_url_fname = os.path.basename(binary_url_split[0])
-                response = requests.get(binary_url)
-                response.raise_for_status()
-                tmp_path = os.path.join(tmpdir, binary_url_fname)
-                logging.error(f"Downloading {binary_url} to {tmp_path}...")
-                with open(tmp_path, 'wb') as f:
-                    f.write(response.content)
+                shutil.copy(tmp_path, file)
 
-                if binary_url_fname.endswith(".tar.gz"):
-                    with tarfile.open(tmp_path ,mode='r:gz') as tar:
-                        for member in tar.getmembers():
-                            if member.name.endswith(daemon_name):
-                                member.name = daemon_name
-                                tar.extract(member, path=binary_path)
-                                subprocess.run(["ls", "-al", binary_path])
-                elif binary_url_fname.endswith(".zip"):
-                    # this code does not work consistently
-                    with zipfile.ZipFile(tmp_path, 'r') as zip_ref:
-                        for zip_info in zip_ref.infolist():
-                            zip_name = zip_info.filename
-                            if zip_name.endswith('/'):
-                                continue
-                            file_content = zip_ref.read(zip_name)
-                            logging.info(f"Extract: {zip_name} to {binary_file}")
-                            with open(binary_file, 'wb') as file_handle:
-                                file_handle.write(file_content)
-                                break
-                else:
-                    shutil.copy(tmp_path, binary_file)
-
-        os.chmod(binary_file, 0o755)
 
     # with open(binary_file, 'r') as f_json:
     #     try:
