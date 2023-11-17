@@ -7,6 +7,7 @@ versions:
   - name: v1
     tag: v1.0.1
     height: 1 
+    libraries: []
     binaries:
       linux/amd64: >-
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv1.0.1/dydxprotocold-v1.0.1-linux-amd64.tar.gz
