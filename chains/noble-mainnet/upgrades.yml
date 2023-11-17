@@ -1,4 +1,4 @@
-# current to 20231020
+# current to 20231117
 chain_name: noble
 daemon_name: nobled
 network_type: mainnet
@@ -37,3 +37,19 @@ versions:
     binaries:
       linux/amd64: https://github.com/strangelove-ventures/noble/releases/download/v3.1.0/nobled_linux-amd64
       linux/arm64: https://github.com/strangelove-ventures/noble/releases/download/v3.1.0/nobled_linux-arm64
+  - name: v4.0.0
+    alias: v4.0.0
+    height: 3408600
+    proposal: ''
+    tag: v4.0.0
+    binaries:
+      linux/amd64: https://github.com/strangelove-ventures/noble/releases/download/v4.0.0/nobled_linux-amd64
+      linux/arm64: https://github.com/strangelove-ventures/noble/releases/download/v4.0.0/nobled_linux-arm64
+  - name: v4.0.1
+    alias: v4.0.1
+    height: 3529808
+    proposal: ''
+    tag: v4.0.1
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/noble:4.0.1
