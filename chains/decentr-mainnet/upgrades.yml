@@ -1,4 +1,4 @@
-# current 20230920
+# current 20231120
 chain_name: decentr
 daemon_name: decentrd
 network_type: mainnet
@@ -10,10 +10,19 @@ versions:
     proposal: 4
     height: 1688950 # initial_height
     binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/decentr/decentrd-v1.5.7
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/decentr:1.5.7
   - name: v160
     tag: v1.6.2
     proposal: 7
     height: 5831225
     binaries:
-      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/decentr/decentrd-v1.6.2
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/decentr:1.6.2
+  - name: v163
+    tag: v1.6.3
+    proposal:
+    height: 11619000
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/decentr:1.6.3
