@@ -100,8 +100,6 @@ parse_chain_info(){
     
     # Snapshot bootstrap
     SNAPSHOT_URL=${SNAPSHOT_URL:=}
-    SNAPSHOT_BOOTRAP_ENABLED=${SNAPSHOT_BOOTRAP_ENABLED:="$([ -n "${SNAPSHOT_URL}" ] && echo "true" || echo "false")"}
-
 }
 
 logger(){
@@ -117,7 +115,7 @@ prepare(){
     get_snapshot
     set_node_key
     set_private_validator_key
-    create_genesis
+    get_genesis
     set_pruning
     download_addrbook
     modify_client_toml
@@ -286,8 +284,8 @@ set_default_pruning() {
     MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}    
 }
 
-# Create the genesis file
-create_genesis(){
+# Retrieve the genesis file
+get_genesis(){
     if [ ! -d "${CONFIG_DIR}" ]; then
         mkdir -p "${CONFIG_DIR}"
     fi
@@ -516,50 +514,24 @@ get_wasm(){
 
 get_snapshot() {
     if [ -n "${SNAPSHOT_URL}" ]; then
-        logger "Downloading snapshot files from ${SNAPSHOT_URL}"
+        logger "Downloading snapshot from ${SNAPSHOT_URL}"
 
-        # Determine the file extension
-        FILE_EXT="${SNAPSHOT_URL##*.}"
-
-        # Download the file to a temporary location
-        TEMP_FILE="/tmp/snapshot.${FILE_EXT}"
-        aria2c -s 16 -x 16 -d /tmp -o "snapshot.${FILE_EXT}" "${SNAPSHOT_URL}"
+        # Download the file to home directory (some of these are quite large so not using tmpfs)
+        local tmpfn=$(basename "${SNAPSHOT_URL%%\?*}")
+        local tmpfile="${CHAIN_HOME}/${tmpfn}"
+        aria2c -s16 -x16 -d "${CHAIN_HOME}" -o "${tmpfn}" "${SNAPSHOT_URL}"
 
         # Extract based on file extension
-        case "${FILE_EXT}" in
-            "zip")
-                # Check if zip contains a 'data' directory
-                if unzip -l "${TEMP_FILE}" | grep -q '^.* data/'; then
-                    unzip -j "${TEMP_FILE}" "data/*" -d "${DATA_DIR}"
-                else
-                    unzip "${TEMP_FILE}" -d "${DATA_DIR}"
-                fi
+        logger "Extracting ${tmpfn} to ${CHAIN_HOME}"
+        case ${tmpfile} in
+            *.zip)
+                unzip "${tmpfile}" -d "${CHAIN_HOME}"
                 ;;
-            "gz")
-                # Create a temporary extraction directory for gz
-                TEMP_DIR_GZ=$(mktemp -d)
-                tar -xzf "${TEMP_FILE}" -C "${TEMP_DIR_GZ}"
-                # Check if extracted contents include a 'data' directory
-                if [ -d "${TEMP_DIR_GZ}/data" ]; then
-                    mv "${TEMP_DIR_GZ}/data"/* "${DATA_DIR}"
-                else
-                    mv "${TEMP_DIR_GZ}"/* "${DATA_DIR}"
-                fi
-                # Remove the temporary directory for gz
-                rm -rf "${TEMP_DIR_GZ}"
+            *.tar.gz)
+                tar -xzf "${tmpfile}" -C "${CHAIN_HOME}"
                 ;;
-            "lz4")
-                # Create a temporary extraction directory for lz4
-                TEMP_DIR_LZ4=$(mktemp -d)
-                lz4 -c -d "${TEMP_FILE}" | tar -x -C "${TEMP_DIR_LZ4}"
-                # Check if extracted contents include a 'data' directory
-                if [ -d "${TEMP_DIR_LZ4}/data" ]; then
-                    mv "${TEMP_DIR_LZ4}/data"/* "${DATA_DIR}"
-                else
-                    mv "${TEMP_DIR_LZ4}"/* "${DATA_DIR}"
-                fi
-                # Remove the temporary directory for lz4
-                rm -rf "${TEMP_DIR_LZ4}"
+            *.tar.lz4)
+                lz4 -c -d "${tmpfile}" | tar -x -C "${CHAIN_HOME}"
                 ;;
             *)
                 logger "Unsupported file format: ${FILE_EXT}"
@@ -568,8 +540,10 @@ get_snapshot() {
         esac
 
         # Remove the temporary file
-        rm "${TEMP_FILE}"
+        rm "${tmpfile}"
 
+        # Initialize the version again
+        initversion
     fi
 }
 
