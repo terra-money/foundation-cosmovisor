@@ -158,16 +158,32 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     upgrade_name = version.get("name", "")
     binary_url = version.get("binary_url", {})
     library_urls = version.get("libraries", [])
-    tag = version.get("tag", "")
     name = ctx.get("chain_name", "")
+    time = version.get("time", "0001-01-01T00:00:00Z")
+    height = version.get("height", "")
+    tag = version.get("tag", "")
 
     upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
     binary_file = os.path.join(upgrade_path, "bin", daemon_name)
 
     logging.info(f"Found version {upgrade_name}, Checking for {upgrade_path}...")
 
-    # add binary
     os.makedirs(upgrade_path, exist_ok=True)
+
+    # add upgrade-info.json
+    if int(height) > 1 and not os.path.exists(f"{upgrade_path}/upgrade-info.json"):
+        logging.info(f"Setting upgrade height to {height}...")
+        with open(f"{upgrade_path}/upgrade-info.json", 'w') as f:
+            json.dump({
+                "name": name, 
+                "time": time, 
+                "height": height, 
+                "info": json.dumps({
+                    "binaries": { ctx['arch']: binary_url }
+                })
+            }, f)
+
+    # add binary
     if binary_url:
         download_file(binary_url, binary_file)
         os.chmod(binary_file, 0o755)
@@ -188,6 +204,8 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
             link_cv_genesis(ctx, upgrade_path)
     else:
         raise FileNotFoundError(f"Binary {binary_file} not found")
+
+
 
 
 def link_cv_current(ctx, upgrade_path):
