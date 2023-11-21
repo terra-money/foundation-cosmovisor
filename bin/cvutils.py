@@ -160,7 +160,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     library_urls = version.get("libraries", [])
     name = ctx.get("chain_name", "")
     time = version.get("time", "0001-01-01T00:00:00Z")
-    height = version.get("height", "")
+    height = version.get("height", 0)
     tag = version.get("tag", "")
 
     upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
