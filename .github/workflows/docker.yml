@@ -63,6 +63,7 @@ jobs:
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
             type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build docker image
         uses: docker/build-push-action@v3
