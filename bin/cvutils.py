@@ -171,7 +171,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(upgrade_path, exist_ok=True)
 
     # add upgrade-info.json
-    if int(height) > 1 and not os.path.exists(f"{upgrade_path}/upgrade-info.json"):
+    if int(height or 0) > 1 and not os.path.exists(f"{upgrade_path}/upgrade-info.json"):
         logging.info(f"Setting upgrade height to {height}...")
         with open(f"{upgrade_path}/upgrade-info.json", 'w') as f:
             json.dump({

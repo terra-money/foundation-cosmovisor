@@ -7,7 +7,7 @@ libraries: []
 versions: []
   # - name: 2.0.40beta
   #   tag: 2.0.40beta
-  #   height: ''
+  #   height: 1
   #   proposal: ''
   #   recommended_version: 2.0.40beta
   #   binaries: {}

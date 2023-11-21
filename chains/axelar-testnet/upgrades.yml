@@ -14,8 +14,8 @@ versions:
         https://github.com/axelarnetwork/axelar-core/releases/download/v0.13.6/axelard-linux-amd64-v0.13.6
   - name: v0.34
     tag: v0.34.1
-    height: ''
-    proposal: ''
+    height:
+    proposal:
     binaries:
       linux/amd64: >-
         https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-linux-amd64-v0.34.1
