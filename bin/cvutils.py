@@ -112,7 +112,8 @@ def get_arch_version(ctx, codebase, version):
 
 
 def check_cv_path(ctx):
-    source_path = destination_path = ctx['cosmovisor_dir']
+    source_path = ctx['opt_cosmovisor_dir']
+    destination_path = ctx['cosmovisor_dir']
 
     # Check if source path exists
     if not os.path.exists(source_path):

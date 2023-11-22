@@ -4,6 +4,7 @@ import os
 import logging
 import cvutils
 import getchaininfo
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
