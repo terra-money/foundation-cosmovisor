@@ -239,7 +239,7 @@ set_pruning(){
                 PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=${SNAPSHOT_INTERVAL}}
                 PRUNING_STRATEGY=${PRUNING_STRATEGY:="custom"}
                 MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}" "${DAYS_TO_RETAIN}")}                                
-                INDEXER="kv"
+                INDEXER="null"
                 ;;
             write)
                 if [ -z "${UNBONDING_PERIOD}" ]; then
@@ -288,7 +288,7 @@ set_pruning(){
     else
         set_default_pruning
     fi
-    if [ ${LZ4_SNAPSHOT_ENABLED} = "true" ]; then
+    if [ ${LZ4_SNAPSHOT_ENABLED:=} = "true" ]; then
         sed -e "s|^autostart=false|autostart=true|" -i /etc/supervisor.d/snapshot.conf
     fi
 }
