@@ -113,6 +113,7 @@ prepare(){
     initialize_node
     reset_on_start
     get_snapshot
+    get_wasm
     set_node_key
     set_private_validator_key
     get_genesis
