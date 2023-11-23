@@ -10,6 +10,7 @@ ARG COSMOVISOR_VERSION="v1.5.0"
 RUN pacman -Syyu --noconfirm \
     aria2 \
     musl \
+    python-lz4 \
     python-pip \
     python-requests \
     python-yaml \
@@ -24,6 +25,7 @@ RUN set -eux && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin cosmovisor
 
+COPY --from=ghcr.io/binaryholdings/cosmprund:v1.0.0 /usr/bin/cosmprund /usr/local/bin/cosmprund
 COPY ./etc /etc/
 COPY ./bin/* /usr/local/bin/
 
