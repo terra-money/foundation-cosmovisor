@@ -253,6 +253,23 @@ set_pruning(){
                 MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}")}
                 INDEXER="null"
                 ;;
+            snap)
+                if [ -z "${UNBONDING_PERIOD}" ]; then
+                    echo "Error: UNBONDING_PERIOD must be defined for ${PROFILE} profile."
+                    exit 1
+                fi
+                # For read profile, want to be able to set the retention in days, default is 30
+                DAYS_TO_RETAIN=${DAYS_TO_RETAIN:=30}
+                # Set variables for read profile
+                PRUNING_INTERVAL=${PRUNING_INTERVAL:=10}
+                PRUNING_KEEP_RECENT=${PRUNING_KEEP_RECENT:=$((DAYS_TO_RETAIN * seconds_per_day / MEAN_BLOCK_TIME))}             
+                PRUNING_KEEP_EVERY=${PRUNING_KEEP_EVERY:=${SNAPSHOT_INTERVAL}}
+                PRUNING_STRATEGY=${PRUNING_STRATEGY:="custom"}
+                MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=$(calculate_min_retain_blocks "${UNBONDING_PERIOD}" "${DAYS_TO_RETAIN}")}                                
+                INDEXER="null"
+                COSMPRUND_ENABLED=${COSMPRUND_ENABLED:="true"}
+                LZ4_SNAPSHOT_ENABLED=${LZ4_SNAPSHOT_ENABLED:="true"}
+                ;;
             archive)
                 # Set variables for archive profile
                 PRUNING_INTERVAL=${PRUNING_INTERVAL:=0}
@@ -270,6 +287,9 @@ set_pruning(){
     else
         set_default_pruning
     fi
+    if [ ${LZ4_SNAPSHOT_ENABLED} = "true" ]; then
+        sed -e "s|^autostart=false|autostart=true|" -i /etc/supervisor.d/snapshot.conf
+    fi
 }
 
 set_default_pruning() {
@@ -282,6 +302,8 @@ set_default_pruning() {
     # to avoid accidentally pruning data on an archival node
     PRUNING_STRATEGY=${PRUNING_STRATEGY:="nothing"}
     MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}    
+    COSMPRUND_ENABLED=${COSMPRUND_ENABLED:="false"}
+    LZ4_SNAPSHOT_ENABLED=${LZ4_SNAPSHOT_ENABLED:="false"}
 }
 
 # Retrieve the genesis file
