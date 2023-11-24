@@ -62,8 +62,12 @@ def create_snapshot():
     # Create tar
     if os.path.exists(outside_wasm_dir):
         compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
-    else:
+        compress_lz4(f'{snap_dir}/wasm.tar.lz4', [outside_wasm_dir], ['wasm/wasm/cache'])
+    elif os.path.exists(inside_wasm_dir):
         compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir], ['data/wasm/cache'])
+        compress_lz4(f'{snap_dir}/wasm.tar.lz4', [inside_wasm_dir], ['wasm/wasm/cache'])
+    else:
+        compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir], [])
 
 def main():
     # Stop the cosmovisor process

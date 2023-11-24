@@ -15,6 +15,9 @@ services:
     env_file:
       - chains/${CHAIN_NAME}-${CHAIN_NETWORK}/.env
     volumes:
-      - /app
+      - /app:app
     networks:
       - default
+
+volumes:
+  app:

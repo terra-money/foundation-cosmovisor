@@ -537,12 +537,17 @@ get_wasm(){
 
 get_snapshot() {
     if [ -n "${SNAPSHOT_URL}" ]; then
-        logger "Downloading snapshot from ${SNAPSHOT_URL}"
-
-        # Download the file to home directory (some of these are quite large so not using tmpfs)
-        local tmpfn=$(basename "${SNAPSHOT_URL%%\?*}")
-        local tmpfile="${CHAIN_HOME}/${tmpfn}"
-        aria2c -s16 -x16 -d "${CHAIN_HOME}" -o "${tmpfn}" "${SNAPSHOT_URL}"
+        local snapdir="${CHAIN_HOME}/snapshots" 
+        local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
+        local snapfile="${snapdir}/${tmpfn}"
+        mkdir -p "${snapdir}"
+        if [ ${SNAPSHOT_URL} != 'file://'* ]; then
+            logger "Downloading snapshot from ${SNAPSHOT_URL}"
+            # Download the file to home directory (some of these are quite large so not using tmpfs)
+            aria2c -s16 -x16 -d "${CHAIN_HOME}" -o "${snapfile}" "${SNAPSHOT_URL}"
+        elif [ "${SNAPSHOT_URL#file://}" != "${snapfile}" ]; then
+            cp "${SNAPSHOT_URL#file://}" "${snapfile}"
+        fi
 
         # Extract based on file extension
         logger "Extracting ${tmpfn} to ${CHAIN_HOME}"
@@ -561,9 +566,6 @@ get_snapshot() {
                 return 1
                 ;;
         esac
-
-        # Remove the temporary file
-        rm "${tmpfile}"
 
         # Initialize the version again
         initversion
