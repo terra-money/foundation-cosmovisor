@@ -11,6 +11,10 @@ CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
 CHAIN_JSON="/etc/default/chain.json"
 UPGRADES_JSON="/etc/default/upgrades.yml"
 
+# Shared directory
+SHARED_DIR=${SHARED:="${CHAIN_HOME}/shared"}
+SNAPSHOTS_DIR="${SHARED_DIR}/snapshots"
+
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
 UPGRADE_INFO_JSON="${DATA_DIR}/upgrade-info.json"
@@ -537,14 +541,13 @@ get_wasm(){
 
 get_snapshot() {
     if [ -n "${SNAPSHOT_URL}" ]; then
-        local snapdir="${CHAIN_HOME}/snapshots" 
         local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
-        local snapfile="${snapdir}/${snapfn}"
-        mkdir -p "${snapdir}"
+        local snapfile="${SNAPSHOTS_DIR}/${snapfn}"
+        mkdir -p "${SNAPSHOTS_DIR}"
         if [ ${SNAPSHOT_URL} != 'file://'* ]; then
             logger "Downloading snapshot from ${SNAPSHOT_URL}"
             # Download the file to home directory (some of these are quite large so not using tmpfs)
-            aria2c -s16 -x16 -d "${CHAIN_HOME}" -o "${snapfile}" "${SNAPSHOT_URL}"
+            aria2c -s16 -x16 -d "${SNAPSHOTS_DIR}" -o "${snapfn}" "${SNAPSHOT_URL}"
         elif [ "${SNAPSHOT_URL#file://}" != "${snapfile}" ]; then
             cp "${SNAPSHOT_URL#file://}" "${snapfile}"
         fi

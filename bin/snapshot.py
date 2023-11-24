@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import tarfile
 import cvcontrol
 import cosmprund
 import lz4.frame
-from pathlib import Path
 
 # Define the home directory
 user_home = os.path.expanduser('~')
@@ -22,7 +22,7 @@ inside_wasm_dir = os.path.join(data_dir, 'wasm')
 outside_wasm_dir = os.path.join(os.path.dirname(data_dir), 'wasm')
 
 # Define the snapshot directory
-default_snap_dir = os.path.join(os.path.dirname(data_dir), 'snapshots')
+default_snap_dir = os.path.join(os.path.dirname(data_dir), 'shared', 'snapshots')
 snap_dir = os.environ.get('SNAPSHOTS_DIR', default_snap_dir)
 
 def remove_first_directory(full_path):
@@ -58,16 +58,29 @@ def compress_lz4(filename, directories_to_tar, exclude_patterns):
 def create_snapshot():
     # Ensure the snapshot directory exists
     os.makedirs(snap_dir, exist_ok=True)
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    snapshot_file = f'{snap_dir}/snapshot-{timestr}.tar.lz4'
+    wasm_file = f'{snap_dir}/wasm-{timestr}.tar.lz4'
 
     # Create tar
     if os.path.exists(outside_wasm_dir):
-        compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
-        compress_lz4(f'{snap_dir}/wasm.tar.lz4', [outside_wasm_dir], ['wasm/wasm/cache'])
+        compress_lz4(snapshot_file, [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
+        compress_lz4(wasm_file, [outside_wasm_dir], ['wasm/wasm/cache'])
     elif os.path.exists(inside_wasm_dir):
-        compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir], ['data/wasm/cache'])
-        compress_lz4(f'{snap_dir}/wasm.tar.lz4', [inside_wasm_dir], ['wasm/wasm/cache'])
+        compress_lz4(snapshot_file, [data_dir], ['data/wasm/cache'])
+        compress_lz4(wasm_file, [inside_wasm_dir], ['wasm/wasm/cache'])
     else:
-        compress_lz4(f'{snap_dir}/snapshot.tar.lz4', [data_dir], [])
+        compress_lz4(snapshot_file, [data_dir], [])
+        
+    # Create a symlink to the latest snapshot
+    snapshot_latest = f'{snap_dir}/snapshot-latest.tar.lz4'
+    os.remove(snapshot_latest)
+    os.symlink(snapshot_file, snapshot_latest)
+
+    # Create a symlink to the latest wasm snapshot
+    wasm_latest = f'{snap_dir}/wasm-latest.tar.lz4'
+    os.remove(wasm_latest)
+    os.symlink(wasm_file, wasm_latest)
 
 def main():
     # Stop the cosmovisor process
