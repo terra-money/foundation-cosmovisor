@@ -550,16 +550,16 @@ get_snapshot() {
         fi
 
         # Extract based on file extension
-        logger "Extracting ${tmpfn} to ${CHAIN_HOME}"
-        case ${tmpfile} in
+        logger "Extracting ${snapfn} to ${CHAIN_HOME}"
+        case ${snapfile} in
             *.zip)
-                unzip "${tmpfile}" -d "${CHAIN_HOME}"
+                unzip "${snapfile}" -d "${CHAIN_HOME}"
                 ;;
             *.tar.gz)
-                tar -xzf "${tmpfile}" -C "${CHAIN_HOME}"
+                tar -xzf "${snapfile}" -C "${CHAIN_HOME}"
                 ;;
             *.tar.lz4)
-                lz4 -c -d "${tmpfile}" | tar -x -C "${CHAIN_HOME}"
+                lz4 -c -d "${snapfile}" | tar -x -C "${CHAIN_HOME}"
                 ;;
             *)
                 logger "Unsupported file format: ${FILE_EXT}"
