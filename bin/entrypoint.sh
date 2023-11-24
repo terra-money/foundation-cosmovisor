@@ -539,7 +539,7 @@ get_snapshot() {
     if [ -n "${SNAPSHOT_URL}" ]; then
         local snapdir="${CHAIN_HOME}/snapshots" 
         local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
-        local snapfile="${snapdir}/${tmpfn}"
+        local snapfile="${snapdir}/${snapfn}"
         mkdir -p "${snapdir}"
         if [ ${SNAPSHOT_URL} != 'file://'* ]; then
             logger "Downloading snapshot from ${SNAPSHOT_URL}"
