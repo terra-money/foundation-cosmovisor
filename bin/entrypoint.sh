@@ -509,39 +509,10 @@ modify_app_toml(){
     fi
 }
 
+# Call snapshot.py to load data from image
 load_data_from_image() {
-    if [[ ${RESTORE_SNAPSHOT:="false"} == "true" && -n "${SNAPSHOT_URL:=}" ]]; then
-        local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
-        local snapfile="${SNAPSHOTS_DIR}/${snapfn}"
-        mkdir -p "${SNAPSHOTS_DIR}"
-        if [[ ${SNAPSHOT_URL} != 'file://'* ]]; then
-            logger "Downloading snapshot from ${SNAPSHOT_URL}"
-            # Download the file to home directory (some of these are quite large so not using tmpfs)
-            aria2c -s16 -x16 -d "${SNAPSHOTS_DIR}" -o "${snapfn}" "${SNAPSHOT_URL}"
-        elif [[ "${SNAPSHOT_URL#file://}" != "${snapfile}" ]]; then
-            cp "${SNAPSHOT_URL#file://}" "${snapfile}"
-        fi
-
-        # Extract based on file extension
-        logger "Extracting ${snapfn} to ${CHAIN_HOME}"
-        case ${snapfile} in
-            *.zip)
-                unzip "${snapfile}" -d "${CHAIN_HOME}"
-                ;;
-            *.tar.gz)
-                tar -xzf "${snapfile}" -C "${CHAIN_HOME}"
-                ;;
-            *.tar.lz4)
-                lz4 -c -d "${snapfile}" | tar -x -C "${CHAIN_HOME}"
-                ;;
-            *)
-                logger "Unsupported file format: ${FILE_EXT}"
-                return 1
-                ;;
-        esac
-
-        # Initialize the version again
-        initialize_version
+    if [[ ${RESTORE_SNAPSHOT:="false"} == "true" ]]; then
+        snapshot.py "restore"
     fi
 }
 

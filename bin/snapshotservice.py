@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
 
+import os
 import sys
 import getstatus
 import snapshot
-from time import sleep
 from datetime import datetime, time
 
 # Define time range
@@ -46,10 +46,17 @@ def main():
         # write_stderr(data)
 
         if is_ready():
-            snapshot.main()
+            snapshot.create_snapshot(data_dir, snapshots_dir)
 
         # transition from READY to ACKNOWLEDGED (ignore fail/best effort)
         write_stdout('RESULT 2\nOK')
 
 if __name__ == '__main__':
-    main()
+    user_home = os.path.expanduser('~')
+    chain_home = os.environ.get('CHAIN_HOME', user_home)
+    default_data_dir = os.path.join(chain_home, 'data')
+    data_dir = os.environ.get('DATA_DIR', default_data_dir)
+    default_snapshots_dir = os.path.join(os.path.dirname(data_dir), 'shared', 'snapshots')
+    snapshots_dir = os.environ.get('SNAPSHOTS_DIR', default_snapshots_dir)
+    cosmprund_enabled = os.getenv('COSMPRUND_ENABLED', 'false').lower() in ['true', '1', 'yes']
+    main(data_dir, snapshots_dir, cosmprund_enabled)
