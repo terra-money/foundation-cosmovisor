@@ -51,7 +51,6 @@ versions:
     tag: v9.1.2
     height: '6548200'
     proposal: '102'
-    recommended_version: v9.1.2
     binaries:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v9.1.2/comdex
@@ -59,7 +58,6 @@ versions:
     tag: v10.0.0
     height: '7158500'
     proposal: '132'
-    recommended_version: v10.0.0
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/comdex:10.0.0
@@ -67,7 +65,6 @@ versions:
     tag: v11.5.1
     height: '8184000'
     proposal: '154'
-    recommended_version: v11.5.1
     binaries:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex-linux-amd64.tar.gz

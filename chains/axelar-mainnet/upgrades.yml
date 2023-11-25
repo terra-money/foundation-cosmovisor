@@ -162,7 +162,7 @@ versions:
   - name: v0.33
     height: '6895400'
     proposal: '162'
-    recommended_version: v0.33.0
+
     binaries:
       linux/amd64: >-
         https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.33.0/axelard-linux-amd64-v0.33.0

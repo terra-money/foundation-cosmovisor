@@ -9,7 +9,7 @@ versions:
     alias: v2.0
     height: 1
     proposal: ''
-    recommended_version: v2.0.0-rc.1
+
     tag: v2.0.0-rc.1
     binaries:
       linux/amd64: >-
@@ -20,7 +20,6 @@ versions:
     alias: v2.1
     height: '838500'
     proposal: '18'
-    recommended_version: v2.1.0-beta.1
     tag: v2.1.0-beta.1
     binaries:
       linux/amd64: >-
@@ -29,7 +28,6 @@ versions:
     alias: v2.2
     height: '2777777'
     proposal: '42'
-    recommended_version: v2.2.1
     tag: v2.2.1
     binaries:
       linux/amd64: >-
@@ -38,7 +36,6 @@ versions:
     alias: v2.3
     height: '4712048'
     proposal: '103'
-    recommended_version: v2.3.4
     tag: v2.3.4
     binaries:
       linux/amd64: >-
@@ -47,7 +44,6 @@ versions:
     alias: v2.4
     height: '6272928'
     proposal: '130'
-    recommended_version: v2.4.0-rc5
     tag: v2.4.0-rc5
     binaries:
       linux/amd64: >-

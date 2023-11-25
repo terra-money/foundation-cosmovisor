@@ -30,7 +30,6 @@ versions:
     tag: v0.21.1
     height: '3607200'
     proposal: '124'
-    recommended_version: v0.21.0
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.21.1

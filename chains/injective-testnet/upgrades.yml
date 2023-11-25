@@ -30,7 +30,6 @@ versions:
     alias: v1.10.2
     height: '9159850'
     proposal: '67'
-    recommended_version: v1.10.2
     binaries:
       linux/amd64: >-
         https://github.com/InjectiveLabs/testnet/releases/download/v1.10.2-1678712142/linux-amd64.zip
@@ -44,7 +43,6 @@ versions:
     alias: v1.11.1
     height: '11881100'
     proposal: '167'
-    recommended_version: v1.11.1
     binaries:
       linux/amd64: >-
         https://github.com/InjectiveLabs/testnet/releases/download/v1.11.1-1685205489/linux-amd64.zip

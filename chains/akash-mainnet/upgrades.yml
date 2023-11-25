@@ -41,7 +41,6 @@ versions:
   - name: v0.22.0
     tag: v0.22.7
     height: '0'
-    recommended_version: v0.22.7
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
@@ -51,7 +50,6 @@ versions:
     alias: v0.24.0
     height: '12606074'
     proposal: '224'
-    recommended_version: v0.24.0
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_amd64.zip
@@ -61,7 +59,6 @@ versions:
     alias: v0.26.1
     height: '12992204'
     proposal: '231'
-    recommended_version: v0.24.0
     binaries:
       darwin/amd64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
       darwin/arm64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
@@ -71,7 +68,6 @@ versions:
     alias: v0.26.2
     height: '13602144'
     proposal:
-    recommended_version: v0.26.2
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.26.2/akash_0.26.2_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.26.2/akash_0.26.2_linux_arm64.zip
@@ -79,7 +75,6 @@ versions:
     alias: v0.28.2
     height: '13759618'
     proposal: '237'
-    recommended_version: v0.28.2
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_arm64.zip

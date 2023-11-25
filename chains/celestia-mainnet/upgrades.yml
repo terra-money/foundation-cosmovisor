@@ -11,4 +11,3 @@ versions:
       linux/amd64: >-
         https://github.com/celestiaorg/celestia-app/releases/download/v1.3.0/celestia-app_Linux_x86_64.tar.gz
 
-        

@@ -5,4 +5,3 @@ network_type: testnet
 git_repo: https://github.com/archway-network/archway
 libraries: []
 versions: {}
-        

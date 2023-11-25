@@ -32,7 +32,7 @@ versions:
     alias: v1.4.0
     height: '250'
     proposal: '5'
-    recommended_version: v1.4.0
+
     tag: v1.4.0
     binaries:
       linux/amd64: >-

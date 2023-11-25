@@ -9,7 +9,7 @@ versions:
     alias: v2.0
     height: 1
     proposal: ''
-    recommended_version: v2.0.1
+
     tag: v2.0.1
     binaries:
       linux/amd64: >-
@@ -20,7 +20,7 @@ versions:
     alias: v2.1
     height: '890000'
     proposal: '894'
-    recommended_version: v2.1.4
+
     tag: v2.1.4
     binaries:
       linux/amd64: >-
@@ -31,7 +31,6 @@ versions:
     alias: v2.2
     height: '2979805'
     proposal: '3619'
-    recommended_version: v2.2.1
     tag: v2.2.1
     binaries:
       linux/amd64: >-
@@ -40,7 +39,6 @@ versions:
     alias: v2.3
     height: '4711800'
     proposal: '4717'
-    recommended_version: v2.3.5
     tag: v2.3.5
     binaries:
       linux/amd64: >-

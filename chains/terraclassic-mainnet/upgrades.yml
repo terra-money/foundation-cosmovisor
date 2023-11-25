@@ -9,7 +9,6 @@ versions:
     alias: 1.0.5
     height: 0
     proposal: ''
-    recommended_version: ''
     tag: v1.0.5-full-archive
     binaries:
       linux/amd64: >-
@@ -18,7 +17,6 @@ versions:
     alias: 1.1.0
     height: '11734000'
     proposal: '11367'
-    recommended_version: v1.1.0
     tag: v1.1.0
     binaries:
       linux/amd64: >-

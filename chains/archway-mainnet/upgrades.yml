@@ -28,4 +28,3 @@ versions:
         https://github.com/archway-network/archway/releases/download/v4.0.2/archwayd_linux_amd64
       linux/arm64: >-
         https://github.com/archway-network/archway/releases/download/v4.0.2/archwayd_linux_arm64
-        

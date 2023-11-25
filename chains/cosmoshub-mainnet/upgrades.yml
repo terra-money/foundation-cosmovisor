@@ -56,7 +56,6 @@ versions:
     alias: v9-Lambda
     height: 15213800
     proposal: ''
-    recommended_version: v9.1.1
     tag: v9.1.1
     binaries:
       linux/amd64: >-
@@ -73,7 +72,6 @@ versions:
     alias: v10
     height: 15816200
     proposal: 798
-    recommended_version: v10.0.2
     tag: v10.0.2
     binaries:
       linux/amd64: >-
@@ -90,7 +88,6 @@ versions:
     alias: v11
     height: 16596000
     proposal: 804
-    recommended_version: v11.0.0
     tag: v11.0.0
     binaries:
       linux/amd64: >-
@@ -109,7 +106,6 @@ versions:
     alias: v12
     height: 16985500
     proposal: 821
-    recommended_version: v12.0.0
     tag: v12.0.0
     binaries:
       linux/amd64: >-
@@ -128,7 +124,6 @@ versions:
     alias: v13
     height: 17380000
     proposal: 825
-    recommended_version: v13.0.0
     tag: v13.0.0
     binaries:
       linux/amd64: >-

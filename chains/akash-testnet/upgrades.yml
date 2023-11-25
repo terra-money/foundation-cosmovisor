@@ -16,7 +16,6 @@ versions:
   - name: v0.24.0
     height: '249826'
     proposal: '2'
-    recommended_version: v0.24.0
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_amd64.zip

@@ -7,8 +7,6 @@ versions:
   - name: v3
     alias: v3
     height: 0
-    proposal: ''
-    recommended_version: ''
     tag: v3.1.0
     binaries:
       darwin/amd64: >-
@@ -103,7 +101,7 @@ versions:
     alias: v15
     height: '8732500'
     proposal: '458'
-    recommended_version: v15.2.0
+
     tag: v15.2.0
     binaries:
       linux/amd64: >-
@@ -114,7 +112,7 @@ versions:
     alias: v16
     height: '10517000'
     proposal: '556'
-    recommended_version: v16.1.1
+
     tag: v16.1.1
     binaries:
       linux/arm64: >-
@@ -129,7 +127,6 @@ versions:
     alias: v17
     height: '11126100'
     proposal: '586'
-    recommended_version: v17.0.0
     tag: v17.0.0
     binaries:
       linux/arm64: >-
@@ -144,7 +141,6 @@ versions:
     alias: v18
     height: '11155350'
     proposal: '588'
-    recommended_version: v18.0.0
     tag: v18.0.0
     binaries:
       linux/arm64: >-
@@ -155,7 +151,6 @@ versions:
     alias: v19
     height: '11317300'
     proposal: '606'
-    recommended_version: v19.0.0
     tag: v19.0.0
     binaries:
       linux/arm64: >-
@@ -166,7 +161,6 @@ versions:
     alias: v20
     height: '11317300'
     proposal: '606'
-    recommended_version: v20.1.0
     tag: v20.1.0
     binaries:
       linux/arm64: >-

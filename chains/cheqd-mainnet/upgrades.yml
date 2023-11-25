@@ -39,7 +39,6 @@ versions:
     alias: v1.4.4
     height: '6427280'
     proposal: '12'
-    recommended_version: v1.4.4
     binaries:
       linux/amd64: >-
         https://github.com/cheqd/cheqd-node/releases/download/v1.4.4/cheqd-noded-1.4.4-linux-amd64.tar.gz
