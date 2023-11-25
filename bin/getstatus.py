@@ -26,7 +26,9 @@ def is_catching_up():
     This function checks if the node is catching up with the network.
     """
     status = get_status()
-    return status['result']['sync_info']['catching_up'] == True
+    if status is not None:
+        return status['result']['sync_info']['catching_up'] == True
+    return True
 
 
 def main():

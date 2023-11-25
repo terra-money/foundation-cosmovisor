@@ -7,8 +7,8 @@ from time import sleep
 from datetime import datetime, time
 
 # Define time range
-midnight = time(0, 0)  # 00:00 UTC
-one_am = time(1, 0)    # 01:00 UTC
+start = time(5, 0)  # 05:00 UTC
+stop = time(6, 0)    # 06:00 UTC
 
 # write to stdout and flush
 def write_stdout(s):
@@ -23,8 +23,8 @@ def write_stderr(s):
 
 def is_ready():
     # Check if the current time is between midnight and 1 AM UTC
-    if not (midnight <= datetime.utcnow().time() < one_am):
-        write_stderr(f"Current time is not between {midnight} and {one_am} UTC.")
+    if not (start <= datetime.utcnow().time() < stop):
+        write_stderr(f"Current time is not between {start} and {stop} UTC.")
         return False
     if not getstatus.is_catching_up():
         write_stderr(f"Node is not catching up.")
