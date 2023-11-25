@@ -101,7 +101,6 @@ versions:
     alias: v15
     height: '8732500'
     proposal: '458'
-
     tag: v15.2.0
     binaries:
       linux/amd64: >-
@@ -112,7 +111,6 @@ versions:
     alias: v16
     height: '10517000'
     proposal: '556'
-
     tag: v16.1.1
     binaries:
       linux/arm64: >-
