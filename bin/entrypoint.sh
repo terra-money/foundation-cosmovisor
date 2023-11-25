@@ -510,7 +510,7 @@ modify_app_toml(){
 }
 
 load_data_from_image() {
-    if [ -n "${SNAPSHOT_URL:=}" ]; then
+    if [[ ${RESTORE_SNAPSHOT:="false"} == "true" && -n "${SNAPSHOT_URL:=}" ]]; then
         local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
         local snapfile="${SNAPSHOTS_DIR}/${snapfn}"
         mkdir -p "${SNAPSHOTS_DIR}"
