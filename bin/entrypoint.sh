@@ -514,11 +514,11 @@ load_data_from_image() {
         local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
         local snapfile="${SNAPSHOTS_DIR}/${snapfn}"
         mkdir -p "${SNAPSHOTS_DIR}"
-        if [ ${SNAPSHOT_URL} != 'file://'* ]; then
+        if [[ ${SNAPSHOT_URL} != 'file://'* ]]; then
             logger "Downloading snapshot from ${SNAPSHOT_URL}"
             # Download the file to home directory (some of these are quite large so not using tmpfs)
             aria2c -s16 -x16 -d "${SNAPSHOTS_DIR}" -o "${snapfn}" "${SNAPSHOT_URL}"
-        elif [ "${SNAPSHOT_URL#file://}" != "${snapfile}" ]; then
+        elif [[ "${SNAPSHOT_URL#file://}" != "${snapfile}" ]]; then
             cp "${SNAPSHOT_URL#file://}" "${snapfile}"
         fi
 
