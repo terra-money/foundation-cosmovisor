@@ -105,7 +105,7 @@ logger(){
 prepare(){
     parse_chain_info
     ensure_chain_home
-    initalize_version
+    initialize_version
     initialize_node
     delete_data_dir
     load_data_from_image
@@ -138,7 +138,7 @@ ensure_chain_home(){
     fi
 }
 
-initalize_version(){
+initialize_version(){
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME \
     CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION 
     initversion.py
@@ -484,7 +484,7 @@ modify_app_toml(){
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
-    sed -e "s|^rpc-max-body-bytes *=.*|rpc-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
+    sed -e "s|^rpc-max-body-bytes *=.*|rpialize_c-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
 
     sed -e "s|^address *=.*:1317.*$|address = \"tcp:\/\/0.0.0.0:1317\"|" \
         -e "s|^address *=.*:8080.*$|address = \"0.0.0.0:8080\"|" \
