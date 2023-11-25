@@ -17,8 +17,8 @@ SNAPSHOTS_DIR="${SHARED_DIR}/snapshots"
 
 # data directory
 DATA_DIR="${CHAIN_HOME}/data"
-UPGRADE_INFO_JSON="${DATA_DIR}/upgrade-info.json"
 WASM_DIR=${WASM_DIR:="${DATA_DIR}/wasm"}
+UPGRADE_INFO_JSON="${DATA_DIR}/upgrade-info.json"
 
 # Config directory
 CONFIG_DIR="${CHAIN_HOME}/config"
@@ -30,12 +30,6 @@ NODE_KEY_FILE="${CONFIG_DIR}/node_key.json"
 PV_KEY_FILE="${CONFIG_DIR}/priv_validator_key.json"
 ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
-GENESIS_BINARY_URL=${GENESIS_BINARY_URL:=""}
-HALT_HEIGHT=${HALT_HEIGHT:=""}
-EXTRA_ARGS=${EXTRA_ARGS:=""}
-DAYS_TO_RETAIN=${DAYS_TO_RETAIN:=}
-PROFILE=${PROFILE:=}
-MEAN_BLOCK_TIME=${MEAN_BLOCK_TIME:=6} # Mean block time in seconds
 
 parse_chain_info(){
     if [ ! -f "${CHAIN_JSON}" ]; then
@@ -54,6 +48,7 @@ parse_chain_info(){
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
     ENABLE_API=${ENABLE_API:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
+    HALT_HEIGHT=${HALT_HEIGHT:=""}
     KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
     MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
@@ -101,9 +96,6 @@ parse_chain_info(){
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
-    
-    # Snapshot bootstrap
-    SNAPSHOT_URL=${SNAPSHOT_URL:=}
 }
 
 logger(){
@@ -113,16 +105,16 @@ logger(){
 prepare(){
     parse_chain_info
     ensure_chain_home
-    initversion
+    initalize_version
     initialize_node
-    reset_on_start
-    get_snapshot
-    get_wasm
+    delete_data_dir
+    load_data_from_image
+    prepare_statesync
     set_node_key
-    set_private_validator_key
-    get_genesis
-    set_pruning
+    set_validator_key
+    download_genesis
     download_addrbook
+    set_pruning
     modify_client_toml
     modify_config_toml
     modify_app_toml
@@ -146,6 +138,15 @@ ensure_chain_home(){
     fi
 }
 
+initalize_version(){
+    export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME \
+    CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION \
+    initversion.py
+    if [ $? != 0 ]; then
+        exit $?
+    fi
+}
+
 # Initialize the node
 initialize_node(){
     # TODO: initialize in tmpdir and copy any missing files to the config dir
@@ -158,6 +159,62 @@ initialize_node(){
             echo "Failed to initialize node." >&2
             exit $?
         fi
+    fi
+}
+
+delete_data_dir(){
+    if [ "${RESET_ON_START}" = "true" ]; then
+        logger "Reset on start set to: ${RESET_ON_START}"
+        cp "${DATA_DIR}/priv_validator_state.json" /tmp/priv_validator_state.json.backup
+        rm -rf "${DATA_DIR}"
+        mkdir -p "${DATA_DIR}"
+        mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
+    fi
+}
+
+# Set the node key
+set_node_key(){
+    if [ -n "${NODE_KEY}" ]; then
+        echo "Using node key from env..."
+        echo "${NODE_KEY}" | base64 -d > "${NODE_KEY_FILE}"
+    fi
+}
+
+# Set the private validator key
+set_validator_key(){
+    if [ -n "${PRIVATE_VALIDATOR_KEY}" ]; then
+        echo "Using private key from env..."
+        echo "${PRIVATE_VALIDATOR_KEY}" | base64 -d > "${PV_KEY_FILE}"
+    fi
+}
+
+# Retrieve the genesis file
+download_genesis(){
+    if [ ! -d "${CONFIG_DIR}" ]; then
+        mkdir -p "${CONFIG_DIR}"
+    fi
+
+    if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
+        logger "Downloading genesis file from ${GENESIS_URL}..."
+        case "${GENESIS_URL}" in
+            *.tar.gz)
+                curl -sSL "${GENESIS_URL}" | tar -xz -C "${CONFIG_DIR}" 2>/dev/null
+                ;;
+            *.gz)
+                curl -sSL "${GENESIS_URL}" | zcat > "${GENESIS_FILE}"
+                ;;
+            *)
+                curl -sSL "${GENESIS_URL}" -o "${GENESIS_FILE}"
+                ;;
+        esac
+    fi
+}
+
+# Download the address book file
+download_addrbook(){
+    if [ -n "${ADDR_BOOK_URL}" ]; then
+        echo "Downloading address book file..."
+        curl -sSL "${ADDR_BOOK_URL}" -o "${ADDR_BOOK_FILE}"
     fi
 }
 
@@ -224,10 +281,12 @@ parse_unbonding_period() {
 }
 
 set_pruning(){
-    UNBONDING_PERIOD=${UNBONDING_PERIOD:-$(parse_unbonding_period)}
     # Profile-based configuration
-    if [ -n "${PROFILE}" ]; then
+    if [ -n "${PROFILE:=}" ]; then
         local seconds_per_day=86400
+        DAYS_TO_RETAIN=${DAYS_TO_RETAIN:=}
+        MEAN_BLOCK_TIME=${MEAN_BLOCK_TIME:=6} # Mean block time in seconds
+        UNBONDING_PERIOD=${UNBONDING_PERIOD:-$(parse_unbonding_period)}
         logger "Pruning profile set to ${PROFILE}"
         case "${PROFILE}" in
             read)
@@ -309,87 +368,6 @@ set_default_pruning() {
     MIN_RETAIN_BLOCKS=${MIN_RETAIN_BLOCKS:=0}    
     COSMPRUND_ENABLED=${COSMPRUND_ENABLED:="false"}
     LZ4_SNAPSHOT_ENABLED=${LZ4_SNAPSHOT_ENABLED:="false"}
-}
-
-# Retrieve the genesis file
-get_genesis(){
-    if [ ! -d "${CONFIG_DIR}" ]; then
-        mkdir -p "${CONFIG_DIR}"
-    fi
-
-    if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
-        logger "Downloading genesis file from ${GENESIS_URL}..."
-        case "${GENESIS_URL}" in
-            *.tar.gz)
-                curl -sSL "${GENESIS_URL}" | tar -xz -C "${CONFIG_DIR}" 2>/dev/null
-                ;;
-            *.gz)
-                curl -sSL "${GENESIS_URL}" | zcat > "${GENESIS_FILE}"
-                ;;
-            *)
-                curl -sSL "${GENESIS_URL}" -o "${GENESIS_FILE}"
-                ;;
-        esac
-    fi
-}
-
-initversion(){
-    export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME CHAIN_HOME CHAIN_JSON_URL \
-    GENESIS_BINARY_URL RECOMMENDED_VERSION RECOMMENDED_BINARY_URL \
-    PREFER_RECOMMENDED_VERSION STATE_SYNC_ENABLED
-    initversion.py
-    if [ $? != 0 ]; then
-        exit $?
-    fi
-}
-
-# Download the address book file
-download_addrbook(){
-    if [ -n "${ADDR_BOOK_URL}" ]; then
-        echo "Downloading address book file..."
-        curl -sSL "${ADDR_BOOK_URL}" -o "${ADDR_BOOK_FILE}"
-    fi
-}
-
-# Set the node key
-set_node_key(){
-    if [ -n "${NODE_KEY}" ]; then
-        echo "Using node key from env..."
-        echo "${NODE_KEY}" | base64 -d > "${NODE_KEY_FILE}"
-    fi
-}
-
-# Set the private validator key
-set_private_validator_key(){
-    if [ -n "${PRIVATE_VALIDATOR_KEY}" ]; then
-        echo "Using private key from env..."
-        echo "${PRIVATE_VALIDATOR_KEY}" | base64 -d > "${PV_KEY_FILE}"
-    fi
-}
-
-get_sync_block_height(){
-    local latest_height
-    local sync_block_height
-    if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
-        if [ "${latest_height}" = "null" ]; then
-            # Maybe Tendermint 0.35+?
-            latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
-        fi
-        sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
-    fi
-    echo "${sync_block_height:=}"
-}
-
-get_sync_block_hash(){
-    local sync_block_hash
-    if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
-        sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .result.block_id.hash)
-        if [ "${sync_block_hash}" = "null" ]; then
-            sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
-        fi
-    fi
-    echo "${sync_block_hash:=}"
 }
 
 # Modify the client.toml file
@@ -530,17 +508,8 @@ modify_app_toml(){
     fi
 }
 
-get_wasm(){
-    if [ -n "${WASM_URL}" ]; then
-        logger "Downloading wasm files from ${WASM_URL}"
-        wasm_base_dir=$(dirname ${WASM_DIR})
-        mkdir -p "${wasm_base_dir}"
-        curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
-    fi
-}
-
-get_snapshot() {
-    if [ -n "${SNAPSHOT_URL}" ]; then
+load_data_from_image() {
+    if [ -n "${SNAPSHOT_URL:=}" ]; then
         local snapfn=$(basename "${SNAPSHOT_URL%%\?*}")
         local snapfile="${SNAPSHOTS_DIR}/${snapfn}"
         mkdir -p "${SNAPSHOTS_DIR}"
@@ -575,14 +544,37 @@ get_snapshot() {
     fi
 }
 
+get_sync_block_height(){
+    local latest_height
+    local sync_block_height
+    if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+        latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
+        if [ "${latest_height}" = "null" ]; then
+            # Maybe Tendermint 0.35+?
+            latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
+        fi
+        sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
+    fi
+    echo "${sync_block_height:=}"
+}
 
-reset_on_start(){
-    if [ "${RESET_ON_START}" = "true" ]; then
-        logger "Reset on start set to: ${RESET_ON_START}"
-        cp "${DATA_DIR}/priv_validator_state.json" /tmp/priv_validator_state.json.backup
-        rm -rf "${DATA_DIR}"
-        mkdir -p "${DATA_DIR}"
-        mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
+get_sync_block_hash(){
+    local sync_block_hash
+    if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+        sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .result.block_id.hash)
+        if [ "${sync_block_hash}" = "null" ]; then
+            sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
+        fi
+    fi
+    echo "${sync_block_hash:=}"
+}
+
+prepare_statesync(){
+    if [ -n "${WASM_URL}" ]; then
+        logger "Downloading wasm files from ${WASM_URL}"
+        wasm_base_dir=$(dirname ${WASM_DIR})
+        mkdir -p "${wasm_base_dir}"
+        curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
     fi
 }
 
