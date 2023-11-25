@@ -166,6 +166,7 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
 
         # Change the owner and group of the extracted files
         for root, dirs, files in os.walk(chain_home):
+            dirs.remove('shared')
             for name in dirs + files:
                 os.chown(os.path.join(root, name), uid, gid)
 

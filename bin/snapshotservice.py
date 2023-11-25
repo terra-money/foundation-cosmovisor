@@ -31,7 +31,7 @@ def is_ready():
         return False
     return True
 
-def main():
+def main(data_dir, snapshots_dir, cosmprund_enabled):
     while 1:
         # transition from ACKNOWLEDGED to READY
         write_stdout('READY\n')
@@ -46,7 +46,7 @@ def main():
         # write_stderr(data)
 
         if is_ready():
-            snapshot.create_snapshot(data_dir, snapshots_dir)
+            snapshot.create_snapshot(data_dir, snapshots_dir, cosmprund_enabled)
 
         # transition from READY to ACKNOWLEDGED (ignore fail/best effort)
         write_stdout('RESULT 2\nOK')
