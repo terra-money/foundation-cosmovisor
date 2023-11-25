@@ -541,7 +541,7 @@ load_data_from_image() {
         esac
 
         # Initialize the version again
-        initversion
+        initialize_version
     fi
 }
 
