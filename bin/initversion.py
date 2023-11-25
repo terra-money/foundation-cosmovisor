@@ -30,8 +30,9 @@ def main(ctx):
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = cvutils.get_upgrade_info_version(ctx)
     elif os.path.exists(data_dir):
-        logging.info("Data dir exists, assuming recommended version.")
-        version = getchaininfo.get_chain_json_recommended_version(ctx)
+        logging.info("Data dir exists, assuming latest version.")
+        # version = getchaininfo.get_chain_json_recommended_version(ctx)
+        version = getchaininfo.get_chain_json_latest_version(ctx)
     else:
         logging.info("Preparing genesis version...")
         version = getchaininfo.get_chain_json_genesis_version(ctx)

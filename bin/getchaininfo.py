@@ -92,13 +92,13 @@ def get_chain_json_version(ctx, version):
 
     return None
 
-def get_chain_json_last_version(ctx):
-    logging.info(f"Retrieving last available version identified in {ctx['chain_json_path']}...")
+def get_chain_json_latest_version(ctx):
+    logging.info(f"Retrieving latest available version identified in {ctx['chain_json_path']}...")
     codebase_data = get_codebase_data(ctx)
 
-    last_version = next(reversed(codebase_data['versions']), None)
-    if last_version:
-        return cvutils.get_arch_version(ctx, codebase_data, last_version)
+    latest_version = next(reversed(codebase_data['versions']), None)
+    if latest_version:
+        return cvutils.get_arch_version(ctx, codebase_data, latest_version)
     return None
 
 def get_chain_json_first_version(ctx):
@@ -132,8 +132,8 @@ def get_chain_json_recommended_version(ctx):
         if recommended_version:
             return get_chain_json_version(ctx, recommended_version)
 
-    logging.info(f"Recommended version not found in {ctx['chain_json_path']}, falling back to last version...")
-    return get_chain_json_last_version()
+    logging.info(f"Recommended version not found in {ctx['chain_json_path']}, falling back to latest version...")
+    return get_chain_json_latest_version()
 
 
 if __name__ == "__main__":
