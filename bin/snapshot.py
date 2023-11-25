@@ -165,10 +165,12 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
         gid = stat_info.st_gid
 
         # Change the owner and group of the extracted files
-        for root, dirs, files in os.walk(chain_home):
-            dirs.remove('shared')
-            for name in dirs + files:
-                os.chown(os.path.join(root, name), uid, gid)
+        # chown -R does not thow error for shared dir
+        try:
+            # Running the chown command using subprocess
+            subprocess.run(['chown', '-R', f'{uid}:{gid}', chain_home], check=True)
+        except subprocess.CalledProcessError as e:
+            logging.error(f"An error occurred while changing ownership: {e}")
 
         initversion.main(cvutils.get_ctx())
     return 0
