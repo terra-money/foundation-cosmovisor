@@ -13,3 +13,12 @@ versions:
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv1.0.1/dydxprotocold-v1.0.1-linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv1.0.1/dydxprotocold-v1.0.1-linux-arm64.tar.gz
+  - name: v2
+    tag: v2.0.0
+    height: 1810000
+    libraries: []
+    binaries:
+      linux/amd64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv2.0.0/dydxprotocold-v2.0.0-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv2.0.0/dydxprotocold-v2.0.0-linux-arm64.tar.gz
