@@ -300,13 +300,14 @@ def get_upgrade_info_version(ctx):
         info = info.replace("'", '"')
         logging.info(f"upgrade info is {info}")
         if isinstance(info, str):
+            if info.startswith('http'):
+                response = requests.get(info)
+                info = response.json()
             if 'binaries' in info:
                 info = json.loads(info)
-                binaries = info.get('binaries', {})
-                binary_url = binaries.get(ctx["arch"], None)
-                return {"name": name, "binary_url": binary_url}
-            elif 'http:' in info:
-                return {"name": name, "binary_url": info}
+            binaries = info.get('binaries', {})
+            binary_url = binaries.get(ctx["arch"], None)
+            return {"name": name, "binary_url": binary_url}
     return None
 
 
