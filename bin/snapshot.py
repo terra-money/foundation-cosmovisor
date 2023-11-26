@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import json
 import time
 import cvutils
 import cvcontrol
@@ -12,9 +13,9 @@ import tarfile
 import lz4.frame
 import initversion
 import logging
-
-
+import glob
 import subprocess
+import datetime
 
 def download_file(url: str, destination: str) -> None:
     """
@@ -97,7 +98,39 @@ def extract_file(filepath: str, extract_to: str) -> bool:
     return False
 
 
-def create_snapshot(ctx, snapshots_dir: str, data_dir: str, cosmprund_enabled: str = False) -> None:
+def get_snapshot_block_height(data_dir):
+    full_pattern = os.path.join(data_dir, "snapshots", "*000")
+    files = glob.glob(full_pattern)
+    sorted_files = sorted(files, key=os.path.getmtime, reverse=True)
+    return os.path.basename(sorted_files[0]) if sorted_files else None
+
+
+def get_status_block_height(json_file_path):
+    try:
+        with open(json_file_path, 'r') as file:
+            data = json.load(file)
+            return data['result']['sync_info']['latest_block_height']
+    except Exception as e:
+        logging.error(f"Error reading status file: {e}")
+        return None
+
+def get_block_height(data_dir):
+    # Try to get block height from snapshot
+    snapshot_block_height = get_snapshot_block_height(data_dir)
+    if snapshot_block_height:
+        return snapshot_block_height
+
+    # Try to get block height from status.json
+    json_file_path = os.path.join(data_dir, 'status.json')
+    status_block_height = get_status_block_height(json_file_path)
+    if status_block_height:
+        return status_block_height
+
+    # If neither works, return the current timestamp
+    return time.strftime("%Y%m%d-%H%M%S")
+
+
+def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: str = False) -> None:
     """
     Creates a snapshot of the given directories.
 
@@ -114,9 +147,9 @@ def create_snapshot(ctx, snapshots_dir: str, data_dir: str, cosmprund_enabled: s
     outside_wasm_dir = os.path.join(os.path.dirname(data_dir), 'wasm')
     
     os.makedirs(snapshots_dir, exist_ok=True)
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    snapshot_file = f'{snapshots_dir}/snapshot-{timestr}.tar.lz4'
-    wasm_file = f'{snapshots_dir}/wasm-{timestr}.tar.lz4'
+    identifier = get_block_height(data_dir)
+    snapshot_file = f'{snapshots_dir}/snapshot-{identifier}.tar.lz4'
+    wasm_file = f'{snapshots_dir}/wasm-{identifier}.tar.lz4'
 
     if os.path.exists(outside_wasm_dir):
         compress_lz4(snapshot_file, [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
@@ -128,11 +161,21 @@ def create_snapshot(ctx, snapshots_dir: str, data_dir: str, cosmprund_enabled: s
         compress_lz4(snapshot_file, [data_dir], [])
 
     snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
-    os.remove(snapshot_latest)
+    if os.path.islink(snapshot_latest):
+        os.unlink(snapshot_latest)
+    elif os.path.exists(snapshot_latest):
+        os.remove(snapshot_latest)
+
+    if os.path.exists(snapshot_latest): os.remove(snapshot_latest)
     os.symlink(snapshot_file, snapshot_latest)
 
     wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
-    os.remove(wasm_latest)
+    if os.path.islink(wasm_latest):
+        os.unlink(wasm_latest)
+    elif os.path.exists(wasm_latest):
+        os.remove(wasm_latest)
+    
+    if os.path.exists(wasm_latest): os.remove(wasm_latest)
     os.symlink(wasm_file, wasm_latest)
 
 

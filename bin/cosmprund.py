@@ -5,7 +5,7 @@ import subprocess
 
 # shell command to prune data directory
 def main(data_dir):
-    command = f'/usr/local/bin/cosmprund prune {data_dir}'
+    command = ["/usr/local/bin/cosmprund", "prune", data_dir]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     # Keep reading from the process's output pipes in real-time
