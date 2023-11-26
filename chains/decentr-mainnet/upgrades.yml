@@ -26,3 +26,10 @@ versions:
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/decentr:1.6.3
+  - name: 07-tendermint-13
+    tag: v1.6.4
+    proposal:
+    height: 11698697
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/decentr:1.6.4
