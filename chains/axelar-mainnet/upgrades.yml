@@ -7,7 +7,7 @@ git_repo: https://github.com/axelarnetwork/axelar-core
 libraries: []
 versions:
   - name: v0.10
-    height: 0
+    height: 1
     binaries:
       linux/amd64: >-
         https://github.com/axelarnetwork/axelar-core/releases/download/v0.10.7/axelard-linux-amd64-v0.10.7

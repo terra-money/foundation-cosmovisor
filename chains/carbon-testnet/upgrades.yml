@@ -7,7 +7,7 @@ libraries: ["https://tfl-testnets.s3.amazonaws.com/carbon/libleveldb.so.1","http
 versions:
   - name: v2.32.0
     alias: v2.32.0
-    height: '0'
+    height: '1'
     binaries:
       linux/amd64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.32.0/carbond2.32.0-testnet.linux-amd64.tar.gz

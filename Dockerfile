@@ -69,10 +69,4 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
 COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /etc/default/
 
 RUN set -eux && \
-    mkdir -p /opt/cosmovisor/genesis && \
-    mkdir -p /opt/cosmovisor/upgrades && \
-    mkdir -p /app/cosmovisor && \
-    ln -s /opt/cosmovisor/genesis /app/cosmovisor/genesis && \
-    ln -s /opt/cosmovisor/upgrades /app/cosmovisor/upgrades && \
-    /usr/local/bin/getupgrades.py && \
-    chown -R cosmovisor:cosmovisor /opt/cosmovisor/upgrades
+    /usr/local/bin/getupgrades.py 

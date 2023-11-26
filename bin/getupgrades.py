@@ -29,5 +29,7 @@ def download_libraries(ctx):
 
 if __name__ == "__main__":
     ctx = cvutils.get_ctx()
+    cvutils.link_cv_path(ctx)
     download_versions(ctx)
     download_libraries(ctx)
+    cvutils.copy_cv_path(ctx)

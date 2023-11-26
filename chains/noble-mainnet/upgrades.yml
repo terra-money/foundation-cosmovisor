@@ -7,7 +7,7 @@ libraries: []
 versions:
   - name: v1.0.0
     alias: v1.0.0
-    height: 0
+    height: 1
     tag: v1.0.0
     binaries:
       docker/linux/amd64: >-

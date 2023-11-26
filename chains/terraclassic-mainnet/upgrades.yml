@@ -7,7 +7,7 @@ libraries: []
 versions:
   - name: 1.0.5
     alias: 1.0.5
-    height: 0
+    height: 1
     proposal: ''
     tag: v1.0.5-full-archive
     binaries:

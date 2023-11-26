@@ -7,6 +7,7 @@ libraries: []
 versions:
   - name: v157
     tag: v1.5.7
+    height: 1
     binaries:
       linux/amd64: https://tfl-mainnets.s3.amazonaws.com/decentr/decentrd-v1.5.7
   - name: v160

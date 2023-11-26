@@ -28,10 +28,11 @@ def write_status():
     status = getstatus.get_status('http://localhost:26657/status')
     
     # Write the JSON data to the file
-    with open(file_path, 'w') as file:
-        json.dump(status, file, indent=4)
+    if status is not None:
+        with open(file_path, 'w') as file:
+            json.dump(status, file, indent=4)
 
-    write_stderr(f"Data written to {file_path}")
+        write_stderr(f"Data written to {file_path}")
 
 def main():
     while 1:

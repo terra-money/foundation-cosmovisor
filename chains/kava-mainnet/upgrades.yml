@@ -8,7 +8,7 @@ libraries: []
 versions:
   - name: v0.17.0
     tag: v0.17.7
-    height: '0'
+    height: '1'
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.17.7

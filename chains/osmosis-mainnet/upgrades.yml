@@ -6,6 +6,7 @@ libraries: []
 versions:
   - name: v3
     alias: v3
+    height: '1'
     tag: v3.1.0
     binaries:
       darwin/amd64: >-

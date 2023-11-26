@@ -7,7 +7,7 @@ libraries: []
 versions:
   - name: v0.22.7
     tag: v0.22.7
-    height: '0'
+    height: '1'
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip

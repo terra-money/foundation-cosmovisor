@@ -12,7 +12,7 @@ logging.basicConfig(
 )
 
 def main(ctx):
-    cvutils.check_cv_path(ctx)
+    cvutils.link_cv_path(ctx)
 
     version = None
     data_dir = ctx.get("data_dir")
@@ -40,7 +40,7 @@ def main(ctx):
     if version:
         cvutils.create_cv_upgrade(ctx, version)
 
-    
+    cvutils.copy_cv_path(ctx)
     # do not exit if version = None, we want to keep the container running
     return 
 

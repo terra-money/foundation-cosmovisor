@@ -6,7 +6,7 @@ git_repo: https://github.com/akash-network/node
 libraries: []
 versions:
   - name: genesis
-    height: '0'
+    height: '1'
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.10.0/akash_0.10.0_linux_amd64.zip

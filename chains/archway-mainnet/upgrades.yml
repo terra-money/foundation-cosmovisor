@@ -6,7 +6,7 @@ libraries: []
 versions:
   - name: v1.0.0
     tag: v1.0.0
-    height: 0
+    height: 1
     binaries:
       linux/amd64: >-
         https://github.com/archway-network/archway/releases/download/v1.0.0/archwayd_linux_amd64

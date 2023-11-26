@@ -21,6 +21,8 @@ logging.basicConfig(
 
 def get_ctx():
     arch = get_system_arch()
+    uid = 1000
+    gid = 1000
     debug = os.environ.get("DEBUG", None)
     daemon_home = os.environ.get("DAEMON_HOME", os.getcwd())
     chain_home = os.environ.get("CHAIN_HOME", daemon_home)
@@ -44,6 +46,8 @@ def get_ctx():
     upgrade_info_json = os.path.join(data_dir, "upgrade-info.json")
 
     return {
+        "uid": uid,
+        "gid": gid,
         "arch": arch,
         "debug": debug,
         "daemon_home": daemon_home,
@@ -113,45 +117,65 @@ def get_arch_version(ctx, codebase, version):
     }
 
 
-def check_cv_path(ctx):
+def link_cv_path(ctx):
+    source_path = ctx['opt_cosmovisor_dir']
+    source_upgrades_path = os.path.join(source_path, os.path.basename(ctx['cv_upgrades_dir']))
+    source_genesis_path = os.path.join(source_path, os.path.basename(ctx['cv_genesis_dir']))
+    source_current_path = os.path.join(source_path, os.path.basename(ctx['cv_current_dir']))
+    destination_path = ctx['cosmovisor_dir']
+    destination_upgrades_path = os.path.join(destination_path, os.path.basename(ctx['cv_upgrades_dir']))
+    destination_genesis_path = os.path.join(destination_path, os.path.basename(ctx['cv_genesis_dir']))
+    destination_current_path = os.path.join(destination_path, os.path.basename(ctx['cv_current_dir']))
+
+    if not os.path.exists(source_path):
+        os.makedirs(source_path, exist_ok=True)
+
+    if not os.path.exists(source_upgrades_path):
+        os.makedirs(source_upgrades_path, exist_ok=True)
+        
+    if not os.path.exists(source_genesis_path):
+        os.makedirs(source_genesis_path, exist_ok=True)
+        
+    if not os.path.exists(source_current_path):
+        os.makedirs(source_current_path, exist_ok=True)
+
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path, exist_ok=True)
+    
+    if not os.path.exists(destination_upgrades_path):
+        if os.stat(source_upgrades_path).st_dev == os.stat(destination_path).st_dev:
+            os.symlink(source_upgrades_path, destination_upgrades_path)
+            
+    if not os.path.exists(destination_genesis_path):
+        if os.stat(source_genesis_path).st_dev == os.stat(destination_path).st_dev:
+            os.symlink(source_genesis_path, destination_genesis_path)
+            
+    if not os.path.exists(destination_current_path):
+        if os.stat(source_current_path).st_dev == os.stat(destination_path).st_dev:
+            os.symlink(source_current_path, destination_current_path)
+
+
+def copy_cv_path(ctx):
+    uid = ctx['uid']
+    gid = ctx['gid']
     source_path = ctx['opt_cosmovisor_dir']
     destination_path = ctx['cosmovisor_dir']
+    
+    # Iterate over files in the source directory and copy each file to the destination
+    for root, dirs, files in os.walk(source_path):
+        for file in files:
+            src_file = os.path.join(root, file)
+            dest_file = os.path.join(destination_path, root, file)
 
-    # Check if source path exists
-    if not os.path.exists(source_path):
-        return
+            # Skip the copy step if source and destination are the same
+            if os.path.realpath(src_file) != os.path.realpath(dest_file):
+                # Ensure the destination directory exists
+                os.makedirs(os.path.dirname(dest_file), exist_ok=True)
 
-    source_dev = os.stat(source_path).st_dev
-
-    # Check if destination path is a symbolic link and pointing to the expected target
-    if os.path.islink(destination_path):
-        actual_target = os.readlink(destination_path)
-        logging.info(f"Actual target: {actual_target}")
-        if actual_target != source_path:
-            os.unlink(destination_path)
-
-    # Check if destination path exists
-    if not os.path.exists(destination_path):
-        logging.info(f"Error: Path '{destination_path}' does not exist.")
-        if source_dev != os.stat(ctx['daemon_home']).st_dev:
-            logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
-            shutil.copytree(source_path, destination_path)
-        else:
-            logging.info(f"Creating symbolic link '{source_path}' -> '{destination_path}'...")
-            os.symlink(source_path, destination_path)
-
-    # Check if destination path is not a symbolic link but not empty
-    if source_dev != os.stat(destination_path).st_dev:
-        logging.info(f"Copying '{source_path}' -> '{destination_path}'...")
-        for subpath in os.listdir(f"{source_path}/upgrades"):
-            subpath_destination = f"{destination_path}/upgrades/{subpath}"
-            if os.path.exists(subpath_destination):
-                shutil.rmtree(subpath_destination)
-            if not os.path.exists(subpath_destination):
-                os.makedirs(subpath_destination)
-                shutil.copytree(f"{source_path}/upgrades/{subpath}", subpath_destination, dirs_exist_ok=True)
-
-    return
+                # Copy the file from source to destination
+                shutil.copy2(src_file, dest_file)
+            os.chown(src_file, uid, gid)
+            os.chown(dest_file, uid, gid)
 
 
 
@@ -161,8 +185,6 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     upgrade_name = version.get("name", "")
     binary_url = version.get("binary_url", None)
     library_urls = version.get("libraries", {})
-    time = version.get("time", "0001-01-01T00:00:00Z")
-    height = version.get("height", 0)
 
     upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
     binary_file = os.path.join(upgrade_path, "bin", daemon_name)
@@ -170,19 +192,6 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     logging.info(f"Found version {upgrade_name}, Checking for {upgrade_path}...")
 
     os.makedirs(upgrade_path, exist_ok=True)
-
-    # add upgrade-info.json
-    if int(height or 0) > 1 and not os.path.exists(f"{upgrade_path}/upgrade-info.json"):
-        logging.info(f"Setting upgrade height to {height}...")
-        with open(f"{upgrade_path}/upgrade-info.json", 'w') as f:
-            json.dump({
-                "name": upgrade_name, 
-                "time": time, 
-                "height": height, 
-                "info": json.dumps({
-                    "binaries": { ctx['arch']: binary_url }
-                })
-            }, f)
 
     # add binary
     if binary_url:
@@ -195,11 +204,12 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
         logging.info(f"Downloading library: {library_url}...")
         library_file = os.path.join(upgrade_path, "lib", key)
         download_file(library_url, library_file)
+        os.chmod(library_file, 0o755)
         
     # link if binary exists
     if os.path.exists(binary_file):
         logging.info(f"Successfully added binary {binary_file}")
-        copy_upgrade_info(ctx, upgrade_path)
+        create_upgrade_info(ctx, version, os.path.exists(ctx["cv_genesis_dir"] and True or False))
         if linkCurrent:
             link_cv_current(ctx, upgrade_path)
         if not os.path.exists(ctx["cv_genesis_dir"]):
@@ -207,17 +217,25 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     else:
         raise FileNotFoundError(f"Binary {binary_file} not found")
 
-def copy_upgrade_info(ctx, upgrade_path):
-    my_upgrade_info_json = f"{upgrade_path}/upgrade-info.json"
-    upgrade_info_json = ctx["upgrade_info_json"]
-    if os.path.islink(upgrade_info_json):
-        logging.info(f"Removing existing {upgrade_info_json}...")
-        os.unlink(upgrade_info_json)
-    elif os.path.exists(upgrade_info_json):
-        logging.info(f"Removing existing {upgrade_info_json}...")
-        os.remove(upgrade_info_json)
-    logging.info(f"copying {my_upgrade_info_json} to {upgrade_info_json}...")
-    shutil.copy(my_upgrade_info_json, upgrade_info_json)
+def create_upgrade_info(ctx, version, genesis=False):
+    upgrade_name = version.get("name", "")
+    binary_url = version.get("binary_url", None)
+    upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
+    time = version.get("time", "0001-01-01T00:00:00Z")
+    height = version.get("height", genesis and 1 or 0)
+    v_upgrade_info_json = f"{upgrade_path}/upgrade-info.json"
+    if int(height or 0) >= 1 and not os.path.exists(v_upgrade_info_json):
+        logging.info(f"Setting upgrade height for {upgrade_name} to {height}...")
+        with open(v_upgrade_info_json, 'w') as f:
+            json.dump({
+                "name": upgrade_name, 
+                "time": time, 
+                "height": height, 
+                "info": json.dumps({
+                    "binaries": { ctx['arch']: binary_url }
+                })
+            }, f)
+        os.chmod(v_upgrade_info_json, 0o644)
 
 
 def link_cv_current(ctx, upgrade_path):
@@ -261,7 +279,7 @@ def download_file(url, file):
             response = requests.get(url)
             response.raise_for_status()
             tmp_path = os.path.join(tmpdir, url_fname)
-            logging.error(f"Downloading {url} to {tmp_path}...")
+            logging.info(f"Downloading {url} to {tmp_path}...")
             with open(tmp_path, 'wb') as f:
                 f.write(response.content)
 
@@ -273,7 +291,6 @@ def download_file(url, file):
                             logging.info(f"Extracting: {member.name} to {file}")
                             member.name = name
                             tar.extract(member, path=path)
-                            subprocess.run(["ls", "-al", path])
             elif url_fname.endswith(".zip"):
                 # this code does not work consistently
                 with zipfile.ZipFile(tmp_path, 'r') as zip_ref:

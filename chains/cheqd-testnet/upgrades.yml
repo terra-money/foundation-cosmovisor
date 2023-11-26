@@ -6,7 +6,7 @@ git_repo: https://github.com/cheqd/cheqd-node
 libraries: []
 versions:
   - name: v0.3
-    height: '0'
+    height: '1'
     binaries: 
       linux/amd64: >-
         https://github.com/cheqd/cheqd-node/releases/download/v0.3.1/cheqd-node_0.3.1.tar.gz

@@ -7,6 +7,7 @@ libraries: []
 versions:
   - name: v0.3.0
     tag: v0.3.0
+    height: 1
     binaries:
       linux/amd64: https://github.com/strangelove-ventures/noble-networks/blob/main/testnet/grand-1/nobled?checksum=sha256:fc92d3b64b0618238b354bd82b31ed4aa35557129d679d90b070643df34c7c38
   - name: neon
