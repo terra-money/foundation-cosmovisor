@@ -253,11 +253,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('action', type=str, choices=['create', 'restore'], help='Action to perform (create or extract)')
-    parser.add_argument('--snapshot-url', dest="snapshot_url", type=str, default=default_snapshot_url, help='URL of the snapshot')
-    parser.add_argument('--snapshots-dir', dest="snapshot_dir", type=str, default=default_snapshots_dir, help='Directory to save snapshots')
-    parser.add_argument('--chain-home', dest="chain_home", type=str, default=chain_home, help='Directory to extract snapshots')
-    parser.add_argument('--data-dir', dest="data_dir", type=str, default=data_dir, help='Directory to extract snapshots')
-    parser.add_argument('--cosmprund-enabled', dest="cosmprund_enabled", action='store_true', default=default_cosmprund_enabled, help='Enable cosmprund')
+    parser.add_argument('-u', '--snapshot-url', dest="snapshot_url", type=str, default=default_snapshot_url, help='URL of the snapshot')
+    parser.add_argument('-s', '--snapshots-dir', dest="snapshot_dir", type=str, default=default_snapshots_dir, help='Directory to save snapshots')
+    parser.add_argument('-h', '--chain-home', dest="chain_home", type=str, default=chain_home, help='Directory to extract snapshots')
+    parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, default=data_dir, help='Directory to extract snapshots')
+    parser.add_argument('-p', '--cosmprund-enabled', dest="cosmprund_enabled", action='store_true', default=default_cosmprund_enabled, help='Enable cosmprund')
 
     args = parser.parse_args()
 
