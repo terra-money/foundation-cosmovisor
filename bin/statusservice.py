@@ -25,7 +25,7 @@ def write_stderr(s):
 
 def write_status(): 
     # Perform the GET request
-    status = getstatus.get_status()
+    status = getstatus.get_status('http://localhost:26657/status')
     
     # Write the JSON data to the file
     with open(file_path, 'w') as file:
