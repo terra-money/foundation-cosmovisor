@@ -305,7 +305,7 @@ def get_upgrade_info_version(ctx):
             if info.startswith('http'):
                 response = requests.get(info)
                 info = response.json()
-            if 'binaries' in info:
+            elif 'binaries' in info:
                 info = json.loads(info)
             binaries = info.get('binaries', {})
             binary_url = binaries.get(ctx["arch"], None)
