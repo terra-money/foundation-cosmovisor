@@ -30,7 +30,6 @@ NODE_KEY_FILE="${CONFIG_DIR}/node_key.json"
 PV_KEY_FILE="${CONFIG_DIR}/priv_validator_key.json"
 ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
-
 parse_chain_info(){
     if [ ! -f "${CHAIN_JSON}" ]; then
         getchaininfo.py

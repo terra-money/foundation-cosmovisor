@@ -98,6 +98,7 @@ def get_arch_version(ctx, codebase, version):
     git_repo = codebase.get("git_repo", "")
     tag = version.get("tag", name)
     recommended_version = version.get("recommended_version", tag)
+    libraries = version.get("libraries", {}).get(ctx["arch"], {})
     binaries = version.get("binaries", {})
     binary_url = binaries.get(ctx["arch"], binaries.get("docker/" + ctx["arch"], ""))
     return {
@@ -108,6 +109,7 @@ def get_arch_version(ctx, codebase, version):
         "tag": tag,
         "recommended_version": recommended_version,
         "binary_url": binary_url,
+        "libraries": libraries
     }
 
 
@@ -157,8 +159,8 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(ctx["cv_upgrades_dir"], exist_ok=True)
     daemon_name = ctx.get("daemon_name")
     upgrade_name = version.get("name", "")
-    binary_url = version.get("binary_url", {})
-    library_urls = version.get("libraries", [])
+    binary_url = version.get("binary_url", None)
+    library_urls = version.get("libraries", {})
     name = ctx.get("chain_name", "")
     time = version.get("time", "0001-01-01T00:00:00Z")
     height = version.get("height", 0)
@@ -191,9 +193,9 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     
     # add libraries
     os.makedirs(f"{upgrade_path}/lib", exist_ok=True)
-    for library_url in library_urls:
+    for key, library_url in library_urls.items():
         logging.info(f"Downloading library: {library_url}...")
-        library_file = os.path.join(upgrade_path, "lib", os.path.basename(library_url.split('?')[0]))
+        library_file = os.path.join(upgrade_path, "lib", key)
         download_file(library_url, library_file)
         
     # link if binary exists

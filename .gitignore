@@ -1,3 +1,5 @@
 .vscode/
 bin/test.py
 bin/__pycache__
+tests/__pycache__
+bin/__init__.py
