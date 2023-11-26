@@ -351,7 +351,7 @@ set_pruning(){
     else
         set_default_pruning
     fi
-    if [ ${LZ4_SNAPSHOT_ENABLED:=} = "true" ]; then
+    if [[ ${LZ4_SNAPSHOT_ENABLED:=""} == "true" ]]; then
         sed -e "s|^autostart=false|autostart=true|" -i /etc/supervisor.d/snapshot.conf
     fi
 }
