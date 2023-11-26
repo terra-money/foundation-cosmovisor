@@ -161,10 +161,8 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     upgrade_name = version.get("name", "")
     binary_url = version.get("binary_url", None)
     library_urls = version.get("libraries", {})
-    name = ctx.get("chain_name", "")
     time = version.get("time", "0001-01-01T00:00:00Z")
     height = version.get("height", 0)
-    tag = version.get("tag", "")
 
     upgrade_path = os.path.join(ctx["cv_upgrades_dir"], upgrade_name)
     binary_file = os.path.join(upgrade_path, "bin", daemon_name)
@@ -178,7 +176,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
         logging.info(f"Setting upgrade height to {height}...")
         with open(f"{upgrade_path}/upgrade-info.json", 'w') as f:
             json.dump({
-                "name": name, 
+                "name": upgrade_name, 
                 "time": time, 
                 "height": height, 
                 "info": json.dumps({
@@ -201,6 +199,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     # link if binary exists
     if os.path.exists(binary_file):
         logging.info(f"Successfully added binary {binary_file}")
+        copy_upgrade_info(ctx, upgrade_path)
         if linkCurrent:
             link_cv_current(ctx, upgrade_path)
         if not os.path.exists(ctx["cv_genesis_dir"]):
@@ -208,7 +207,17 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
     else:
         raise FileNotFoundError(f"Binary {binary_file} not found")
 
-
+def copy_upgrade_info(ctx, upgrade_path):
+    my_upgrade_info_json = f"{upgrade_path}/upgrade-info.json"
+    upgrade_info_json = ctx["upgrade_info_json"]
+    if os.path.islink(upgrade_info_json):
+        logging.info(f"Removing existing {upgrade_info_json}...")
+        os.unlink(upgrade_info_json)
+    elif os.path.exists(upgrade_info_json):
+        logging.info(f"Removing existing {upgrade_info_json}...")
+        os.remove(upgrade_info_json)
+    logging.info(f"copying {my_upgrade_info_json} to {upgrade_info_json}...")
+    shutil.copy(my_upgrade_info_json, upgrade_info_json)
 
 
 def link_cv_current(ctx, upgrade_path):
