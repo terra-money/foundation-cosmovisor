@@ -80,4 +80,4 @@ versions:
       linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.6-1688984159/linux-amd64.zip
     libraries:
       linux/amd64:
-        libwasmvm.x86_64.so: https://github.com/CosmWasm/wasmvm/releases/download/v1.2.4/libwasmvm.x86_64.so
+        libwasmvm.x86_64.so: https://github.com/CosmWasm/wasmvm/releases/download/v1.2.3/libwasmvm.x86_64.so
