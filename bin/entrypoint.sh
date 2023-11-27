@@ -479,7 +479,6 @@ modify_app_toml(){
     sed -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"${PRUNING_KEEP_RECENT}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-interval *=.*|pruning-interval = \"${PRUNING_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^pruning-keep-every *=.*|pruning-keep-every = \"${PRUNING_KEEP_EVERY}\"|" -i "${APP_TOML}"
-    sed -e "s|^min-retain-blocks *=.*|min-retain-blocks = \"${MIN_RETAIN_BLOCKS}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
@@ -490,6 +489,10 @@ modify_app_toml(){
         -e "s|^address *=.*:9090.*$|address = \"0.0.0.0:9090\"|" \
         -e "s|^address *=.*:9091.*$|address = \"0.0.0.0:9091\"|" \
         -i "${APP_TOML}"
+
+    if [ -n "${MIN_RETAIN_BLOCKS}" ]; then
+        sed -e "s|^min-retain-blocks *=.*|min-retain-blocks = \"${MIN_RETAIN_BLOCKS}\"|" -i "${APP_TOML}"
+    fi
 
     if [ -n "${DB_BACKEND}" ]; then
         sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND}\"|" -i "${APP_TOML}"

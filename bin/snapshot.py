@@ -15,7 +15,7 @@ import initversion
 import logging
 import glob
 import subprocess
-import datetime
+
 
 def download_file(url: str, destination: str) -> None:
     """
@@ -114,6 +114,7 @@ def get_status_block_height(json_file_path):
         logging.error(f"Error reading status file: {e}")
         return None
 
+
 def get_block_height(data_dir):
     # Try to get block height from snapshot
     snapshot_block_height = get_snapshot_block_height(data_dir)
@@ -161,22 +162,21 @@ def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: str = 
         compress_lz4(snapshot_file, [data_dir], [])
 
     snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
-    if os.path.islink(snapshot_latest):
-        os.unlink(snapshot_latest)
-    elif os.path.exists(snapshot_latest):
-        os.remove(snapshot_latest)
-
-    if os.path.exists(snapshot_latest): os.remove(snapshot_latest)
-    os.symlink(snapshot_file, snapshot_latest)
-
+    link_overwrite(snapshot_file, snapshot_latest)
     wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
-    if os.path.islink(wasm_latest):
-        os.unlink(wasm_latest)
-    elif os.path.exists(wasm_latest):
-        os.remove(wasm_latest)
-    
-    if os.path.exists(wasm_latest): os.remove(wasm_latest)
-    os.symlink(wasm_file, wasm_latest)
+    link_overwrite(wasm_file, wasm_latest)
+
+
+def link_overwrite(src_file: str, dst_file: str) -> None:
+    """
+    """
+    if os.path.islink(dst_file):
+        os.unlink(dst_file)
+    elif os.path.exists(dst_file):
+        os.remove(dst_file)
+
+    if os.path.exists(dst_file): os.remove(dst_file)
+    os.symlink(src_file, dst_file)
 
 
 def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> int:
@@ -195,6 +195,8 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
         if not snapshot_url.startswith('file://'):
             logging.info(f"Downloading snapshot from {snapshot_url}")
             download_file(snapshot_url, snapfile)
+            snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
+            link_overwrite(snapfile, snapshot_latest)
         elif snapshot_url[len('file://'):] != snapfile:
             shutil.copy(snapshot_url[len('file://'):], snapfile)
 
