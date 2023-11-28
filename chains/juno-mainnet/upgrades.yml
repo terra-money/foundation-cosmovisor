@@ -54,8 +54,8 @@ versions:
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v16.0.0/junod
   - name: v17
-    tag: v17.0.0
+    tag: v17.1.1
     proposal: 317
     height: 10078449
     binaries:
-      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v17.0.0/junod
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v17.1.1/junod
