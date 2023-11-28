@@ -200,7 +200,7 @@ download_genesis(){
             *.tar.gz)
                 curl -sSL "${GENESIS_URL}" | tar -xz -C "${CONFIG_DIR}" 2>/dev/null
                 if [ ! -f "${GENESIS_FILE}" ]; then
-                    mv "${CONFIG_DIR}/*genesis*.json" "${GENESIS_FILE}"
+                    mv ${CONFIG_DIR}/*genesis*.json ${GENESIS_FILE}
                 fi
                 ;;
             *.gz)
