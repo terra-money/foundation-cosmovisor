@@ -62,3 +62,10 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/core/releases/download/v2.6.0-rc1/terra_2.6.0-rc1_Linux_x86_64.tar.gz?checksum=sha256:e9868edb4d2917dab9387b753a18dcea869d23d071c5936041a513b6510a963d
+  - name: v2.7
+    height: '8494000'
+    proposal: '224'
+    tag: v2.7.1
+    binaries:
+      linux/amd64: >-
+        https://github.com/terra-money/core/releases/download/v2.7.1/terra_2.7.1_Linux_x86_64.tar.gz?checksum=sha256:abcafb737540afa560225467bf96a9acb87f354ece354c02a27abdf1613e8596
