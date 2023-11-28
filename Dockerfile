@@ -68,5 +68,6 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
 
 COPY ./chains/${CHAIN_NAME}-${CHAIN_NETWORK}/* /etc/default/
 
+# install binaries to /opt/cosmovisor
 RUN set -eux && \
-    /usr/local/bin/getupgrades.py 
+    /usr/local/bin/getupgrades.py -d /opt/cosmovisor 

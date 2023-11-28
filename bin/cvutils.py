@@ -35,41 +35,27 @@ def get_ctx():
     upgrades_yaml_path = os.path.join('/etc/default', 'upgrades.yml')
     upgrades_json_path = os.path.join('/etc/default', 'upgrades.json')
 
-    opt_cosmovisor_dir = os.path.join('/opt', "cosmovisor")
-    cosmovisor_dir = os.path.join(daemon_home, "cosmovisor")
-    cv_current_dir = os.path.join(cosmovisor_dir, "current")
-    cv_genesis_dir = os.path.join(cosmovisor_dir, "genesis")
-    cv_upgrades_dir = os.path.join(cosmovisor_dir, "upgrades")
-
     config_dir = os.path.join(chain_home, "config")
     data_dir = os.path.join(chain_home, "data")
     upgrade_info_json = os.path.join(data_dir, "upgrade-info.json")
 
-    return {
-        "uid": uid,
-        "gid": gid,
-        "arch": arch,
-        "debug": debug,
-        "daemon_home": daemon_home,
-        "chain_name": chain_name,
-        "chain_network": chain_network,
-        "daemon_name": daemon_name,
-        "chain_json_url": chain_json_url,
+    cosmovisor_dir = os.path.join(daemon_home, "cosmovisor")
+    return set_cosmovisor_dir(locals(), cosmovisor_dir)
 
-        "chain_json_path": chain_json_path,
-        "upgrades_json_path": upgrades_json_path,
-        "upgrades_yaml_path": upgrades_yaml_path,
-        "upgrade_info_json": upgrade_info_json,
 
-        "opt_cosmovisor_dir": opt_cosmovisor_dir,
-        "cosmovisor_dir": cosmovisor_dir,
-        "cv_current_dir": cv_current_dir,
-        "cv_genesis_dir": cv_genesis_dir,
-        "cv_upgrades_dir": cv_upgrades_dir,
+def set_cosmovisor_dir(ctx, cosmovisor_dir):
+    ctx["cosmovisor_dir"] = cosmovisor_dir
+    ctx["cv_current_dir"] = os.path.join(cosmovisor_dir, "current")
+    ctx["cv_genesis_dir"] = os.path.join(cosmovisor_dir, "genesis")
+    ctx["cv_upgrades_dir"] = os.path.join(cosmovisor_dir, "upgrades")
+    return ctx
 
-        "data_dir": data_dir,
-        "config_dir": config_dir,
-    }
+
+def rsync_cosmovisor(ctx):
+    source = "/opt/cosmovisor/" # set in dockerfile
+    destination = ctx["cosmovisor_dir"]
+    command = ["rsync", "-avz", source, destination]
+    subprocess.run(command)
 
 
 def get_system_arch():
@@ -117,68 +103,6 @@ def get_arch_version(ctx, codebase, version):
     }
 
 
-def link_cv_path(ctx):
-    source_path = ctx['opt_cosmovisor_dir']
-    source_upgrades_path = os.path.join(source_path, os.path.basename(ctx['cv_upgrades_dir']))
-    source_genesis_path = os.path.join(source_path, os.path.basename(ctx['cv_genesis_dir']))
-    source_current_path = os.path.join(source_path, os.path.basename(ctx['cv_current_dir']))
-    destination_path = ctx['cosmovisor_dir']
-    destination_upgrades_path = os.path.join(destination_path, os.path.basename(ctx['cv_upgrades_dir']))
-    destination_genesis_path = os.path.join(destination_path, os.path.basename(ctx['cv_genesis_dir']))
-    destination_current_path = os.path.join(destination_path, os.path.basename(ctx['cv_current_dir']))
-
-    if not os.path.exists(source_path):
-        os.makedirs(source_path, exist_ok=True)
-
-    if not os.path.exists(source_upgrades_path):
-        os.makedirs(source_upgrades_path, exist_ok=True)
-        
-    if not os.path.exists(source_genesis_path):
-        os.makedirs(source_genesis_path, exist_ok=True)
-        
-    if not os.path.exists(source_current_path):
-        os.makedirs(source_current_path, exist_ok=True)
-
-    if not os.path.exists(destination_path):
-        os.makedirs(destination_path, exist_ok=True)
-    
-    if not os.path.exists(destination_upgrades_path):
-        if os.stat(source_upgrades_path).st_dev == os.stat(destination_path).st_dev:
-            os.symlink(source_upgrades_path, destination_upgrades_path)
-            
-    if not os.path.exists(destination_genesis_path):
-        if os.stat(source_genesis_path).st_dev == os.stat(destination_path).st_dev:
-            os.symlink(source_genesis_path, destination_genesis_path)
-            
-    if not os.path.exists(destination_current_path):
-        if os.stat(source_current_path).st_dev == os.stat(destination_path).st_dev:
-            os.symlink(source_current_path, destination_current_path)
-
-
-def copy_cv_path(ctx):
-    uid = ctx['uid']
-    gid = ctx['gid']
-    source_path = ctx['opt_cosmovisor_dir']
-    destination_path = ctx['cosmovisor_dir']
-    
-    # Iterate over files in the source directory and copy each file to the destination
-    for root, dirs, files in os.walk(source_path):
-        for file in files:
-            src_file = os.path.join(root, file)
-            dest_file = os.path.join(destination_path, root, file)
-
-            # Skip the copy step if source and destination are the same
-            if os.path.realpath(src_file) != os.path.realpath(dest_file):
-                # Ensure the destination directory exists
-                os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-
-                # Copy the file from source to destination
-                shutil.copy2(src_file, dest_file)
-            os.chown(src_file, uid, gid)
-            os.chown(dest_file, uid, gid)
-
-
-
 def create_cv_upgrade(ctx, version, linkCurrent=True):
     os.makedirs(ctx["cv_upgrades_dir"], exist_ok=True)
     daemon_name = ctx.get("daemon_name")
@@ -216,6 +140,7 @@ def create_cv_upgrade(ctx, version, linkCurrent=True):
             link_cv_genesis(ctx, upgrade_path)
     else:
         raise FileNotFoundError(f"Binary {binary_file} not found")
+
 
 def create_upgrade_info(ctx, version, genesis=False):
     upgrade_name = version.get("name", "")
@@ -420,3 +345,17 @@ def download_and_extract_image(image_url: str, binary_file: str):
                             blobtar.extract(member, path=destination)
                             logging.info(f"Successfully extracted {file_to_extract} from {image}")
                             break
+
+
+def unsafe_reset_all(data_dir):
+    # remove addrbook, imperfect logic, but should work for now
+    config_dir = os.path.join(os.path.dirname(data_dir), 'config')
+    addrbook_json = os.path.join(config_dir, 'addrbook.json')
+    if os.path.exists(addrbook_json):
+        os.remove(addrbook_json)
+    
+    # remove data_dir and recreate
+    shutil.rmtree(data_dir, ignore_errors=True)
+    os.makedirs(data_dir, exist_ok=True)
+    with open(os.path.join(data_dir, 'priv_validator_state.json'), 'w') as file:
+        file.write('{"height": "0", "round": 0, "step": 0}')

@@ -233,6 +233,7 @@ def main(args: argparse.Namespace) -> int:
     if args.action == 'create':
         create_snapshot(args.snapshots_dir, args.data_dir, args.cosmprund_enabled)
     elif args.action == 'restore':
+        cvutils.unsafe_reset_all(args.data_dir)
         restore_snapshot(args.snapshot_url, args.snapshots_dir, args.chain_home)
     else:
         raise ValueError(f"Unsupported action: {args.action}")

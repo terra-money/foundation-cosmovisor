@@ -4,6 +4,7 @@ import os
 import logging
 import cvutils
 import getchaininfo
+import subprocess
 
 # Set up logging
 logging.basicConfig(
@@ -12,8 +13,6 @@ logging.basicConfig(
 )
 
 def main(ctx):
-    cvutils.link_cv_path(ctx)
-
     version = None
     data_dir = ctx.get("data_dir")
     upgrade_info_json = ctx.get("upgrade_info_json")
@@ -40,10 +39,11 @@ def main(ctx):
     if version:
         cvutils.create_cv_upgrade(ctx, version)
 
-    cvutils.copy_cv_path(ctx)
-    # do not exit if version = None, we want to keep the container running
     return 
+
 
 if __name__ == "__main__":
     ctx = cvutils.get_ctx()
+    logging.info("Initializing version...")
+    cvutils.rsync_cosmovisor(ctx)
     main(ctx)
