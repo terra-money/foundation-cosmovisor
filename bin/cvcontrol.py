@@ -63,7 +63,7 @@ def stop_process(process_name):
         server.supervisor.stopProcess(process_name)
 
         # Print success message
-        logging.info(f"Stopped process: {process_name}", file=sys.stderr)
+        logging.info(f"Stopped process: {process_name}")
     except Exception as e:
         # Print error message
         logging.error(f"Error stopping process: {e}")
@@ -104,7 +104,7 @@ def main(args: argparse.Namespace) -> int:
         restart_process(process_name)
         
     return 0
-    
+
         
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
