@@ -4,7 +4,6 @@ import os
 import logging
 import cvutils
 import getchaininfo
-import subprocess
 
 # Set up logging
 logging.basicConfig(
@@ -30,6 +29,14 @@ def main(ctx):
         version = cvutils.get_upgrade_info_version(ctx)
     elif os.path.exists(data_dir):
         logging.info("Data dir exists, assuming latest version.")
+        # version = getchaininfo.get_chain_json_recommended_version(ctx)
+        version = getchaininfo.get_chain_json_latest_version(ctx)
+    elif ctx.get("statesync_enabled", False):
+        logging.info("Statesync enabled using latest version.")
+        # version = getchaininfo.get_chain_json_recommended_version(ctx)
+        version = getchaininfo.get_chain_json_latest_version(ctx)
+    elif ctx.get("restore_snapshot", False):
+        logging.info("Restore snapshot enabled using latest version.")
         # version = getchaininfo.get_chain_json_recommended_version(ctx)
         version = getchaininfo.get_chain_json_latest_version(ctx)
     else:

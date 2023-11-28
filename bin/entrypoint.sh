@@ -138,8 +138,8 @@ ensure_chain_home(){
 }
 
 initialize_version(){
-    export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME \
-    CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION 
+    export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME STATE_SYNC_ENABLED \
+    CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION RESTORE_SNAPSHOT
     initversion.py
     if [ $? != 0 ]; then
         exit $?
@@ -199,6 +199,9 @@ download_genesis(){
         case "${GENESIS_URL}" in
             *.tar.gz)
                 curl -sSL "${GENESIS_URL}" | tar -xz -C "${CONFIG_DIR}" 2>/dev/null
+                if [ ! -f "${GENESIS_FILE}" ]; then
+                    mv "${CONFIG_DIR}/*genesis*.json" "${GENESIS_FILE}"
+                fi
                 ;;
             *.gz)
                 curl -sSL "${GENESIS_URL}" | zcat > "${GENESIS_FILE}"

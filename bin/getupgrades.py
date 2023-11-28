@@ -32,13 +32,12 @@ def download_libraries(ctx):
 
 if __name__ == "__main__":
     # get target directory
-    ctx = cvutils.get_ctx()
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
-    parser.add_argument('-d', '--dir', dest="dir", type=str, default=ctx["cosmovisor_dir"], help='Cosmovisor directory')
+    parser.add_argument('-d', '--dir', dest="cosmovisor_dir", type=str, help='Cosmovisor directory')
     args = parser.parse_args()
 
     # modify ctx
-    ctx = cvutils.set_cosmovisor_dir(ctx, args.dir)
+    ctx = cvutils.get_ctx(args)
 
     download_versions(ctx)
     download_libraries(ctx)

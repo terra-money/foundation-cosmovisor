@@ -13,6 +13,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 
+
 def get_chain_json(ctx):
     chain_name = ctx.get('chain_name', None)
     chain_network = ctx.get('chain_network', 'mainnet')
@@ -40,15 +41,18 @@ def get_chain_json(ctx):
     with open(chain_json_path, 'wb') as f:
         f.write(response.content)
 
+
 def get_upgrades_json(ctx, upgrades_json_path):
     with open(upgrades_json_path, 'r') as f:
         codebase_data = json.load(f)
     return codebase_data
 
+
 def get_upgrades_yaml(ctx, upgrades_yaml_path):
     with open(upgrades_yaml_path, 'r') as f:
         codebase_data = yaml.safe_load(f)  
     return codebase_data
+
 
 def get_codebase_data(ctx):
     upgrades_yaml_path = ctx.get('upgrades_yaml_path')
@@ -79,6 +83,7 @@ def get_codebase_data(ctx):
         'versions': chain_data.get('codebase', {}).get('versions', [])
     }
     
+    
 def get_chain_json_version(ctx, version):
     data = get_codebase_data(ctx)
     
@@ -92,6 +97,7 @@ def get_chain_json_version(ctx, version):
 
     return None
 
+
 def get_chain_json_latest_version(ctx):
     logging.info(f"Retrieving latest available version identified in {ctx['chain_json_path']}...")
     codebase_data = get_codebase_data(ctx)
@@ -101,6 +107,7 @@ def get_chain_json_latest_version(ctx):
         return cvutils.get_arch_version(ctx, codebase_data, latest_version)
     return None
 
+
 def get_chain_json_first_version(ctx):
     logging.info(f"Retrieving first available version identified in {ctx['chain_json_path']}...")
     codebase_data = get_codebase_data(ctx)
@@ -109,6 +116,7 @@ def get_chain_json_first_version(ctx):
     if first_version:
         return cvutils.get_arch_version(ctx, codebase_data, first_version)
     return None
+
 
 def get_chain_json_genesis_version(ctx):
     with open(ctx["chain_json_path"], 'r') as f:
@@ -122,6 +130,7 @@ def get_chain_json_genesis_version(ctx):
 
     logging.info(f"Genesis version not found in {ctx['chain_json_path']}, falling back to first version...")
     return get_chain_json_first_version(ctx)
+
 
 def get_chain_json_recommended_version(ctx):
     with open(ctx["chain_json_path"], 'r') as f:

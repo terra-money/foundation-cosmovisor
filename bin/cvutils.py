@@ -10,7 +10,7 @@ import subprocess
 import platform
 import shutil
 import tempfile
-
+import argparse
 
 # Set up logging
 logging.basicConfig(
@@ -18,28 +18,50 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 
+# modiffication of getattr to return default value if attribute is empty
+def agetattr(obj, name, default=None):
+    value = getattr(obj, name, default)
+    if not value:
+        return default
+    return value
 
-def get_ctx():
+
+def get_ctx(args: argparse.Namespace = {}):
     arch = get_system_arch()
-    uid = 1000
-    gid = 1000
-    debug = os.environ.get("DEBUG", None)
-    daemon_home = os.environ.get("DAEMON_HOME", os.getcwd())
-    chain_home = os.environ.get("CHAIN_HOME", daemon_home)
-    chain_name = os.environ.get('CHAIN_NAME', 'terra')
-    chain_network = os.environ.get('CHAIN_NETWORK', 'mainnet')
-    daemon_name = os.environ.get("DAEMON_NAME", f"{chain_name}d")
-    chain_json_url = os.environ.get('CHAIN_JSON_URL', None)
+    uid = agetattr(args, "uid", 1000)
+    gid = agetattr(args, "gid", 1000)
+    debug = agetattr(args, "debug", os.environ.get("DEBUG", None))
 
-    chain_json_path = os.path.join('/etc/default', 'chain.json')
-    upgrades_yaml_path = os.path.join('/etc/default', 'upgrades.yml')
-    upgrades_json_path = os.path.join('/etc/default', 'upgrades.json')
+    moniker = agetattr(args, "moniker", os.environ.get("MONIKER", "rpcnode"))
+    chain_network = agetattr(args, "chain_network", os.environ.get("CHAIN_NETWORK", "mainnet"))
+    chain_name = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", "mainnet"))
+    chain_id = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", f"{chain_name}-1"))
+    daemon_name = agetattr(args, "daemon_name", os.environ.get("DAEMON_NAME", f"{chain_name}d"))
+    
+    daemon_home = agetattr(args, "daemon_home", os.environ.get("DAEMON_HOME", os.getcwd()))
+    chain_home = agetattr(args, "chain_home", os.environ.get("CHAIN_HOME", daemon_home))
+    chain_json_url = agetattr(args, "chain_json_url", os.environ.get("CHAIN_JSON_URL", None))
+    
+    chain_json_path = agetattr(args, "chain_json_path", os.environ.get("CHAIN_JSON_PATH", '/etc/default/chain.json'))
+    upgrades_yaml_path = agetattr(args, "upgrades_yaml_path", os.environ.get("UPGRADES_YAML_PATH", '/etc/default/upgrades.yml'))
+    upgrades_json_path = agetattr(args, "upgrades_json_path", os.environ.get("UPGRADES_JSON_PATH", '/etc/default/upgrades.json'))
 
-    config_dir = os.path.join(chain_home, "config")
-    data_dir = os.path.join(chain_home, "data")
-    upgrade_info_json = os.path.join(data_dir, "upgrade-info.json")
+    config_dir = agetattr(args, "config_dir", os.path.join(chain_home, "config"))
+    genesis_file = agetattr(args, "genesis_file", os.path.join(config_dir, "genesis.json"))
+    
+    data_dir = agetattr(args, "data_dir", os.path.join(chain_home, "data"))
+    upgrade_info_json = agetattr(args, "upgrade_info_json", os.path.join(data_dir, "upgrade-info.json"))
 
-    cosmovisor_dir = os.path.join(daemon_home, "cosmovisor")
+    cosmovisor_dir = agetattr(args, "cosmovisor_dir", os.environ.get("COSMOVISOR_DIR", os.path.join(daemon_home, "cosmovisor")))
+
+    snapshots_dir = agetattr(args, "snapshots_dir", os.environ.get("SNAPSHOTS_DIR", os.path.join(os.path.dirname(data_dir), "shared", "snapshots")))
+    snapshot_url = agetattr(args, "snapshot_url", os.environ.get("SNAPSHOT_URL", f"file://{snapshots_dir}/snapshot-latest.tar.lz4"))
+    cosmprund_enabled = agetattr(args, "cosmprund_enabled", os.environ.get("COSMPRUND_ENABLED", "false").lower() in ["true", "1", "yes"])
+
+
+    statesync_enabled = agetattr(args, "statesync_enabled", os.environ.get("STATE_SYNC_ENABLED", "false").lower() in ["true", "1", "yes"])
+    restore_snapshot = agetattr(args, "restore_snapshot", os.environ.get("RESTORE_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
+
     return set_cosmovisor_dir(locals(), cosmovisor_dir)
 
 
@@ -347,7 +369,8 @@ def download_and_extract_image(image_url: str, binary_file: str):
                             break
 
 
-def unsafe_reset_all(data_dir):
+def unsafe_reset_all(ctx):
+    data_dir = ctx.get('data_dir')
     # remove addrbook, imperfect logic, but should work for now
     config_dir = os.path.join(os.path.dirname(data_dir), 'config')
     addrbook_json = os.path.join(config_dir, 'addrbook.json')

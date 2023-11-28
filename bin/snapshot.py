@@ -228,13 +228,14 @@ def main(args: argparse.Namespace) -> int:
     :param args: Command line arguments.
     :return: 0 if the snapshot was successfully created or restored, 1 otherwise.
     """
+    ctx = cvutils.get_ctx(args)
     cvcontrol.stop_process('cosmovisor')
 
     if args.action == 'create':
-        create_snapshot(args.snapshots_dir, args.data_dir, args.cosmprund_enabled)
+        create_snapshot(ctx.get("snapshots_dir"), ctx.get("data_dir"), ctx.get("cosmprund_enabled"))
     elif args.action == 'restore':
-        cvutils.unsafe_reset_all(args.data_dir)
-        restore_snapshot(args.snapshot_url, args.snapshots_dir, args.chain_home)
+        cvutils.unsafe_reset_all(ctx)
+        restore_snapshot(ctx.get("snapshot_url"), ctx.get("snapshots_dir"), ctx.get("chain_home"))
     else:
         raise ValueError(f"Unsupported action: {args.action}")
 
@@ -245,24 +246,16 @@ def main(args: argparse.Namespace) -> int:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    user_home = os.path.expanduser('~')
-    chain_home = os.environ.get('CHAIN_HOME', user_home)
-    default_data_dir = os.path.join(chain_home, 'data')
-    data_dir = os.environ.get('DATA_DIR', default_data_dir)
-    shared_snapshots_dir = os.path.join(os.path.dirname(data_dir), 'shared', 'snapshots')
-    default_snapshots_dir = os.environ.get('SNAPSHOTS_DIR', shared_snapshots_dir)
-    default_cosmprund_enabled = os.getenv('COSMPRUND_ENABLED', 'false').lower() in ['true', '1', 'yes']
-    default_snapshot_url = os.getenv('SNAPSHOT_URL', f'file://{default_snapshots_dir}/snapshot-latest.tar.lz4')
-
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('action', type=str, choices=['create', 'restore'], help='Action to perform (create or extract)')
-    parser.add_argument('-u', '--snapshot-url', dest="snapshot_url", type=str, default=default_snapshot_url, help='URL of the snapshot')
-    parser.add_argument('-s', '--snapshots-dir', dest="snapshots_dir", type=str, default=default_snapshots_dir, help='Directory to save snapshots')
-    parser.add_argument('-c', '--chain-home', dest="chain_home", type=str, default=chain_home, help='Directory to extract snapshots')
-    parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, default=data_dir, help='Directory to extract snapshots')
-    parser.add_argument('-p', '--cosmprund-enabled', dest="cosmprund_enabled", action='store_true', default=default_cosmprund_enabled, help='Enable cosmprund')
+    parser.add_argument('-u', '--snapshot-url', dest="snapshot_url", type=str, help='URL of the snapshot')
+    parser.add_argument('-s', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
+    parser.add_argument('-c', '--chain-home', dest="chain_home", type=str, help='Directory to extract snapshots')
+    parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
+    parser.add_argument('-p', '--cosmprund-enabled', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
 
     args = parser.parse_args()
 
     exit_code = main(args)
+    
     exit(exit_code)

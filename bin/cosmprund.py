@@ -1,10 +1,15 @@
-import os
 import sys
 import select
 import subprocess
+import logging
+import cvutils
+import argparse
 
 # shell command to prune data directory
-def main(data_dir):
+def main(args: argparse.Namespace) -> int:
+    ctx = cvutils.get_ctx(args)
+    data_dir = ctx["data_dir"]
+    
     command = ["/usr/local/bin/cosmprund", "prune", data_dir]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -25,8 +30,16 @@ def main(data_dir):
         # Break from the loop if the process is done
         if process.poll() is not None:
             break
+    return 0
         
 if __name__ == '__main__':
-    data_dir = os.environ.get('DATA_DIR')
-    if data_dir:
-        main(data_dir)
+    logging.basicConfig(level=logging.INFO)
+
+    parser = argparse.ArgumentParser(description='Load data from image snapshot.')
+    parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
+
+    args = parser.parse_args()
+
+    exit_code = main(args)
+    
+    exit(exit_code)

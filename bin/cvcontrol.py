@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 
 import sys
+import logging
+import argparse
 import xmlrpc.client
 
 # URL to fetch the data from
@@ -61,10 +63,10 @@ def stop_process(process_name):
         server.supervisor.stopProcess(process_name)
 
         # Print success message
-        print(f"Stopped process: {process_name}", file=sys.stderr)
+        logging.info(f"Stopped process: {process_name}", file=sys.stderr)
     except Exception as e:
         # Print error message
-        print(f"Error stopping process: {e}")
+        logging.error(f"Error stopping process: {e}")
 
 
 def restart_process(process_name: str, supervisor_rpc_url: str) -> None:
@@ -81,7 +83,7 @@ def restart_process(process_name: str, supervisor_rpc_url: str) -> None:
     # Connect to the supervisord XML-RPC server
     server = xmlrpc.client.ServerProxy(supervisor_rpc_url)
 
-    # Restart the process
+    # Restart the plogging.infologging.infoerrorinfoprintlogging.infoerrors
     try:
         server.supervisor.stopProcess(process_name)
         server.supervisor.startProcess(process_name)
@@ -90,19 +92,9 @@ def restart_process(process_name: str, supervisor_rpc_url: str) -> None:
         sys.stderr.write(f"Error restarting process: {e}")
 
   
-def main():
+def main(args: argparse.Namespace) -> int:
     process_name = 'cosmovisor'
-    valid_actions = ['start', 'stop', 'restart']
-
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <action>")
-        sys.exit(1)
-
-    action = sys.argv[1]
-
-    if action not in valid_actions:
-        print(f"Invalid action: {action}")
-        sys.exit(1)
+    action = args.action
 
     if action == 'start':
         start_process(process_name)
@@ -111,6 +103,13 @@ def main():
     elif action == 'restart':
         restart_process(process_name)
         
+    return 0
+    
         
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser(description='Load data from image snapshot.')
+    parser.add_argument('action', type=str, choices=['start', 'stop', 'restart'], help='Action to perform (create or extract)')
+    args = parser.parse_args()
+    exit_code = main(args)
+    exit(exit_code)
