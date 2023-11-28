@@ -45,6 +45,8 @@ parse_chain_info(){
 
     # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
+    CONTRACT_QUERY_GAS_LIMIT=${CONTRACT_QUERY_GAS_LIMIT:=3000000}
+    CONTRACT_SIMULATION_GAS_LIMIT=${CONTRACT_SIMULATION_GAS_LIMIT:=50000000}
     ENABLE_API=${ENABLE_API:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
     HALT_HEIGHT=${HALT_HEIGHT:=""}
@@ -482,6 +484,11 @@ modify_app_toml(){
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
+    sed -e "s|^memory_cache_size *=.*|memory_cache_size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
+    sed -e "s|^contract-query-gas-limit *=.*|contract-query-gas-limit = \"${CONTRACT_QUERY_GAS_LIMIT}\"|" -i "${APP_TOML}"
+    sed -e "s|^query_gas_limit *=.*|query_gas_limit = \"${CONTRACT_QUERY_GAS_LIMIT}\"|" -i "${APP_TOML}"
+    sed -e "s|^contract-simulation-gas-limit *=.*|contract-simulation-gas-limit = \"${CONTRACT_SIMULATION_GAS_LIMIT}\"|" -i "${APP_TOML}"
+    sed -e "s|^simulation_gas_limit *=.*|simulation_gas_limit = \"${CONTRACT_SIMULATION_GAS_LIMIT}\"|" -i "${APP_TOML}"
     sed -e "s|^rpc-max-body-bytes *=.*|rpialize_c-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
 
     sed -e "s|^address *=.*:1317.*$|address = \"tcp:\/\/0.0.0.0:1317\"|" \
