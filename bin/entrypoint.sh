@@ -141,7 +141,8 @@ ensure_chain_home(){
 
 initialize_version(){
     export DEBUG DAEMON_NAME DAEMON_HOME CHAIN_NAME \
-    CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION 
+    CHAIN_HOME CHAIN_JSON_URL BINARY_URL BINARY_VERSION \
+    STATE_SYNC_ENABLED
     initversion.py
     if [ $? != 0 ]; then
         exit $?

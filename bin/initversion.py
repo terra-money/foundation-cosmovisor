@@ -18,6 +18,7 @@ def main(ctx):
     upgrade_info_json = ctx.get("upgrade_info_json")
     binary_url = os.environ.get("BINARY_URL")
     binary_version = os.environ.get("BINARY_VERSION")
+    state_sync_enabled = os.environ.get("STATE_SYNC_ENABLED", "false")
     
     if binary_url:
         version_name = binary_version if binary_version else "custom"
@@ -32,6 +33,9 @@ def main(ctx):
         logging.info("Data dir exists, assuming latest version.")
         # version = getchaininfo.get_chain_json_recommended_version(ctx)
         version = getchaininfo.get_chain_json_latest_version(ctx)
+    elif state_sync_enabled == "true":
+        logging.info("State sync is enabled, using recommended verison.")
+        version = getchaininfo.get_chain_json_recommended_version(ctx)        
     else:
         logging.info("Preparing genesis version...")
         version = getchaininfo.get_chain_json_genesis_version(ctx)
