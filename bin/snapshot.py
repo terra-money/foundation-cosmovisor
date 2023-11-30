@@ -131,7 +131,7 @@ def get_block_height(data_dir):
     return time.strftime("%Y%m%d-%H%M%S")
 
 
-def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: str = False) -> None:
+def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: bool = False) -> None:
     """
     Creates a snapshot of the given directories.
 
@@ -155,16 +155,19 @@ def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: str = 
     if os.path.exists(outside_wasm_dir):
         compress_lz4(snapshot_file, [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
         compress_lz4(wasm_file, [outside_wasm_dir], ['wasm/wasm/cache'])
+        wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
+        link_overwrite(wasm_file, wasm_latest)
     elif os.path.exists(inside_wasm_dir):
         compress_lz4(snapshot_file, [data_dir], ['data/wasm/cache'])
         compress_lz4(wasm_file, [inside_wasm_dir], ['wasm/wasm/cache'])
+        wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
+        link_overwrite(wasm_file, wasm_latest)
     else:
         compress_lz4(snapshot_file, [data_dir], [])
 
+    # always create a snapshot-latest.tar.lz4 link (but not wasm)
     snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
     link_overwrite(snapshot_file, snapshot_latest)
-    wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
-    link_overwrite(wasm_file, wasm_latest)
 
 
 def link_overwrite(src_file: str, dst_file: str) -> None:

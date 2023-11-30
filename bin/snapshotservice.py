@@ -4,6 +4,7 @@ import os
 import sys
 import getstatus
 import snapshot
+import cvcontrol
 from datetime import datetime, time
 
 # Define time range
@@ -26,12 +27,15 @@ def is_ready():
     if not (start <= datetime.utcnow().time() < stop):
         write_stderr(f"Current time is not between {start} and {stop} UTC.")
         return False
-    if not getstatus.is_catching_up():
+    
+    status = getstatus.get_status('http://localhost:26657/status')
+    if not getstatus.is_catching_up(status):
         write_stderr(f"Node is not catching up.")
         return False
+    
     return True
 
-def main(data_dir, snapshots_dir, cosmprund_enabled):
+def main(snapshots_dir, data_dir, cosmprund_enabled):
     while 1:
         # transition from ACKNOWLEDGED to READY
         write_stdout('READY\n')
@@ -46,7 +50,11 @@ def main(data_dir, snapshots_dir, cosmprund_enabled):
         # write_stderr(data)
 
         if is_ready():
-            snapshot.create_snapshot(data_dir, snapshots_dir, cosmprund_enabled)
+            write_stderr(f"Creating lz4 snapshot")
+            cvcontrol.stop_process('cosmovisor')
+            snapshot.create_snapshot(snapshots_dir, data_dir, cosmprund_enabled)
+            cvcontrol.start_process('cosmovisor')
+            write_stderr(f"Finished lz4 snapshot")
 
         # transition from READY to ACKNOWLEDGED (ignore fail/best effort)
         write_stdout('RESULT 2\nOK')
@@ -59,4 +67,4 @@ if __name__ == '__main__':
     default_snapshots_dir = os.path.join(os.path.dirname(data_dir), 'shared', 'snapshots')
     snapshots_dir = os.environ.get('SNAPSHOTS_DIR', default_snapshots_dir)
     cosmprund_enabled = os.getenv('COSMPRUND_ENABLED', 'false').lower() in ['true', '1', 'yes']
-    main(data_dir, snapshots_dir, cosmprund_enabled)
+    main(snapshots_dir, data_dir, cosmprund_enabled)
