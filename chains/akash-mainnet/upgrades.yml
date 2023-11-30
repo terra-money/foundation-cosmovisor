@@ -78,3 +78,10 @@ versions:
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_arm64.zip
+  - name: v0.30.0
+    alias: v0.30.0
+    height: '13880774'
+    proposal: '238'
+    binaries:
+      linux/amd64: https://github.com/akash-network/node/releases/download/v0.30.0/akash_0.30.0_linux_amd64.zip
+      linux/arm64: https://github.com/akash-network/node/releases/download/v0.30.0/akash_0.30.0_linux_arm64.zip
