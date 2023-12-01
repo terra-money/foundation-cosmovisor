@@ -27,12 +27,12 @@ def is_ready():
     if not (start <= datetime.utcnow().time() < stop):
         write_stderr(f"Current time is not between {start} and {stop} UTC.")
         return False
-    
+
     status = getstatus.get_status('http://localhost:26657/status')
-    if not getstatus.is_catching_up(status):
-        write_stderr(f"Node is not catching up.")
+    if getstatus.is_catching_up(status):
+        write_stderr(f"Node is still catching up.")
         return False
-    
+
     return True
 
 def main(snapshots_dir, data_dir, cosmprund_enabled):
