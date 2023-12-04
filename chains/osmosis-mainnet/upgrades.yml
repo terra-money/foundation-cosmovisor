@@ -159,9 +159,9 @@ versions:
     alias: v20
     height: '11317300'
     proposal: '606'
-    tag: v20.1.0
+    tag: v20.5.0
     binaries:
       linux/arm64: >-
-        https://github.com/osmosis-labs/osmosis/releases/download/v20.1.0/osmosisd-20.1.0-linux-arm64?checksum=sha256:07fa5364fd239739792b55d7b3aadcfcab09563b432e83e26f1f8af112c723b4
+        https://github.com/osmosis-labs/osmosis/releases/download/v20.1.0/osmosisd-20.5.0-linux-arm64?checksum=sha256:99359257ff81d21b55b685924a74473d532cbc5af196a672a784bf13dad06d26
       linux/amd64: >-
-        https://github.com/osmosis-labs/osmosis/releases/download/v20.1.0/osmosisd-20.1.0-linux-amd64?checksum=sha256:958fa18f4005bd3c81fc5eb023c7d229bde46d7c1e48a15fc29a68881e105787
+        https://github.com/osmosis-labs/osmosis/releases/download/v20.5.0/osmosisd-20.5.0-linux-amd64?checksum=sha256:f9ff6176e32499f22b20288c71dbc802556eb5399baef23de164fe6158a55a69
