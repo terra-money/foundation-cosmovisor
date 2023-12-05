@@ -5,11 +5,8 @@ import logging
 import argparse
 import xmlrpc.client
 
-# URL to fetch the data from
-supervisor_rpc_url = "http://127.0.0.1:9001/RPC2"
 
-
-def is_running(process_name):
+def is_running(process_name: str = "cosmovisor", supervisor_rpc_url: str = "http://127.0.0.1:9001/RPC2") -> None:
     """
     Check if a process is running using supervisord XML-RPC server.
 
@@ -39,7 +36,7 @@ def is_running(process_name):
     return False
 
 
-def start_process(process_name):
+def start_process(process_name: str = "cosmovisor", supervisor_rpc_url: str = "http://127.0.0.1:9001/RPC2") -> None:
     # Connect to the supervisord XML-RPC server
     server = xmlrpc.client.ServerProxy(supervisor_rpc_url)
 
@@ -51,7 +48,7 @@ def start_process(process_name):
         sys.stderr.write(f"Error starting process: {e}",)
 
 
-def stop_process(process_name):
+def stop_process(process_name: str = "cosmovisor", supervisor_rpc_url: str = "http://127.0.0.1:9001/RPC2") -> None:
     """
     This function stops a process using the given process name and supervisor RPC URL.
     """
@@ -69,7 +66,7 @@ def stop_process(process_name):
         logging.error(f"Error stopping process: {e}")
 
 
-def restart_process(process_name: str, supervisor_rpc_url: str) -> None:
+def restart_process(process_name: str = "cosmovisor", supervisor_rpc_url: str = "http://127.0.0.1:9001/RPC2") -> None:
     """
     Restarts a process using the given supervisor RPC URL and process name.
 

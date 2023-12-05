@@ -13,10 +13,12 @@ RUN pacman -Syyu --noconfirm \
     musl \
     python-lz4 \
     python-pip \
-    python-requests \
     python-yaml \
+    python-tomlkit \
+    python-requests \
     skopeo \
     tmux \
+    vim \
     wget
 
 # install grpcurl and cosmovisor

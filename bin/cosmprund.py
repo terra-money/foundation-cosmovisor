@@ -34,12 +34,8 @@ def main(args: argparse.Namespace) -> int:
         
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
-
     args = parser.parse_args()
-
     exit_code = main(args)
-    
     exit(exit_code)

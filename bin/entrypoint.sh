@@ -472,6 +472,10 @@ modify_config_toml(){
     if [ -n "${TIMEOUT_COMMIT}" ]; then
         sed -e "s|^timeout.commit *=.*|timeout_commit = \"${TIMEOUT_COMMIT}\"|" -i "${CONFIG_TOML}"
     fi
+
+    if [ -n "${KUBERNETES_SERVICE_HOST:=}" ]; then
+        k8speers.py
+    fi
 }
 
 modify_app_toml(){
