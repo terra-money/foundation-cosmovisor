@@ -24,7 +24,6 @@ def main(ctx):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('-c', '--chain-id', dest="chain_id", type=str, help='Chain id')
     parser.add_argument('-h', '--chain-home', dest="chain_home", type=str, help='Chain home directory')
@@ -32,6 +31,5 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--moniker', dest="moniker", type=str, help='Moniker')
 
     args = parser.parse_args()
-
     exit_code = main(args)
     exit(exit_code)

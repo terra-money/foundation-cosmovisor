@@ -6,12 +6,7 @@ import yaml
 import requests
 import logging
 import cvutils
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-)
+import argparse
 
 
 def get_chain_json(ctx):
@@ -146,5 +141,8 @@ def get_chain_json_recommended_version(ctx):
 
 
 if __name__ == "__main__":
-    ctx = cvutils.get_ctx()
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser(description='Load data from image snapshot.')
+    args = parser.parse_args()
+    ctx = cvutils.get_ctx(args)
     get_chain_json(ctx)

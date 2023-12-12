@@ -48,8 +48,12 @@ def get_ctx(args: argparse.Namespace = {}):
 
     config_dir = agetattr(args, "config_dir", os.path.join(chain_home, "config"))
     genesis_file = agetattr(args, "genesis_file", os.path.join(config_dir, "genesis.json"))
+    config_toml = agetattr(args, "config_toml", os.path.join(config_dir, "config.toml"))
+    app_toml = agetattr(args, "app_toml", os.path.join(config_dir, "app.toml"))
+    addrbook = agetattr(args, "addrbook", os.path.join(config_dir, "addrbook.json"))
     
     data_dir = agetattr(args, "data_dir", os.path.join(chain_home, "data"))
+    status_json = agetattr(args, "status_json", os.path.join(data_dir, "status.json"))
     upgrade_info_json = agetattr(args, "upgrade_info_json", os.path.join(data_dir, "upgrade-info.json"))
 
     cosmovisor_dir = agetattr(args, "cosmovisor_dir", os.environ.get("COSMOVISOR_DIR", os.path.join(daemon_home, "cosmovisor")))
@@ -71,13 +75,6 @@ def set_cosmovisor_dir(ctx, cosmovisor_dir):
     ctx["cv_genesis_dir"] = os.path.join(cosmovisor_dir, "genesis")
     ctx["cv_upgrades_dir"] = os.path.join(cosmovisor_dir, "upgrades")
     return ctx
-
-
-def rsync_cosmovisor(ctx):
-    source = "/opt/cosmovisor/" # set in dockerfile
-    destination = ctx["cosmovisor_dir"]
-    command = ["rsync", "-avz", source, destination]
-    subprocess.run(command)
 
 
 def get_system_arch():
@@ -262,30 +259,6 @@ def download_file(url, file):
     #         download_cv_version(arch_binary_url, binary_file)
     #     except:
     #         f_json.close()
-
-
-def get_upgrade_info_version(ctx):
-    logging.info(f"Downloading binary identified in {ctx['upgrade_info_json']}...")
-
-    with open(ctx['upgrade_info_json'], 'r') as f:
-        data = json.load(f)
-        name = data.get('name', '')
-        logging.info(f"upgrade name is {name}")
-        info = data.get('info', '').rstrip(',')
-        info = info.replace("'", '"')
-        logging.info(f"upgrade info is {info}")
-        if isinstance(info, str):
-            if info.endswith('.json'):
-                response = requests.get(info)
-                info = response.json()
-            elif 'binaries' in info:
-                info = json.loads(info)
-            elif isinstance(info, str):
-                return {"name": name, "binary_url": info}
-            binaries = info.get('binaries', {})
-            binary_url = binaries.get(ctx["arch"], None)
-            return {"name": name, "binary_url": binary_url}
-    return None
 
 
 def download_and_extract_image(image_url: str, binary_file: str):
