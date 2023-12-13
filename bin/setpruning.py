@@ -65,11 +65,11 @@ def calculate_min_retain_blocks(unbonding_period_seconds, mean_block_time, days_
 
 def nothing_profile(ctx):
     return {
-        'strategy': 'nothing',
-        'interval': 0,
-        'keep_recent': 0,
-        'keep_every': 0,
-        'min_retain_blocks': 0,
+        'pruning': 'nothing',
+        'pruning-interval': 0,
+        'pruning-keep-recent': 0,
+        'pruning-keep-every': 0,
+        'min-retain-blocks': 0,
         'indexer': 'kv',
     }
 
@@ -77,11 +77,11 @@ def custom_profile(ctx, days_to_retain):
     unbonding_period = parse_unbonding_period(ctx)
     mean_block_time = ctx.get("mean_block_time")
     return {
-        'strategy': 'custom',
-        'interval': 10,
-        'keep_recent': days_to_retain * 86400 // mean_block_time,
-        'keep_every': ctx.get("snapshot_interval", 1000),
-        'min_retain_blocks': calculate_min_retain_blocks(unbonding_period, mean_block_time, days_to_retain),
+        'pruning': 'custom',
+        'pruning-interval': 10,
+        'pruning-keep-recent': days_to_retain * 86400 // mean_block_time,
+        'pruning-keep-every': ctx.get("snapshot_interval", 1000),
+        'min-retain-blocks': calculate_min_retain_blocks(unbonding_period, mean_block_time, days_to_retain),
         'indexer': 'null'
     }
 
@@ -112,23 +112,18 @@ def set_pruning(ctx, pruning):
     # Modify app_toml
     with open(app_toml_path, 'r') as file:
         app_toml_data = tomlkit.load(file)
-
-    app_toml_data.update({
-        'pruning': pruning['strategy'],
-        'pruning-interval': pruning['interval'],
-        'pruning-keep-recent': pruning['keep_recent'],
-        'pruning-keep-every': pruning['keep_every'],
-        'min-retain-blocks': pruning['min_retain_blocks']
-    })
+    
+    for key in pruning:
+        if key in app_toml_data.keys():
+            app_toml_data[key] = pruning[key]
 
     with open(app_toml_path, 'w') as file:
         tomlkit.dump(app_toml_data, file)
 
-    # Modify config_toml
     with open(config_toml_path, 'r') as file:
         config_toml_data = tomlkit.load(file)
-
-    config_toml_data['indexer'] = pruning['indexer']
+        if config_toml_data['tx_index']:
+            config_toml_data['tx_index']['indexer'] = pruning['indexer']
 
     with open(config_toml_path, 'w') as file:
         tomlkit.dump(config_toml_data, file)
@@ -148,4 +143,5 @@ if __name__ == "__main__":
     ctx = get_ctx(args)
     
     pruning = get_pruning_settings(ctx)
+    logging.info(f"setting pruning settings to {pruning}")
     set_pruning(ctx, pruning)

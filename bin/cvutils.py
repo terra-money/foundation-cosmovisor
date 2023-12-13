@@ -60,7 +60,7 @@ def get_ctx(args: argparse.Namespace = {}):
 
     profile = agetattr(args, "profile", os.environ.get("PROFILE", "default"))
     mean_block_time = agetattr(args, "mean_block_period", os.environ.get("MEAN_BLOCK_PERIOD", 6))
-    snapshot_interval = agetattr(args, "snapshot_interval", os.environ.get("SNAPSHOT_INTERVAL, 1000"))
+    snapshot_interval = agetattr(args, "snapshot_interval", os.environ.get("SNAPSHOT_INTERVAL", 1000))
 
 
     snapshots_dir = agetattr(args, "snapshots_dir", os.environ.get("SNAPSHOTS_DIR", os.path.join(os.path.dirname(data_dir), "shared", "snapshots")))
