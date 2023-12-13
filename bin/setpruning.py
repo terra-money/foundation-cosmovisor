@@ -73,7 +73,7 @@ def nothing_profile(ctx):
         'indexer': 'kv',
     }
 
-def custom_profile(ctx, days_to_retain):
+def custom_profile(ctx, days_to_retain, indexer='kv'):
     unbonding_period = parse_unbonding_period(ctx)
     mean_block_time = ctx.get("mean_block_time")
     return {
@@ -82,7 +82,7 @@ def custom_profile(ctx, days_to_retain):
         'pruning-keep-recent': days_to_retain * 86400 // mean_block_time,
         'pruning-keep-every': ctx.get("snapshot_interval", 1000),
         'min-retain-blocks': calculate_min_retain_blocks(unbonding_period, mean_block_time, days_to_retain),
-        'indexer': 'null'
+        'indexer': indexer
     }
 
 def get_pruning_settings(ctx):
@@ -98,9 +98,9 @@ def get_pruning_settings(ctx):
     elif profile == 'read':
         return custom_profile(ctx, 10)
     elif profile == 'write':
-        return custom_profile(ctx, 1)
+        return custom_profile(ctx, 1, 'null')
     elif profile == 'snap':
-        return custom_profile(ctx, 1)
+        return custom_profile(ctx, 1, 'null')
     else:
         raise ValueError(f"Unknown profile: {profile}")
 
