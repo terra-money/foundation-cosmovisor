@@ -1,3 +1,4 @@
+import os
 import sys
 import select
 import subprocess
@@ -34,6 +35,12 @@ def main(args: argparse.Namespace) -> int:
         
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
+    profile = os.environ.get("PROFILE")
+    if profile == "archive":
+        logging.error("This script is blocked on archive nodes")
+        exit(1)
+    
+
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
     args = parser.parse_args()

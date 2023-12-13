@@ -58,10 +58,14 @@ def get_ctx(args: argparse.Namespace = {}):
 
     cosmovisor_dir = agetattr(args, "cosmovisor_dir", os.environ.get("COSMOVISOR_DIR", os.path.join(daemon_home, "cosmovisor")))
 
+    profile = agetattr(args, "profile", os.environ.get("PROFILE", "default"))
+    mean_block_time = agetattr(args, "mean_block_period", os.environ.get("MEAN_BLOCK_PERIOD", 6))
+    snapshot_interval = agetattr(args, "snapshot_interval", os.environ.get("SNAPSHOT_INTERVAL, 1000"))
+
+
     snapshots_dir = agetattr(args, "snapshots_dir", os.environ.get("SNAPSHOTS_DIR", os.path.join(os.path.dirname(data_dir), "shared", "snapshots")))
     snapshot_url = agetattr(args, "snapshot_url", os.environ.get("SNAPSHOT_URL", f"file://{snapshots_dir}/snapshot-latest.tar.lz4"))
     cosmprund_enabled = agetattr(args, "cosmprund_enabled", os.environ.get("COSMPRUND_ENABLED", "false").lower() in ["true", "1", "yes"])
-
 
     statesync_enabled = agetattr(args, "statesync_enabled", os.environ.get("STATE_SYNC_ENABLED", "false").lower() in ["true", "1", "yes"])
     restore_snapshot = agetattr(args, "restore_snapshot", os.environ.get("RESTORE_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
