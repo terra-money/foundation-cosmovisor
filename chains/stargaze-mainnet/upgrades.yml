@@ -1,6 +1,6 @@
 # current to 20231023
 chain_name: stargaze
-daemon_name: stargazed
+daemon_name: starsd
 network_type: mainnet
 git_repo: https://github.com/public-awesome/stargaze
 libraries: []
