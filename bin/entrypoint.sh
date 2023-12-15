@@ -341,7 +341,7 @@ modify_app_toml(){
         -e "s|^address *=.*:9091.*$|address = \"0.0.0.0:9091\"|" \
         -i "${APP_TOML}"
 
-    if [ -n "${PROFILE:=}"]; then
+    if [ -n "${PROFILE:=}" ]; then
         if [ -n "${PRUNING_STRATEGY:=}" ]; then
             sed -e "s|^pruning *=.*|pruning = \"${PRUNING_STRATEGY}\"|" -i "${APP_TOML}"
         fi
