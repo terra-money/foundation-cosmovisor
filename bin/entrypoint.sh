@@ -118,8 +118,6 @@ prepare(){
     modify_client_toml
     modify_config_toml
     modify_app_toml
-    chown -R cosmovisor:cosmovisor "${CHAIN_HOME}"
-    chown -R cosmovisor:cosmovisor "${DAEMON_HOME}"
 }
 
 start(){
@@ -133,6 +131,7 @@ start(){
 
 ensure_chain_home(){
     mkdir -p "${CHAIN_HOME}"
+    chown cosmovisor:cosmovisor "${CHAIN_HOME}"
     if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then
         ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data;
     fi
@@ -144,6 +143,7 @@ initialize_version(){
     if [ $? != 0 ]; then
         exit $?
     fi
+    chown -R cosmovisor:cosmovisor "${DAEMON_HOME}/cosmovisor"
 }
 
 # Initialize the node
@@ -152,7 +152,9 @@ initialize_node(){
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
         mkdir -p "${DATA_DIR}"
+        chown -R cosmovisor:cosmovisor "${DATA_DIR}"
         /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
+        chown -R cosmovisor:cosmovisor "${CONFIG_DIR}"
         if [ -f "${GENESIS_FILE}" ]; then
             rm "${GENESIS_FILE}"
         else
@@ -169,6 +171,7 @@ delete_data_dir(){
         rm -rf "${DATA_DIR}"
         mkdir -p "${DATA_DIR}"
         mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
+        chown -R cosmovisor:cosmovisor "${DATA_DIR}"
     fi
 }
 
@@ -177,6 +180,7 @@ set_node_key(){
     if [ -n "${NODE_KEY}" ]; then
         echo "Using node key from env..."
         echo "${NODE_KEY}" | base64 -d > "${NODE_KEY_FILE}"
+        chown cosmovisor:cosmovisor ${NODE_KEY_FILE}*
     fi
 }
 
@@ -185,6 +189,7 @@ set_validator_key(){
     if [ -n "${PRIVATE_VALIDATOR_KEY}" ]; then
         echo "Using private key from env..."
         echo "${PRIVATE_VALIDATOR_KEY}" | base64 -d > "${PV_KEY_FILE}"
+        chown cosmovisor:cosmovisor ${PV_KEY_FILE}*
     fi
 }
 
@@ -192,6 +197,7 @@ set_validator_key(){
 download_genesis(){
     if [ ! -d "${CONFIG_DIR}" ]; then
         mkdir -p "${CONFIG_DIR}"
+        chown cosmovisor:cosmovisor "${CONFIG_DIR}"
     fi
 
     if [ ! -f "${GENESIS_FILE}" ] && [ -n "${GENESIS_URL}" ]; then
@@ -210,6 +216,7 @@ download_genesis(){
                 curl -sSL "${GENESIS_URL}" -o "${GENESIS_FILE}"
                 ;;
         esac
+        chown cosmovisor:cosmovisor ${GENESIS_FILE}*
     fi
 }
 
@@ -218,6 +225,7 @@ download_addrbook(){
     if [ -n "${ADDR_BOOK_URL}" ]; then
         echo "Downloading address book file..."
         curl -sSL "${ADDR_BOOK_URL}" -o "${ADDR_BOOK_FILE}"
+        chown cosmovisor:cosmovisor ${ADDR_BOOK_FILE}*
     fi
 }
 
@@ -226,6 +234,7 @@ modify_client_toml(){
     if [ -f "${CLIENT_TOML}" ]; then
         sed -e "s|^chain-id *=.*|chain-id = \"${CHAIN_ID}\"|" -i "${CLIENT_TOML}"
     fi
+    chown cosmovisor:cosmovisor ${CLIENT_TOML}*
 }
 
 # Modify the config.toml file
@@ -324,6 +333,7 @@ modify_config_toml(){
     if [ -n "${KUBERNETES_SERVICE_HOST:=}" ]; then
         k8speers.py
     fi
+    chown cosmovisor:cosmovisor ${CONFIG_TOML}*
 }
 
 modify_app_toml(){
@@ -374,6 +384,7 @@ modify_app_toml(){
     if [ -n "${HALT_HEIGHT}" ]; then
         sed -e "s|^halt-height *=.*|halt-height = \"${HALT_HEIGHT}\"|" -i "${APP_TOML}"
     fi
+    chown cosmovisor:cosmovisor ${APP_TOML}*
 }
 
 # Call snapshot.py to load data from image
@@ -414,6 +425,7 @@ prepare_statesync(){
         wasm_base_dir=$(dirname ${WASM_DIR})
         mkdir -p "${wasm_base_dir}"
         curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
+        chown -R cosmovisor:cosmovisor "${wasm_base_dir}"
     fi
 }
 
