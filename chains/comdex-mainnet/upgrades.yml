@@ -62,12 +62,12 @@ versions:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/comdex:10.0.0
   - name: v11.5.0
-    tag: v11.5.1
+    tag: v11.5.2
     height: '8184000'
     proposal: '154'
     binaries:
       linux/amd64: >-
-        https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex-linux-amd64.tar.gz
+        https://github.com/comdex-official/comdex/releases/download/v11.5.2/comdex-linux-amd64.tar.gz
   - name: v13.3.0
     tag: v13.3.0
     height: '10981900'
