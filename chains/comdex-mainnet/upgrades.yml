@@ -4,7 +4,7 @@ chain_name: comdex
 daemon_name: comdex
 network_type: mainnet
 git_repo: https://github.com/comdex-official/comdex
-libraries: ["https://github.com/comdex-official/comdex/releases/download/v11.5.0/libwasmvm.x86_64.so"]
+libraries: ["https://github.com/comdex-official/comdex/releases/download/v13.3.0/libwasmvm.x86_64.so"]
 versions:
   - name: v0.0.4
     height: '1'
@@ -68,3 +68,10 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v11.5.1/comdex-linux-amd64.tar.gz
+  - name: v13.3.0
+    tag: v13.3.0
+    height: '10981900'
+    proposal: '102'
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v13.3.0/comdex-linux-amd64.tar.gz
