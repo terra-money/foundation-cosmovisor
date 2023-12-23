@@ -3,7 +3,6 @@ chain_name: stargaze
 daemon_name: starsd
 network_type: mainnet
 git_repo: https://github.com/public-awesome/stargaze
-libraries: ["https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so"]
 versions:
   - name: v2
     proposal: 7
