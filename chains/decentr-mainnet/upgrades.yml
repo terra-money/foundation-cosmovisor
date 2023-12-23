@@ -3,7 +3,6 @@ chain_name: decentr
 daemon_name: decentrd
 network_type: mainnet
 git_repo: https://github.com/Decentr-net/decentr
-libraries: []
 versions:
   - name: v157
     tag: v1.5.7

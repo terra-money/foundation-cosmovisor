@@ -3,7 +3,6 @@ chain_name: neutron
 daemon_name: neutrond
 network_type: mainnet
 git_repo: https://github.com/neutron-org/neutron
-libraries: []
 versions:
   - name: v1.0
     tag: v1.0.4

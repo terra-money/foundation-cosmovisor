@@ -3,5 +3,4 @@ chain_name: crescent
 daemon_name: crescentd
 network_type: testnet
 git_repo: https://github.com/crescent-network/crescent
-libraries: []
 versions: []

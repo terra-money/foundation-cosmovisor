@@ -3,7 +3,6 @@ chain_name: terraclassic
 daemon_name: terrad
 network_type: testnet
 git_repo: https://github.com/classic-terra/core
-libraries: []
 versions:
   - name: 1.0.5
     alias: 1.0.5

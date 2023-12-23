@@ -4,7 +4,6 @@ chain_name: axelar
 daemon_name: axelard
 network_type: mainnet
 git_repo: https://github.com/axelarnetwork/axelar-core
-libraries: []
 versions:
   - name: v0.10
     height: 1

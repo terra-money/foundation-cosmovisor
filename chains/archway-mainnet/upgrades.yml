@@ -2,7 +2,6 @@ chain_name: archway
 daemon_name: archwayd
 network_type: mainnet
 git_repo: https://github.com/archway-network/archway
-libraries: []
 versions:
   - name: v1.0.0
     tag: v1.0.0

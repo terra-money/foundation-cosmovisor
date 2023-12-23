@@ -3,7 +3,6 @@ chain_name: chihuahua
 daemon_name: chihuahuad
 network_type: mainnet
 git_repo: https://github.com/ChihuahuaChain/chihuahua
-libraries: []
 versions:
   - name: genesis
     tag: v1.0.0

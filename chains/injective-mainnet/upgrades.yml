@@ -4,7 +4,6 @@ chain_name: injective
 daemon_name: injectived
 network_type: mainnet
 git_repo: https://github.com/InjectiveLabs/injective-chain-releases
-libraries: []
 versions:
   - name: v1.0
     tag: v1.0.1-1629427973

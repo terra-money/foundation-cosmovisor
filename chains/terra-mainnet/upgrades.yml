@@ -3,7 +3,6 @@ chain_name: terra
 daemon_name: terrad
 network_type: mainnet
 git_repo: https://github.com/terra-money/core
-libraries: []
 versions:
   - name: v2.0
     alias: v2.0

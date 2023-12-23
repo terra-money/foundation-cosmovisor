@@ -3,7 +3,6 @@ chain_name: noble
 daemon_name: nobled
 network_type: testnet
 git_repo: https://github.com/strangelove-ventures/noble
-libraries: []
 versions:
   - name: v0.3.0
     tag: v0.3.0

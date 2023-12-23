@@ -3,7 +3,6 @@ chain_name: noble
 daemon_name: nobled
 network_type: mainnet
 git_repo: https://github.com/strangelove-ventures/noble
-libraries: []
 versions:
   - name: v1.0.0
     alias: v1.0.0

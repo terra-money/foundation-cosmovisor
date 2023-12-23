@@ -3,7 +3,6 @@ chain_name: juno
 daemon_name: junod
 network_type: testnet
 git_repo: https://github.com/CosmosContracts/juno
-libraries: []
 versions:
   - name: v11
     tag: v11.0.0-alpha

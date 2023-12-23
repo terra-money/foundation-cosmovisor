@@ -4,7 +4,6 @@ chain_name: mars
 daemon_name: marsd
 network_type: testnet
 git_repo: https://github.com/mars-protocol/hub
-libraries: []
 versions:
   - name: v1
     tag: v1.0.2

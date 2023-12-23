@@ -2,7 +2,6 @@ chain_name: osmosis
 daemon_name: osmosisd
 network_type: mainnet
 git_repo: https://github.com/osmosis-labs/osmosis
-libraries: []
 versions:
   - name: v3
     alias: v3

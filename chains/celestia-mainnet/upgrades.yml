@@ -2,7 +2,6 @@ chain_name: celestia
 daemon_name: celestia-appd
 network_type: mainnet
 git_repo: https://github.com/celestiaorg/celestia-app
-libraries: []
 versions:
   - name: v1.3.0
     tag: v1.3.0

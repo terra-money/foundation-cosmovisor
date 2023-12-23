@@ -3,7 +3,6 @@ chain_name: crescent
 daemon_name: crescentd
 network_type: mainnet
 git_repo: https://github.com/crescent-network/crescent
-libraries: []
 versions:
   - name: v1
     alias: v1

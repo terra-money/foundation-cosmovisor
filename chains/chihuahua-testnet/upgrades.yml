@@ -3,6 +3,5 @@ chain_name: chihuahua
 daemon_name: chihuahuad
 network_type: testnet
 git_repo: https://github.com/ChihuahuaChain/chihuahua
-libraries: []
 versions: []
 

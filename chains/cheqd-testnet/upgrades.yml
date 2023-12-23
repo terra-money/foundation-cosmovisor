@@ -3,7 +3,6 @@ chain_name: cheqd
 daemon_name: cheqd-noded
 network_type: testnet
 git_repo: https://github.com/cheqd/cheqd-node
-libraries: []
 versions:
   - name: v0.3
     height: '1'

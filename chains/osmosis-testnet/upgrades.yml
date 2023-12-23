@@ -3,7 +3,6 @@ chain_name: osmosis
 daemon_name: osmosisd
 network_type: testnet
 git_repo: https://github.com/osmosis-labs/osmosis
-libraries: []
 versions:
   - name: v15
     tag: v15.0.0

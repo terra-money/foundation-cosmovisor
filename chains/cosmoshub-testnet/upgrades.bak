@@ -3,7 +3,6 @@ chain_name: cosmoshub
 daemon_name: gaiad
 network_type: mainnet
 git_repo: https://github.com/cosmos/gaia
-libraries: []
 versions:
   - name: v9-Lambda
     height: '14476206'

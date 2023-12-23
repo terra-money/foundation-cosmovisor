@@ -3,7 +3,6 @@ chain_name: akash
 daemon_name: akash
 network_type: testnet
 git_repo: https://github.com/akash-network/node
-libraries: []
 versions:
   - name: v0.22.7
     tag: v0.22.7

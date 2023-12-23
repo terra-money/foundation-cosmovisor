@@ -3,7 +3,6 @@ chain_name: kujira
 daemon_name: kujirad
 network_type: mainnet
 git_repo: https://github.com/Team-Kujira/core
-libraries: []
 versions:
   - name: v0.4.1
     tag: v0.4.1
