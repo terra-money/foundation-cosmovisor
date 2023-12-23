@@ -68,12 +68,12 @@ versions:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v11.5.2/comdex-linux-amd64.tar.gz
   - name: v13.3.0
-    tag: v13.3.0
+    tag: v13.4.0
     height: '10981900'
     proposal: '102'
     binaries:
       linux/amd64: >-
-        https://github.com/comdex-official/comdex/releases/download/v13.3.0/comdex-linux-amd64.tar.gz
+        https://github.com/comdex-official/comdex/releases/download/v13.4.0/comdex-linux-amd64.tar.gz
     libraries:
       linux/amd64:
         libwasmvm.x86_64.so: >-
