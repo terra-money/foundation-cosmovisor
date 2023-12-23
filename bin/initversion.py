@@ -6,6 +6,8 @@ import logging
 import requests
 import argparse
 import subprocess
+import getstatus
+
 from cvutils import (
     get_ctx,
     get_arch_version,
@@ -30,7 +32,7 @@ def get_status_version(ctx):
 
     with open(ctx['status_json'], 'r') as f:
         status = json.load(f)
-        height = status['result']['sync_info']['latest_block_height']
+        height = getstatus.get_latest_block_height(status)
         return get_version_at_height(ctx, int(height))
 
 

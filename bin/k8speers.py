@@ -7,6 +7,7 @@ import tomlkit
 import logging
 import socket
 import ipaddress
+import getstatus
 from cvutils import (
     get_ctx
 )
@@ -44,8 +45,8 @@ def get_node_id(host):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        data = response.json()
-        id = data["result"]["node_info"]["id"]
+        status = response.json()
+        id = getstatus.get_id(status)
         ip = get_ip_address(host)
         return f"{id}@{ip}:26656"
     except requests.RequestException as e:

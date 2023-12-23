@@ -15,6 +15,7 @@ import initversion
 import logging
 import glob
 import subprocess
+import getstatus
 
 
 def download_file(url: str, destination: str) -> None:
@@ -108,8 +109,8 @@ def get_snapshot_block_height(data_dir):
 def get_status_block_height(json_file_path):
     try:
         with open(json_file_path, 'r') as file:
-            data = json.load(file)
-            return data['result']['sync_info']['latest_block_height']
+            status = json.load(file)
+            return getstatus.get_latest_block_height(status)
     except Exception as e:
         logging.error(f"Error reading status file: {e}")
         return None

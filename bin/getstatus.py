@@ -22,29 +22,30 @@ def get_status(rpc_url):
     return None
 
 def get_id(status):
-    return status['result']['node_info']['id']
+    return status.get('result', status).get('node_info', {}).get('id')
 
 def get_moniker(status):
-    return status['result']['node_info']['moniker']
+    return status.get('result', status).get('node_info', {}).get('moniker')
 
 def get_network(status):
-    return status['result']['node_info']['network']
+    return status.get('result', status).get('node_info', {}).get('network')
 
 def get_latest_block_height(status):
-    return status['result']['sync_info']['latest_block_height']
+    return status.get('result', status).get('sync_info', {}).get('latest_block_height')
 
 def get_earliest_block_height(status):
-    return status['result']['sync_info']['earliest_block_height']
+    return status.get('result', status).get('sync_info', {}).get('earliest_block_height')
 
 def get_catching_up(status):
-    return str(status['result']['sync_info']['catching_up'])
+    return str(status.get('result', status).get('sync_info', {}).get('catching_up'))
 
 
 def is_catching_up(status):
     """
     This function checks if the node is catching up with the network.
     """
-    return status['result']['sync_info']['catching_up'] == True
+    catching_up = get_catching_up(status)
+    return catching_up == 'true' or catching_up == 'True' or catching_up == '1'
 
 
 def main(args):
