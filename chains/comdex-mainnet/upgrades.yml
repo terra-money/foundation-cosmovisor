@@ -74,6 +74,7 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/comdex-official/comdex/releases/download/v13.3.0/comdex-linux-amd64.tar.gz
-    libraries: 
+    libraries:
       linux/amd64:
-      - https://github.com/comdex-official/comdex/releases/download/v13.3.0/libwasmvm.x86_64.so
+        libwasmvm.x86_64.so: >-
+          https://github.com/comdex-official/comdex/releases/download/v13.3.0/libwasmvm.x86_64.so
