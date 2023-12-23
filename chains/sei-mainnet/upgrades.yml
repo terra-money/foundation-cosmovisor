@@ -3,7 +3,6 @@ chain_name: sei
 daemon_name: seid
 network_type: mainnet
 git_repo: https://github.com/sei-protocol/sei-chain
-libraries: []
 versions:
   - name: 2.0.48beta
     tag: 2.0.48beta

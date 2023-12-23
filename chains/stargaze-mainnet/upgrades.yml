@@ -84,5 +84,5 @@ versions:
       linux/amd64: >-
         https://github.com/public-awesome/stargaze/releases/download/v12.0.0/stargaze_12.0.0_linux_amd64.tar.gz
     libraries:
-      linux/amd64: >-
-        https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so
+      linux/amd64:
+      - https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so
