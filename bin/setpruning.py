@@ -9,6 +9,11 @@ from cvutils import (
     get_ctx
 )
 
+def get_with_fallback(dictionary, *keys):
+    for key in keys:
+        if key in dictionary:
+            return dictionary[key]
+    return None
 
 def parse_unbonding_period(ctx):
     genesis_file_path = ctx.get("genesis_file")
@@ -122,8 +127,10 @@ def set_pruning(ctx, pruning):
 
     with open(config_toml_path, 'r') as file:
         config_toml_data = tomlkit.load(file)
-        if config_toml_data['tx_index']:
+        if config_toml_data.get('tx_index', None):
             config_toml_data['tx_index']['indexer'] = pruning['indexer']
+        elif config_toml_data.get('tx-index', None):
+            config_toml_data['tx-index']['indexer'] = pruning['indexer']
 
     with open(config_toml_path, 'w') as file:
         tomlkit.dump(config_toml_data, file)
