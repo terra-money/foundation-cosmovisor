@@ -391,8 +391,8 @@ modify_app_toml(){
 load_data_from_image() {
     if [[ ${RESTORE_SNAPSHOT:="false"} == "true" ]]; then
         snapshot.py "restore"
-    elif [[ -n ${RESORE_SNAPSHOT_URL} ]]; then
-        snapshot.py "restore" -u "${RESORE_SNAPSHOT_URL}"
+    elif [[ -n "${RESTORE_SNAPSHOT_URL:=}" ]]; then
+        snapshot.py "restore" -u "${RESTORE_SNAPSHOT_URL}"
     fi
 }
 
