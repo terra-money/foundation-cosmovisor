@@ -1,4 +1,4 @@
-# current to 20230919
+# current to 20240103
 chain_name: neutron
 daemon_name: neutrond
 network_type: mainnet
@@ -11,3 +11,10 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64
+  - name: v2.0.0
+    tag: v2.0.0
+    proposal:
+    height: 5416000
+    binaries:
+      linux/amd64: >-
+        https://github.com/neutron-org/neutron/releases/download/v2.0.0/neutrond-linux-amd64
