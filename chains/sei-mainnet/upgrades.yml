@@ -80,3 +80,10 @@ versions:
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/sei:3.3.0
+  - name: v3.5.0
+    tag: v3.5.0
+    height: '49519931'
+    proposal: '45'
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/sei:3.5.0
