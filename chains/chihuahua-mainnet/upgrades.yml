@@ -101,4 +101,20 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/ChihuahuaChain/chihuahua/releases/download/v5.0.2/chihuahuad_linux_amd64
+  - name: v503
+    tag: v5.0.3
+    height: '9430000'
+    proposal: '54'
+    binaries:
+      linux/amd64: >-
+        https://github.com/ChihuahuaChain/chihuahua/releases/download/v5.0.3/chihuahuad_linux_amd64
+  - name: v6
+    tag: v6
+    height: '10666000'
+    proposal: '66'
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/chihuahua:6
+
+
 
