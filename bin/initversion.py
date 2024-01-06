@@ -95,10 +95,10 @@ def main(ctx):
     elif binary_version:
         logging.info("Preparing version defined with environment variables...")
         version = get_chain_json_version(ctx, binary_version)
-    elif os.path.exists(upgrade_info_json):
+    elif os.path.exists(upgrade_info_json) and os.path.getsize(upgrade_info_json) > 0:
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = get_upgrade_info_version(ctx)
-    elif os.path.exists(status_json):
+    elif os.path.exists(status_json) and os.path.getsize(status_json) > 0:
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = get_status_version(ctx)
     elif os.path.exists(data_dir):
