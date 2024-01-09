@@ -164,3 +164,14 @@ versions:
         https://github.com/osmosis-labs/osmosis/releases/download/v20.5.0/osmosisd-20.5.0-linux-arm64?checksum=sha256:99359257ff81d21b55b685924a74473d532cbc5af196a672a784bf13dad06d26
       linux/amd64: >-
         https://github.com/osmosis-labs/osmosis/releases/download/v20.5.0/osmosisd-20.5.0-linux-amd64?checksum=sha256:f9ff6176e32499f22b20288c71dbc802556eb5399baef23de164fe6158a55a69
+  - name: v21
+    alias: v21
+    height: '11317300'
+    proposal: '696'
+    tag: v21.1.4
+    binaries:
+      linux/arm64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v21.1.4/osmosisd-21.1.4-linux-arm64
+      linux/amd64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v21.1.4/osmosisd-21.1.4-linux-amd64
+
