@@ -39,3 +39,10 @@ versions:
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/migaloo:3.0.2
+  # not sure if this one breaks consensus, see repo
+  - name: v3.0.3
+    tag: v3.0.3
+    height: 4977474 # arbitrarily chosen
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:3.0.3
