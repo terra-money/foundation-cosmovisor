@@ -80,7 +80,7 @@ versions:
     libraries:
       linux/amd64:
         libwasmvm.x86_64.so: https://github.com/CosmWasm/wasmvm/releases/download/v1.2.3/libwasmvm.x86_64.so
-  - name: v1.12
+  - name: v1.12.0
     tag: v1.12.0-1704530206
     proposal: 314
     height: 57076000
