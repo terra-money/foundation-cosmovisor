@@ -26,10 +26,9 @@ RUN pacman -Syyu --noconfirm \
 
 # install grpcurl and cosmovisor
 RUN set -eux && \
-    curl -sSL https://github.com/fullstorydev/grpcurl/releases/download/v1.8.8/grpcurl_1.8.8_linux_$(uname -m).tar.gz | \
-    tar -xz -C /usr/local/bin/ grpcurl && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
-    tar -xz -C /usr/local/bin cosmovisor
+    tar -xz -C /usr/local/bin cosmovisor && \
+    rm /usr/lib/python3.11/EXTERNALLY-MANAGED 
 
 COPY --from=ghcr.io/binaryholdings/cosmprund:v1.0.0 /usr/bin/cosmprund /usr/local/bin/cosmprund
 COPY ./etc /etc/
