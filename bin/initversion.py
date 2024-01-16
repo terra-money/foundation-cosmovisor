@@ -6,7 +6,7 @@ import logging
 import requests
 import argparse
 import subprocess
-import getstatus
+from rpcstatus import RpcStatus
 
 from cvutils import (
     get_ctx,
@@ -29,11 +29,9 @@ def rsync_cosmovisor(ctx):
 
 def get_status_version(ctx):
     logging.info(f"Looking for height in {ctx['status_json']}...")
-
-    with open(ctx['status_json'], 'r') as f:
-        status = json.load(f)
-        height = getstatus.get_latest_block_height(status)
-        return get_version_at_height(ctx, int(height))
+    rpcstatus = RpcStatus(f"file://{ctx['status_json']}")
+    height = rpcstatus.sync_info.latest_block_height
+    return get_version_at_height(ctx, int(height))
 
 
 def get_version_at_height(ctx: dict, height: int) -> None:
@@ -95,10 +93,10 @@ def main(ctx):
     elif binary_version:
         logging.info("Preparing version defined with environment variables...")
         version = get_chain_json_version(ctx, binary_version)
-    elif os.path.exists(upgrade_info_json) and os.path.getsize(upgrade_info_json) > 0:
+    elif os.path.exists(upgrade_info_json):
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = get_upgrade_info_version(ctx)
-    elif os.path.exists(status_json) and os.path.getsize(status_json) > 0:
+    elif os.path.exists(status_json):
         logging.info("Existing upgrade_info.json found, using upgrade version.")
         version = get_status_version(ctx)
     elif os.path.exists(data_dir):

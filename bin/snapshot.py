@@ -2,7 +2,6 @@
 
 import argparse
 import os
-import json
 import time
 import cvutils
 import cvcontrol
@@ -15,7 +14,7 @@ import initversion
 import logging
 import glob
 import subprocess
-import getstatus
+from rpcstatus import RpcStatus
 
 
 def download_file(url: str, destination: str) -> None:
@@ -108,9 +107,8 @@ def get_snapshot_block_height(data_dir):
 
 def get_status_block_height(json_file_path):
     try:
-        with open(json_file_path, 'r') as file:
-            status = json.load(file)
-            return getstatus.get_latest_block_height(status)
+        rpcstatus = RpcStatus(f"file://{json_file_path}")
+        return rpcstatus.sync_info.latest_block_height
     except Exception as e:
         logging.error(f"Error reading status file: {e}")
         return None
@@ -256,7 +254,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
     parser.add_argument('-c', '--chain-home', dest="chain_home", type=str, help='Directory to extract snapshots')
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
-    parser.add_argument('-p', '--cosmprund-enabled', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
+    parser.add_argument('-p', '--cosmprund-enable', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
+    parser.add_argument('-x', '--cosmprund-disable', dest="cosmprund_enabled", action='store_false', help='Disable cosmprund')
 
     args = parser.parse_args()
 

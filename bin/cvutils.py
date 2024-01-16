@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import tarfile
 import zipfile
@@ -34,9 +32,10 @@ def get_ctx(args: argparse.Namespace = {}):
 
     moniker = agetattr(args, "moniker", os.environ.get("MONIKER", "rpcnode"))
     chain_network = agetattr(args, "chain_network", os.environ.get("CHAIN_NETWORK", "mainnet"))
-    chain_name = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", "mainnet"))
+    chain_name = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", chain_name_from_hostname()))
     chain_id = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", f"{chain_name}-1"))
     daemon_name = agetattr(args, "daemon_name", os.environ.get("DAEMON_NAME", f"{chain_name}d"))
+    domain = agetattr(args, "domain", "chains.svc.cluster.local")
     
     daemon_home = agetattr(args, "daemon_home", os.environ.get("DAEMON_HOME", os.getcwd()))
     chain_home = agetattr(args, "chain_home", os.environ.get("CHAIN_HOME", daemon_home))
@@ -53,6 +52,7 @@ def get_ctx(args: argparse.Namespace = {}):
     addrbook = agetattr(args, "addrbook", os.path.join(config_dir, "addrbook.json"))
     
     data_dir = agetattr(args, "data_dir", os.path.join(chain_home, "data"))
+    status_url = agetattr(args, "status_url", "http://127.0.0.1:26657/status")
     status_json = agetattr(args, "status_json", os.path.join(data_dir, "status.json"))
     upgrade_info_json = agetattr(args, "upgrade_info_json", os.path.join(data_dir, "upgrade-info.json"))
 
@@ -72,6 +72,11 @@ def get_ctx(args: argparse.Namespace = {}):
 
     return set_cosmovisor_dir(locals(), cosmovisor_dir)
 
+def chain_name_from_hostname():
+    hostname = os.environ.get("HOSTNAME", None)
+    if hostname:
+        chain_name = hostname.split('-')[0]
+    return chain_name
 
 def set_cosmovisor_dir(ctx, cosmovisor_dir):
     ctx["cosmovisor_dir"] = cosmovisor_dir
@@ -261,7 +266,7 @@ def download_file(url, file):
     #         json_data = json.load(f_json)
     #         arch_binary_url = json_data.get('binaries', {}).get('ARCH', '')
     #         download_cv_version(arch_binary_url, binary_file)
-    #     except:
+    #     except Exception as e:
     #         f_json.close()
 
 
