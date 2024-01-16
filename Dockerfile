@@ -20,7 +20,6 @@ RUN pacman -Syyu --noconfirm \
     python-dnspython \
     skopeo \
     tmux \
-    uvicorn \
     vim \
     wget
 
