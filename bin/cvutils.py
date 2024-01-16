@@ -76,7 +76,8 @@ def chain_name_from_hostname():
     hostname = os.environ.get("HOSTNAME", None)
     if hostname:
         chain_name = hostname.split('-')[0]
-    return chain_name
+        return chain_name
+    return None
 
 def set_cosmovisor_dir(ctx, cosmovisor_dir):
     ctx["cosmovisor_dir"] = cosmovisor_dir
