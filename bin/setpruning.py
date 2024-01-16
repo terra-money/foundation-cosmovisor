@@ -99,9 +99,9 @@ def get_pruning_settings(ctx):
     elif profile == 'archive':
         return nothing_profile(ctx)
     elif profile == 'sync':
-        return custom_profile(ctx, 30)
+        return custom_profile(ctx, 0)
     elif profile == 'read':
-        return custom_profile(ctx, 10)
+        return custom_profile(ctx, 0)
     elif profile == 'write':
         return custom_profile(ctx, 1, 'null')
     elif profile == 'snap':
