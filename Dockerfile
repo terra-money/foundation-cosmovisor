@@ -9,14 +9,12 @@ ARG COSMOVISOR_VERSION="v1.5.0"
 #RUN pacman -Syyu --noconfirm curl file jq lz4 unzip
 RUN pacman -Syyu --noconfirm \
     aria2 \
-    dropbear \
     musl \
     python-lz4 \
     python-pip \
     python-yaml \
     python-tomlkit \
     python-requests \
-    python-fastapi \
     python-dnspython \
     skopeo \
     tmux \
