@@ -16,8 +16,11 @@ RUN pacman -Syyu --noconfirm \
     python-yaml \
     python-tomlkit \
     python-requests \
+    python-fastapi \
+    python-dnspython \
     skopeo \
     tmux \
+    uvicorn \
     vim \
     wget
 
