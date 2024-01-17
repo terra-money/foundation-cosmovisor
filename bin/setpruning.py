@@ -85,6 +85,19 @@ def custom_profile(ctx, days_to_retain, indexer='kv'):
         'indexer': indexer
     }
 
+# disable min retain blocks for read/sync nodes
+def custom_profile_tmp(ctx, days_to_retain, indexer='kv'):
+    unbonding_period = parse_unbonding_period(ctx)
+    mean_block_time = ctx.get("mean_block_time")
+    return {
+        'pruning': 'custom',
+        'pruning-interval': 10,
+        'pruning-keep-recent': days_to_retain * 86400 // mean_block_time,
+        'pruning-keep-every': ctx.get("snapshot_interval", 1000),
+        'min-retain-blocks': 0,
+        'indexer': indexer
+    }
+
 def get_pruning_settings(ctx):
     profile = ctx.get("profile")
     logging.info(f"Retrieving pruning settings for `{profile}` profile...")
@@ -94,9 +107,9 @@ def get_pruning_settings(ctx):
     elif profile == 'archive':
         return nothing_profile(ctx)
     elif profile == 'sync':
-        return custom_profile(ctx, 0)
+        return custom_profile_tmp(ctx, 10)
     elif profile == 'read':
-        return custom_profile(ctx, 0)
+        return custom_profile_tmp(ctx, 10)
     elif profile == 'write':
         return custom_profile(ctx, 1, 'null')
     elif profile == 'snap':
