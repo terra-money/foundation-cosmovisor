@@ -262,7 +262,7 @@ modify_config_toml(){
         sed -e "s|^cors.allowed.origins *=.*|cors_allowed_origins = ${RPC_CORS_ALLOWED_ORIGIN}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${NODE_MODE}" ]; then
+    if [ -n "${NODE_MODE:-}" ]; then
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
     fi
 
@@ -282,7 +282,7 @@ modify_config_toml(){
         sed -e "s|^indexer *=.*|indexer = "\"${INDEXER}\""|" -i "${CONFIG_TOML}"
     fi
 
-    if [ "${IS_SEED_NODE}" = "true" ]; then
+    if [ "${IS_SEED_NODE:-}" = "true" ]; then
         sed -e "s|^seed.mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
     fi
 
@@ -343,7 +343,7 @@ modify_app_toml(){
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
-    sed -e "s|^rpc-max-body-bytes *=.*|rpialize_c-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
+    sed -e "s|^rpc-max-body-bytes *=.*|rpc-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
 
     sed -e "s|^address *=.*:1317.*$|address = \"tcp:\/\/0.0.0.0:1317\"|" \
         -e "s|^address *=.*:8080.*$|address = \"0.0.0.0:8080\"|" \
@@ -383,6 +383,10 @@ modify_app_toml(){
 
     if [ -n "${HALT_HEIGHT}" ]; then
         sed -e "s|^halt-height *=.*|halt-height = \"${HALT_HEIGHT}\"|" -i "${APP_TOML}"
+    fi
+    
+    if [ -n "${MAX_RECV_MSG_SIZE:=}" ]; then
+        sed -e "s|^max-recv-msg-size *=.*|max-recv-msg-size = \"${MAX_RECV_MSG_SIZE}\"|" -i "${APP_TOML}"
     fi
     chown cosmovisor:cosmovisor ${APP_TOML}*
 }
