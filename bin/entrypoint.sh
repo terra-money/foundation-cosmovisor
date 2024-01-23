@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail 
+set -euo pipefail
 
 export DEBUG=${DEBUG:=""}
 if [ -n "${DEBUG}" ]; then
@@ -47,12 +47,13 @@ parse_chain_info(){
     # app.toml
     CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
     ENABLE_API=${ENABLE_API:=true}
+    ENABLE_GRPC=${ENABLE_GRPC:=true}
     ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
     HALT_HEIGHT=${HALT_HEIGHT:=""}
     KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
     MONIKER=${MONIKER:="moniker"}
     MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=2000}     
+    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=2000}
     RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
 
     # config.toml
@@ -257,6 +258,7 @@ modify_config_toml(){
     sed -e "s|^use.p2p *=.*|use_p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^discard.abci.responses *=.*|discard_abci_responses = false|" -i "${CONFIG_TOML}"
 
     if [ -n "${RPC_CORS_ALLOWED_ORIGIN:-}" ]; then
         sed -e "s|^cors.allowed.origins *=.*|cors_allowed_origins = ${RPC_CORS_ALLOWED_ORIGIN}|" -i "${CONFIG_TOML}"
@@ -377,6 +379,10 @@ modify_app_toml(){
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^enable *=.*|enable = true|' -i "${APP_TOML}"
     fi
 
+    if [ "${ENABLE_GRPC}" = "true" ]; then
+        sed -e '/^\[grpc\]/,/\[grpc-web\]/ s|^enable *=.*|enable = true|' -i "${APP_TOML}"
+    fi
+
     if [ "${ENABLE_SWAGGER}" = "true" ]; then
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^swagger *=.*|swagger = true|' -i "${APP_TOML}"
     fi
@@ -384,7 +390,7 @@ modify_app_toml(){
     if [ -n "${HALT_HEIGHT}" ]; then
         sed -e "s|^halt-height *=.*|halt-height = \"${HALT_HEIGHT}\"|" -i "${APP_TOML}"
     fi
-    
+
     if [ -n "${MAX_RECV_MSG_SIZE:=}" ]; then
         sed -e "s|^max-recv-msg-size *=.*|max-recv-msg-size = \"${MAX_RECV_MSG_SIZE}\"|" -i "${APP_TOML}"
     fi
