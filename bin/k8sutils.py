@@ -40,11 +40,15 @@ def get_service_rpc_status(chain, domain):
 
 def get_service_rpc_addresses(dns_name):
     serviceName = f'_rpc._tcp.{dns_name}'  # Replace with your service and protocol
-    answers = dns.resolver.resolve(serviceName, 'SRV')
-    for rdata in answers:
-        ips = dns.resolver.resolve(rdata.target, 'A')
-        for ip in (ip for ip in ips if ip is not None):
-            yield f"{ip}:{rdata.port}"
+    try:
+        answers = dns.resolver.resolve(serviceName, 'SRV')
+        for rdata in answers:
+            ips = dns.resolver.resolve(rdata.target, 'A')
+            for ip in (ip for ip in ips if ip is not None):
+                yield f"{ip}:{rdata.port}"
+    except Exception as e:
+        logging.error(f"Could not retrieve dns for {serviceName}: {e}")
+        pass
 
 # Function to add node IDs as persistent peers in config.toml
 def add_persistent_peers(ctx):
