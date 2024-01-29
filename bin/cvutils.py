@@ -221,7 +221,7 @@ def download_file(url, file):
     name = os.path.basename(file)
     
     if not os.path.exists(file):
-        print(f"Downloading {url} to {file}...")
+        logging.info(f"Downloading {url} to {file}...")
         os.makedirs(path, exist_ok=True)
         if url.startswith("docker://"):
             download_and_extract_image(url, file)
@@ -321,8 +321,6 @@ def download_and_extract_image(image_url: str, binary_file: str):
             logging.info(f"Failed to download the image {image}. Error: {e}")
             return
         
-        print(os.listdir(tmpdir))
-
         # Extract blobs to a temporary directory
         blob_directory = f"{tmpdir}/blobs"
         try:

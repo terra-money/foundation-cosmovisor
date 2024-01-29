@@ -26,10 +26,10 @@ def get_chain_json(ctx):
             chain_json_url = f'https://raw.githubusercontent.com/cosmos/chain-registry/master/{chain_name}/chain.json'
 
     if not chain_json_url:
-        print("CHAIN_JSON_URL is not set. Exiting...")
+        logging.error("CHAIN_JSON_URL is not set. Exiting...")
         exit(1)
         
-    print(f"Retrieving chain information from {chain_json_url}...")
+    logging.info(f"Retrieving chain information from {chain_json_url}...")
     
     chain_json_path = ctx.get('chain_json_path')
     response = requests.get(chain_json_url)
