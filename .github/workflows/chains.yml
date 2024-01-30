@@ -95,9 +95,13 @@ jobs:
         shell: bash
         run: |
           FILENAME=$(basename $(dirname ${{ matrix.upgrades }}))
-          echo "TAG_PREFIX=${FILENAME}" >> $GITHUB_ENV
           echo "CHAIN_NAME=${FILENAME%%-*}" >> $GITHUB_ENV
-          echo "CHAIN_NETWORK=${FILENAME#*-}" >> $GITHUB_ENV
+          echo "CHAIN_NETWORK=${FILENAME##*-}" >> $GITHUB_ENV
+          echo "TAG_PREFIX=${CHAIN_NAME}-${CHAIN_NETWORK}-" >> $GITHUB_ENV
+          echo "TAG_SUFFIX"=${${FILENAME#*-}%%-*} >> $GITHUB_ENV
+          if [[ "${TAG_SUFFIX}" != "${CHAIN_NETWORK}" ]]; then
+            echo "-${TAG_SUFFIX}=" >> $GITHUB_ENV
+          fi
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -108,9 +112,9 @@ jobs:
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
           tags: |
-            type=sha,prefix=${{ env.TAG_PREFIX }}- 
-            type=semver,pattern={{version}},prefix=${{ env.TAG_PREFIX }}-
-            type=raw,value=${{ env.TAG_PREFIX }}-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=sha,prefix=${{ env.TAG_PREFIX }},suffix=${{ env.TAG_SUFFIX }}
+            type=semver,pattern={{version}},prefix=${{ env.TAG_PREFIX }},suffix=${{ env.TAG_SUFFIX }}
+            type=raw,value=${{ env.TAG_PREFIX }}latest${{ env.TAG_SUFFIX }},enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build docker image
         uses: docker/build-push-action@v3
