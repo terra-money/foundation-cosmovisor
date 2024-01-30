@@ -51,4 +51,4 @@ versions:
     proposal: '2263'
     binaries:
       docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.25.0
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.25.0-rdb
