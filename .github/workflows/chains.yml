@@ -98,10 +98,8 @@ jobs:
           echo "CHAIN_NAME=${FILENAME%%-*}" >> $GITHUB_ENV
           echo "CHAIN_NETWORK=${FILENAME##*-}" >> $GITHUB_ENV
           echo "TAG_PREFIX=${CHAIN_NAME}-${CHAIN_NETWORK}-" >> $GITHUB_ENV
-          echo "TAG_SUFFIX=${${FILENAME#*-}%%-*}" >> $GITHUB_ENV
-          if [[ "${TAG_SUFFIX}" != "${CHAIN_NETWORK}" ]]; then
-            echo "-${TAG_SUFFIX}=" >> $GITHUB_ENV
-          fi
+          SUFFIX=${FILENAME#*-} 
+          echo "TAG_SUFFIX=-${SUFFIX%%-*}" >> $GITHUB_ENV
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
