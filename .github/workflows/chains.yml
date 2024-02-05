@@ -94,11 +94,10 @@ jobs:
       - name: Set env vars
         shell: bash
         run: |
-          CHAIN_DIR=$(dirname ${{ matrix.upgrades }})
-          FULL_NAME=$(basename ${CHAIN_DIR})
-          CHAIN_NAME=${FULL_NAME%%-*}
-          CHAIN_NETWORK=${FULL_NAME##*-} 
-          SUFFIX=${FULL_NAME#*-} 
+          CHAIN_DIR=$(basename $(dirname ${{ matrix.upgrades }}))
+          CHAIN_NAME=${CHAIN_DIR%%-*}
+          CHAIN_NETWORK=${CHAIN_DIR##*-} 
+          SUFFIX=${CHAIN_DIR#*-} 
           echo "CHAIN_DIR=${CHAIN_DIR}" >> $GITHUB_ENV
           echo "CHAIN_NAME=${CHAIN_NAME}" >> $GITHUB_ENV
           echo "CHAIN_NETWORK=${CHAIN_NETWORK}" >> $GITHUB_ENV
