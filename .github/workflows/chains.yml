@@ -95,10 +95,12 @@ jobs:
         shell: bash
         run: |
           FILENAME=$(basename $(dirname ${{ matrix.upgrades }}))
-          echo "CHAIN_NAME=${FILENAME%%-*}" >> $GITHUB_ENV
-          echo "CHAIN_NETWORK=${FILENAME##*-}" >> $GITHUB_ENV
-          echo "TAG_PREFIX=${CHAIN_NAME}-${CHAIN_NETWORK}-" >> $GITHUB_ENV
+          CHAIN_NAME=${FILENAME%%-*}" 
+          CHAIN_NETWORK=${FILENAME##*-}" 
           SUFFIX=${FILENAME#*-} 
+          echo "CHAIN_NAME=${CHAIN_NAME}" >> $GITHUB_ENV
+          echo "CHAIN_NETWORK=${CHAIN_NETWORK}" >> $GITHUB_ENV
+          echo "TAG_PREFIX=${CHAIN_NAME}-${CHAIN_NETWORK}-" >> $GITHUB_ENV
           echo "TAG_SUFFIX=-${SUFFIX%%-*}" >> $GITHUB_ENV
 
       - name: Extract metadata (tags, labels) for Docker
