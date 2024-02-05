@@ -64,3 +64,9 @@ versions:
     height: 12265007
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v18.0.0/junod
+  - name: v19
+    tag: v19.1.0
+    proposal: 333
+    height: 13678871
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v19.1.0/junod
