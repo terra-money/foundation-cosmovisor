@@ -94,10 +94,12 @@ jobs:
       - name: Set env vars
         shell: bash
         run: |
-          FILENAME=$(basename $(dirname ${{ matrix.upgrades }}))
-          CHAIN_NAME=${FILENAME%%-*}" 
-          CHAIN_NETWORK=${FILENAME##*-}" 
-          SUFFIX=${FILENAME#*-} 
+          CHAIN_DIR=$(dirname ${{ matrix.upgrades }})
+          FULL_NAME=$(basename ${CHAIN_DIR})
+          CHAIN_NAME=${FULL_NAME%%-*}
+          CHAIN_NETWORK=${FULL_NAME##*-} 
+          SUFFIX=${FULL_NAME#*-} 
+          echo "CHAIN_DIR=${CHAIN_DIR}" >> $GITHUB_ENV
           echo "CHAIN_NAME=${CHAIN_NAME}" >> $GITHUB_ENV
           echo "CHAIN_NETWORK=${CHAIN_NETWORK}" >> $GITHUB_ENV
           echo "TAG_PREFIX=${CHAIN_NAME}-${CHAIN_NETWORK}-" >> $GITHUB_ENV
@@ -125,6 +127,7 @@ jobs:
           tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
           labels: ${{ env.DOCKER_METADATA_OUTPUT_LABELS }}
           build-args: |
+            CHAIN_DIR=${{ env.CHAIN_DIR }}
             CHAIN_NAME=${{ env.CHAIN_NAME }}
             CHAIN_NETWORK=${{ env.CHAIN_NETWORK }}
   
