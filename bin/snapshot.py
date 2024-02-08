@@ -14,6 +14,7 @@ import initversion
 import logging
 import glob
 import subprocess
+import statesync
 from rpcstatus import RpcStatus
 
 
@@ -139,13 +140,13 @@ def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: bool =
     :param inside_wasm_dir: Directory containing the inside wasm data to include in the snapshot.
     :param outside_wasm_dir: Directory containing the outside wasm data to include in the snapshot.
     """
-    
+
     if cosmprund_enabled:
         cosmprund.main(data_dir)
 
     inside_wasm_dir = os.path.join(data_dir, 'wasm')
     outside_wasm_dir = os.path.join(os.path.dirname(data_dir), 'wasm')
-    
+
     os.makedirs(snapshots_dir, exist_ok=True)
     identifier = get_block_height(data_dir)
     snapshot_file = f'{snapshots_dir}/snapshot-{identifier}.tar.lz4'
@@ -234,6 +235,8 @@ def main(args: argparse.Namespace) -> int:
     cvcontrol.stop_process('cosmovisor')
 
     if args.action == 'create':
+        if ctx.get("statesync_enabled"):
+            statesync.statesync(ctx)
         create_snapshot(ctx.get("snapshots_dir"), ctx.get("data_dir"), ctx.get("cosmprund_enabled"))
     elif args.action == 'restore':
         cvutils.unsafe_reset_all(ctx)
@@ -256,9 +259,10 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
     parser.add_argument('-p', '--cosmprund-enable', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
     parser.add_argument('-x', '--cosmprund-disable', dest="cosmprund_enabled", action='store_false', help='Disable cosmprund')
+    parser.add_argument('--statesync-enable', dest="statesync_enabled", action='store_true', help='Enable statesync before snapshot')
 
     args = parser.parse_args()
 
     exit_code = main(args)
-    
+
     exit(exit_code)
