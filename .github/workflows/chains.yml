@@ -105,7 +105,8 @@ jobs:
           if [[ "${SUFFIX}" != "${CHAIN_NETWORK}" ]]; then
             echo "TAG_SUFFIX=-${SUFFIX%%-*}" >> $GITHUB_ENV
           else
-            echo "TAG_SUFFIX=\"\"" >> $GITHUB_ENV
+            #echo "TAG_SUFFIX=\"\"" >> $GITHUB_ENV
+            echo "TAG_SUFFIX=" >> $GITHUB_ENV
           fi
 
       - name: Extract metadata (tags, labels) for Docker
