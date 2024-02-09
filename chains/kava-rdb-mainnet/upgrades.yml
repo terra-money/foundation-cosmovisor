@@ -50,5 +50,13 @@ versions:
     height: '7638000'
     proposal: '2263'
     binaries:
-      docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.25.0-rdb
+       linux/amd64: >-
+          docker://kava/kava:v0.25.0-rocksdb
+    libraries:
+      linux/amd64:
+        librocksdb.so.8.1: >-
+          docker://kava/kava:v0.25.0-rocksdb
+        libsnappy.so.1: >-
+          docker://kava/kava:v0.25.0-rocksdb
+        libgflags.so.2.2: >-
+          docker://kava/kava:v0.25.0-rocksdb
