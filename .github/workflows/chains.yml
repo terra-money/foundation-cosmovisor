@@ -117,6 +117,8 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
             ${{ env.ECR_REGISTRY }}/cosmovisor
+          flavor: |
+            latest=false
           tags: |
             type=sha,prefix=${{ env.TAG_PREFIX }},suffix=${{ env.TAG_SUFFIX }}
             type=semver,pattern={{version}},prefix=${{ env.TAG_PREFIX }},suffix=${{ env.TAG_SUFFIX }}
