@@ -341,8 +341,11 @@ def download_and_extract_image(image_url: str, binary_file: str):
                 # Open the tar file in read mode
                 with tarfile.open(blob_file_path, 'r') as blobtar:
                     for member in blobtar.getmembers():
-                        if member.isfile() and member.name.split('/')[-1] == file_to_extract:
-                            member.name = os.path.basename(member.name)
+                        member_name = os.path.basename(member.name)
+                        if member_name == file_to_extract:
+                            if member.issym():  # Check if the member is a symbolic link
+                                member = blobtar.getmember(member.linkname)
+                        if member.isfile():
                             logging.info(f"Found {file_to_extract} in {filename}...")
                             # If no KeyError is raised, extract the specific file
                             blobtar.extract(member, path=destination)
