@@ -221,12 +221,12 @@ def download_file(url, file):
     name = os.path.basename(file)
     
     if not os.path.exists(file):
-        logging.info(f"Downloading {url} to {file}...")
         os.makedirs(path, exist_ok=True)
         if url.startswith("docker://"):
             download_and_extract_image(url, file)
             return
 
+        logging.info(f"Downloading {url} to {file}...")
         with tempfile.TemporaryDirectory() as tmpdir:
             url_split = url.split('?')
             url_fname = os.path.basename(url_split[0])
@@ -271,14 +271,14 @@ def download_file(url, file):
     #         f_json.close()
 
 
-def download_and_extract_image(image_url: str, binary_file: str):
-    daemon_name = os.path.basename(binary_file)
-    destination = os.path.dirname(binary_file)
-    file_to_extract = daemon_name
+def download_and_extract_image(image_url: str, file_path: str):
+    file_to_extract = os.path.basename(file_path)
+    destination = os.path.dirname(file_path)
     image = os.path.basename(image_url)
     image_name = image.split('[:@]', 1)[0]
 
 
+    logging.info(f"Extracting {file_to_extract} from {image}...")
     # Check if the image exists on Docker Hub
     try:
         logging.info(f"Checking for {image_url}...")
@@ -341,16 +341,18 @@ def download_and_extract_image(image_url: str, binary_file: str):
                 # Open the tar file in read mode
                 with tarfile.open(blob_file_path, 'r') as blobtar:
                     for member in blobtar.getmembers():
-                        member_name = os.path.basename(member.name)
-                        if member_name == file_to_extract:
-                            if member.issym():  # Check if the member is a symbolic link
-                                member = blobtar.getmember(member.linkname)
-                        if member.isfile():
-                            logging.info(f"Found {file_to_extract} in {filename}...")
-                            # If no KeyError is raised, extract the specific file
-                            blobtar.extract(member, path=destination)
-                            logging.info(f"Successfully extracted {file_to_extract} from {image}")
-                            break
+                        if member.name.split('/')[-1] == file_to_extract:
+                            member_name = os.path.basename(member.name) # save target name
+                            if member.issym():
+                                dirname = os.path.dirname(member.name) + os.path.sep # tar symlinks are relative
+                                member = blobtar.getmember(dirname + member.linkname)
+                            if member.isfile():
+                                member.name = member_name # modify output name
+                                logging.info(f"Found {file_to_extract} as /{member.name} in {filename}...")
+                                # If no KeyError is raised, extract the specific file
+                                blobtar.extract(member, path=destination)
+                                logging.info(f"Successfully extracted {file_to_extract} to {destination}")
+                                break
 
 
 def unsafe_reset_all(ctx):

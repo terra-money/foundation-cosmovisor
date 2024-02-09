@@ -62,9 +62,11 @@ CMD [ "cosmovisor", "run", "start", "--home", "/app" ]
 FROM cosmovisor as final
 
 ARG CHAIN_NAME
+ARG CHAIN_NETWORK
 ARG CHAIN_DIR
 
 ENV CHAIN_NAME=${CHAIN_NAME} \
+    CHAIN_NETWORK=${CHAIN_NETWORK} \
     LD_LIBRARY_PATH=/app/cosmovisor/current/lib
 
 COPY ./chains/${CHAIN_DIR}/* /etc/default/

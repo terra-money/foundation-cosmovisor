@@ -5,15 +5,15 @@ networks:
 
 services:
   node:
-    image: terraformlabs/cosmovisor:${CHAIN_NAME}-${CHAIN_NETWORK}-edge
+    image: terraformlabs/cosmovisor:${COMPOSE_PROJECT_NAME}-edge
     platform: linux/amd64
     build:
       dockerfile: Dockerfile
       args:
         CHAIN_NAME: ${CHAIN_NAME}
-        CHAIN_NETWORK: ${CHAIN_NETWORK}
+        CHAIN_DIR: ${COMPOSE_PROJECT_NAME}
     env_file:
-      - chains/${CHAIN_NAME}-${CHAIN_NETWORK}/.env
+      - chains/${COMPOSE_PROJECT_NAME}/.env
     volumes:
       - /app
     networks:
