@@ -25,7 +25,7 @@ RUN pacman -Syyu --noconfirm \
 RUN set -eux && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin cosmovisor && \
-    rm /usr/lib/python3.11/EXTERNALLY-MANAGED 
+    rm /usr/lib/python3.11/EXTERNALLY-MANAGED
 
 COPY --from=ghcr.io/binaryholdings/cosmprund:v1.0.0 /usr/bin/cosmprund /usr/local/bin/cosmprund
 COPY ./etc /etc/
@@ -35,7 +35,10 @@ COPY ./bin/* /usr/local/bin/
 RUN set -eux && \
     chmod +x /usr/local/bin/* && \
     groupadd -g 1000 cosmovisor && \
-    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor 
+    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor && \
+    mkdir -p  /app/{tmp,shared} && \
+    chown -R cosmovisor:cosmovisor /app/{tmp,shared} && \
+    chmod 777 /app/tmp
 
 # Cosmosvisor vars
 ENV HOME=/app \
@@ -71,4 +74,4 @@ COPY ./chains/${CHAIN_DIR}/* /etc/default/
 
 # install binaries to /opt/cosmovisor
 RUN set -eux && \
-    /usr/local/bin/getupgrades.py -d /opt/cosmovisor 
+    /usr/local/bin/getupgrades.py -d /opt/cosmovisor
