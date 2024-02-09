@@ -12,8 +12,9 @@ export CHAIN_HOME=${CHAIN_HOME:=$DAEMON_HOME}
 export CHAIN_JSON="/etc/default/chain.json"
 export UPGRADES_JSON="/etc/default/upgrades.yml"
 
-# Shared directory
-export SHARED_DIR=${SHARED:="${CHAIN_HOME}/shared"}
+# Shared/tmp directory
+export SHARED_DIR=${SHARED_DIR:="${CHAIN_HOME}/shared"}
+export TEMP_DIR=${TEMP_DIR:="${CHAIN_HOME}/tmp"}
 export SNAPSHOTS_DIR="${SHARED_DIR}/snapshots"
 
 # data directory
@@ -109,6 +110,7 @@ prepare(){
     initialize_version
     initialize_node
     delete_data_dir
+    create_directories
     load_data_from_image
     prepare_statesync
     set_node_key
@@ -174,6 +176,15 @@ delete_data_dir(){
         mv /tmp/priv_validator_state.json.backup "${DATA_DIR}/priv_validator_state.json"
         chown -R cosmovisor:cosmovisor "${DATA_DIR}"
     fi
+}
+
+create_directories(){
+    mkdir -p "${SHARED_DIR}"
+    chown -R cosmovisor:cosmovisor "${SHARED_DIR}"
+
+    mkdir -p "${TEMP_DIR}"
+    chown -R cosmovisor:cosmovisor "${TEMP_DIR}"
+    chmod -R 777 "${TEMP_DIR}"
 }
 
 # Set the node key

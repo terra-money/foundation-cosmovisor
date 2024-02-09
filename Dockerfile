@@ -35,10 +35,7 @@ COPY ./bin/* /usr/local/bin/
 RUN set -eux && \
     chmod +x /usr/local/bin/* && \
     groupadd -g 1000 cosmovisor && \
-    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor && \
-    mkdir -p  /app/{tmp,shared} && \
-    chown -R cosmovisor:cosmovisor /app/{tmp,shared} && \
-    chmod 777 /app/tmp
+    useradd -u 1000 -g 1000 -s /bin/bash -Md /app cosmovisor
 
 # Cosmosvisor vars
 ENV HOME=/app \
