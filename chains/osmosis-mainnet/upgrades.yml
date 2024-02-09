@@ -178,9 +178,9 @@ versions:
     alias: v22
     height: '11317300'
     proposal: '696'
-    tag: v22.0.0
+    tag: v22.0.5
     binaries:
       linux/arm64: >-
-        https://github.com/osmosis-labs/osmosis/releases/download/v22.0.0/osmosisd-22.0.0-linux-arm64
+        https://github.com/osmosis-labs/osmosis/releases/download/v22.0.5/osmosisd-22.0.5-linux-arm64
       linux/amd64: >-
-        https://github.com/osmosis-labs/osmosis/releases/download/v22.0.0/osmosisd-22.0.0-linux-amd64
+        https://github.com/osmosis-labs/osmosis/releases/download/v22.0.5/osmosisd-22.0.5-linux-amd64
