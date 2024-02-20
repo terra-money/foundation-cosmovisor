@@ -184,3 +184,13 @@ versions:
         https://github.com/osmosis-labs/osmosis/releases/download/v22.0.5/osmosisd-22.0.5-linux-arm64
       linux/amd64: >-
         https://github.com/osmosis-labs/osmosis/releases/download/v22.0.5/osmosisd-22.0.5-linux-amd64
+  - name: v23
+    alias: v23
+    height: '13899375'
+    proposal: '730'
+    tag: v23.0.0
+    binaries:
+      linux/arm64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v23.0.0/osmosisd-23.0.0-linux-arm64
+      linux/amd64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v23.0.0/osmosisd-23.0.0-linux-amd64
