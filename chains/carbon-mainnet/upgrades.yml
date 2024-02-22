@@ -3,7 +3,11 @@ chain_name: carbon
 daemon_name: carbond
 network_type: mainnet
 git_repo: https://github.com/Switcheo/carbon-bootstrap
-libraries: ["https://tfl-mainnets.s3.amazonaws.com/carbon/libleveldb.so.1","https://tfl-mainnets.s3.amazonaws.com/carbon/librocksdb.so.7.10"]
+libraries:
+  [
+    "https://tfl-mainnets.s3.amazonaws.com/carbon/libleveldb.so.1",
+    "https://tfl-mainnets.s3.amazonaws.com/carbon/librocksdb.so.7.10",
+  ]
 versions:
   - name: v2.0.0
     height: 1
@@ -404,11 +408,11 @@ versions:
       linux/arm64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.36.9/carbond2.36.9-mainnet.linux-arm64.tar.gz
   - name: v2.37.0
-    alias: v2.37.0
+    alias: v2.38.1
     height: 52699891
     proposal: 338
     binaries:
       linux/amd64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.37.0/carbond2.37.0-mainnet.linux-amd64.tar.gz
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.38.1/carbond2.38.1-mainnet.linux-amd64.tar.gz
       linux/arm64: >-
-        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.37.0/carbond2.37.0-mainnet.linux-arm64.tar.gz
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.38.1/carbond2.38.1-mainnet.linux-arm64.tar.gz
