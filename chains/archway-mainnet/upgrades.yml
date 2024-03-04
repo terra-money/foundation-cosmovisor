@@ -27,3 +27,11 @@ versions:
         https://github.com/archway-network/archway/releases/download/v4.0.2/archwayd_linux_amd64
       linux/arm64: >-
         https://github.com/archway-network/archway/releases/download/v4.0.2/archwayd_linux_arm64
+  - name: v6.0.0
+    tag: v6.0.0
+    height: 3554500
+    binaries:
+      linux/amd64: >-
+        https://github.com/archway-network/archway/releases/download/v6.0.0/archwayd_linux_amd64
+      linux/arm64: >-
+        https://github.com/archway-network/archway/releases/download/v6.0.0/archwayd_linux_arm64
