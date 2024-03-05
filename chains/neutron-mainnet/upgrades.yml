@@ -11,13 +11,13 @@ versions:
     binaries:
       linux/amd64: >-
         https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64
-  - name: v2.0.0
-    tag: v2.0.1
-    proposal:
-    height: 5416000
-    binaries:
-      linux/amd64: >-
-        https://github.com/neutron-org/neutron/releases/download/v2.0.1/neutrond-linux-amd64
+  # - name: v2.0.0
+  #   tag: v2.0.1
+  #   proposal:
+  #   height: 5416000
+  #   binaries:
+  #     linux/amd64: >-
+  #       https://github.com/neutron-org/neutron/releases/download/v2.0.1/neutrond-linux-amd64
   - name: v2.0.0
     tag: v2.0.3
     proposal:
