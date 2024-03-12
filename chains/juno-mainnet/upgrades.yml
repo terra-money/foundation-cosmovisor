@@ -1,4 +1,4 @@
-# current 20240208
+# current 20240312
 chain_name: juno
 daemon_name: junod
 network_type: mainnet
@@ -76,3 +76,9 @@ versions:
     height: 13743782
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v20.0.0/junod
+  - name: v21
+    tag: v21.0.0
+    proposal: 340
+    height: 14556500
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v21.0.0/junod
