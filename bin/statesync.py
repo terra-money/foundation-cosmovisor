@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import logging, requests, time, tomlkit
-import cvcontrol, cvutils
+import logging, os, requests, shutil, time, tomlkit
+import cvcontrol
 
 
 SNAPSHOT_INTERVAL = 2000
 RPC_PORT = 26657
 P2P_PORT = 26656
+KEEP_DATA_FILES = ["wasm", "priv_validator_state.json"]
 
 
 def statesync_setup(ctx):
@@ -58,6 +59,22 @@ def statesync_setup(ctx):
     return True
 
 
+def datadir_cleanup(ctx):
+    logging.info("Cleaning up data directory...")
+    data_dir = ctx.get("data_dir")
+
+    for item in os.listdir(data_dir):
+        item_path = os.path.join(data_dir, item)
+        if item in KEEP_DATA_FILES:
+            continue
+        elif os.path.isfile(item_path):
+            os.remove(item_path)
+            logging.info(f"  deleted file: {item_path}")
+        elif os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+            logging.info(f"  deleted directory: {item_path}")
+
+
 def wait_for_localhost(ctx):
     logging.info("Waiting for localhost to catch up...")
     status_url = ctx["status_url"]
@@ -76,10 +93,10 @@ def wait_for_localhost(ctx):
 
 def statesync(ctx):
     if ctx["profile"] != "snap":
-        logging.error("Not a snap node. Statesync disabled.")
+        logging.error("Not a snapshot node. Statesync disabled.")
     else:
         if statesync_setup(ctx):
-            cvutils.unsafe_reset_all(ctx)
+            datadir_cleanup(ctx)
             cvcontrol.start_process("cosmovisor")
             wait_for_localhost(ctx)
             cvcontrol.stop_process("cosmovisor")
