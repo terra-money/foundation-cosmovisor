@@ -179,7 +179,7 @@ versions:
       darwin/amd64: >-
         https://axelar-releases.s3.us-east-2.amazonaws.com/axelard/v0.34.1/axelard-darwin-amd64-v0.34.1
       #.zip?checksum=sha256:7790c645fe1ebc9244a8d162fc2d80ac53052ec300bfd5aa4bbb683fa3f71884
-  - name: v0.3
+  - name: v0.35
     height: '11795700'
     proposal: '195'
     binaries:
