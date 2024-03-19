@@ -25,15 +25,15 @@ def get_chain_json(ctx):
             chain_json_url = f'https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/{chain_name}testnet/chain.json'
 
     if not chain_json_url:
-        logging.error("CHAIN_JSON_URL is not set. Exiting...")
-        exit(1)
+        logging.warn("CHAIN_JSON_URL is not set.")
         
-    logging.info(f"Retrieving chain information from {chain_json_url}...")
-    
-    chain_json_path = ctx.get('chain_json_path')
-    response = requests.get(chain_json_url)
-    with open(chain_json_path, 'wb') as f:
-        f.write(response.content)
+    if chain_json_url:
+        logging.info(f"Retrieving chain information from {chain_json_url}...")
+        
+        chain_json_path = ctx.get('chain_json_path')
+        response = requests.get(chain_json_url)
+        with open(chain_json_path, 'wb') as f:
+            f.write(response.content)
 
 
 def get_upgrades_json(ctx, upgrades_json_path):

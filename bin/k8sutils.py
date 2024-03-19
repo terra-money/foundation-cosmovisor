@@ -24,7 +24,7 @@ def get_service_peers(chain, domain):
                 port = status.node_info.listen_addr.split(":")[2]
                 yield f"{id}@{ip}:{port}"
             except Exception as e:
-                logging.warn(f"Could not retrieve status for {hostport}: {e}")
+                logging.debug(f"Could not retrieve status for {hostport}: {e}")
                 pass
 
 
@@ -34,7 +34,7 @@ def get_service_rpc_status(chain, domain):
             try:
                 yield rpcstatus.RpcStatus(f"http://{hostport}/status")
             except Exception as e:
-                logging.warn(f"Could not retrieve status for {hostport}: {e}")
+                logging.debug(f"Could not retrieve status for {hostport}: {e}")
                 pass
 
 
