@@ -24,7 +24,9 @@ def rsync_cosmovisor(ctx):
     source = "/opt/cosmovisor/" # set in dockerfile
     destination = ctx["cosmovisor_dir"]
     command = ["rsync", "-avz", source, destination]
-    subprocess.run(command)
+    if os.path.isdir(source):
+        logging.info(f"rsyncing cosmovisor from {source} to {destination}...")
+        subprocess.run(command)
 
 
 def get_status_version(ctx):

@@ -292,7 +292,7 @@ modify_config_toml(){
         sed -e "s|^timeout.commit *=.*|timeout_commit = \"${TIMEOUT_COMMIT}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${KUBERNETES_SERVICE_HOST:=}" ]; then
+    if [ -n "${PROFILE:=}" ] && [ -n "${KUBERNETES_SERVICE_HOST:=}" ]; then
         k8speers.py
     fi
     chown cosmovisor:cosmovisor ${CONFIG_TOML}*
