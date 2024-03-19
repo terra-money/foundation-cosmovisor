@@ -13,17 +13,16 @@ def get_chain_json(ctx):
     chain_name = ctx.get('chain_name', None)
     chain_network = ctx.get('chain_network', 'mainnet')
     chain_json_url = ctx.get('chain_json_url', None)
-    daemon_home = ctx.get('daemon_home', os.getcwd())
     if not chain_json_url and chain_name:
         if chain_name == 'terra':
             chain_name = 'terra2'
         elif chain_name == 'terraclassic':
             chain_name = 'terra'
         
-        if chain_network == 'testnet':
-            chain_json_url = f'https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/{chain_name}testnet/chain.json'
-        else:
+        if chain_network == 'mainnet':
             chain_json_url = f'https://raw.githubusercontent.com/cosmos/chain-registry/master/{chain_name}/chain.json'
+        elif chain_network == 'testnet':
+            chain_json_url = f'https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/{chain_name}testnet/chain.json'
 
     if not chain_json_url:
         logging.error("CHAIN_JSON_URL is not set. Exiting...")
