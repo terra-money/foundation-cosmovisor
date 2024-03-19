@@ -33,7 +33,7 @@ def get_ctx(args: argparse.Namespace = {}):
     moniker = agetattr(args, "moniker", os.environ.get("MONIKER", "rpcnode"))
     chain_network = agetattr(args, "chain_network", os.environ.get("CHAIN_NETWORK", "mainnet"))
     chain_name = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", chain_name_from_hostname()))
-    chain_id = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", f"{chain_name}-1"))
+    chain_id = agetattr(args, "chain_id", os.environ.get("CHAIN_ID", f"{chain_name}-${chain_network}"))
     daemon_name = agetattr(args, "daemon_name", os.environ.get("DAEMON_NAME", f"{chain_name}d"))
     domain = agetattr(args, "domain", "chains.svc.cluster.local")
     

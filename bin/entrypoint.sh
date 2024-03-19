@@ -45,9 +45,14 @@ parse_chain_info(){
         GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
         PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
         SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    else
+        CHAIN_NETWORK=${CHAIN_NETWORK:="mainnet"}
+        export CHAIN_ID=${CHAIN_ID:="${CHAIN_NAME}-${CHAIN_NETWORK}"}
+        export DAEMON_NAME=${DAEMON_NAME:="${CHAIN_NAME}d"}
     fi
 
     # State sync
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_RPC:=}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
 }
@@ -93,7 +98,6 @@ ensure_chain_home(){
 }
 
 initialize_version(){
-    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_RPC:=}" ] && echo "true" || echo "false")"}
     export  STATE_SYNC_ENABLED CHAIN_JSON_URL BINARY_URL BINARY_VERSION RESTORE_SNAPSHOT
     initversion.py
     if [ $? != 0 ]; then
@@ -134,7 +138,6 @@ delete_data_dir(){
 create_directories(){
     mkdir -p "${SHARED_DIR}"
     chown -R cosmovisor:cosmovisor "${SHARED_DIR}"
-
     mkdir -p "${TEMP_DIR}"
     chown -R cosmovisor:cosmovisor "${TEMP_DIR}"
     chmod -R 777 "${TEMP_DIR}"
@@ -142,7 +145,7 @@ create_directories(){
 
 # Set the node key
 set_node_key(){
-    if [ -n "${NODE_KEY}" ]; then
+    if [ -n "${NODE_KEY:=}" ]; then
         echo "Using node key from env..."
         echo "${NODE_KEY}" | base64 -d > "${NODE_KEY_FILE}"
         chown cosmovisor:cosmovisor ${NODE_KEY_FILE}*
@@ -151,7 +154,7 @@ set_node_key(){
 
 # Set the private validator key
 set_validator_key(){
-    if [ -n "${PRIVATE_VALIDATOR_KEY}" ]; then
+    if [ -n "${PRIVATE_VALIDATOR_KEY:=}" ]; then
         echo "Using private key from env..."
         echo "${PRIVATE_VALIDATOR_KEY}" | base64 -d > "${PV_KEY_FILE}"
         chown cosmovisor:cosmovisor ${PV_KEY_FILE}*
@@ -358,7 +361,7 @@ modify_app_toml(){
 
 # Call snapshot.py to load data from image
 load_data_from_image() {
-    if [[ ${RESTORE_SNAPSHOT:="false"} == "true" ]]; then
+    if [[ ${RESTORE_SNAPSHOT:=} == "true" ]]; then
         snapshot.py "restore"
     elif [[ -n "${RESTORE_SNAPSHOT_URL:=}" ]]; then
         snapshot.py "restore" -u "${RESTORE_SNAPSHOT_URL}"
@@ -368,7 +371,7 @@ load_data_from_image() {
 get_sync_block_height(){
     local latest_height
     local sync_block_height
-    if [ -n "${STATE_SYNC_RPC=:}" ]; then
+    if [ -n "${STATE_SYNC_RPC:=}" ]; then
         latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
         if [ "${latest_height}" = "null" ]; then
             # Maybe Tendermint 0.35+?
