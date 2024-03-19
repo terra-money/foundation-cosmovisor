@@ -215,10 +215,10 @@ modify_config_toml(){
     sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT:="5s"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^fast.sync *=.*|fast_sync = \"${FAST_SYNC:="true"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS:="30"}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^seeds *=.*|seeds = \"${SEEDS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^persistent.peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS:=""}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^seeds *=.*|seeds = \"${SEEDS:=}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^persistent.peers *=.*|persistent_peers = \"${PERSISTENT_PEERS:=}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS:=}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS:=}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP:="true"}|" -i "${CONFIG_TOML}"
     sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT:="false"}|" -i "${CONFIG_TOML}"
     sed -e "s|^max.num.inbound.peers *=.*|max_num_inbound_peers = ${MAX_NUM_INBOUND_PEERS:=20}|" -i "${CONFIG_TOML}"
@@ -227,7 +227,7 @@ modify_config_toml(){
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
     sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE:="tendermint"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^discard.abci.responses *=.*|discard_abci_responses = false|" -i "${CONFIG_TOML}"
-    sed -e "s|^db.backend *=.*|db_backend = \"${DB_BACKEND:=goleveldb}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^db.backend *=.*|db_backend = \"${DB_BACKEND:="goleveldb"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES:="2000000"}|" -i "${CONFIG_TOML}"
 
     if [ -n "${RPC_CORS_ALLOWED_ORIGIN:=}" ]; then
@@ -303,7 +303,7 @@ modify_config_toml(){
 
 modify_app_toml(){
     cp "${APP_TOML}" "${APP_TOML}.bak"
-    sed -e "s|^moniker *=.*|moniker = \"${MONIKER:=moniker}\"|" -i "${APP_TOML}"
+    sed -e "s|^moniker *=.*|moniker = \"${MONIKER:="moniker"}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL:="2000"}\"|" -i "${APP_TOML}"
     sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS:="10"}\"|" -i "${APP_TOML}"
     sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE:="8192"}\"|" -i "${APP_TOML}"
