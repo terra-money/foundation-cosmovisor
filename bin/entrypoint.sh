@@ -36,66 +36,18 @@ parse_chain_info(){
     if [ ! -f "${CHAIN_JSON}" ]; then
         getchaininfo.py
     fi
+
     logger "Parsing chain information..."
-    export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
-    export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
-
-    # Codebase Versions
-    GENESIS_VERSION=${GENESIS_VERSION:="$(jq -r ".codebase.genesis.name" ${CHAIN_JSON})"}
-    RECOMMENDED_VERSION=${RECOMMENDED_VERSION:="$(jq -r ".codebase.recommended_version" ${CHAIN_JSON})"}
-    PREFER_RECOMMENDED_VERSION=${PREFER_RECOMMENDED_VERSION:=""}
-
-    # app.toml
-    CONTRACT_MEMORY_CACHE_SIZE=${CONTRACT_MEMORY_CACHE_SIZE:=8192}
-    ENABLE_API=${ENABLE_API:=true}
-    ENABLE_GRPC=${ENABLE_GRPC:=true}
-    ENABLE_SWAGGER=${ENABLE_SWAGGER:=true}
-    HALT_HEIGHT=${HALT_HEIGHT:=""}
-    KEEP_SNAPSHOTS=${KEEP_SNAPSHOTS:=10}
-    MONIKER=${MONIKER:="moniker"}
-    MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
-    SNAPSHOT_INTERVAL=${SNAPSHOT_INTERVAL:=2000}
-    RPC_MAX_BODY_BYTES=${RPC_MAX_BODY_BYTES:=1500000}
-
-    # config.toml
-    ADDR_BOOK_STRICT=${ADDR_BOOK_STRICT:=false}
-    ADDR_BOOK_URL=${ADDR_BOOK_URL:=}
-    ALLOW_DUPLICATE_IP=${ALLOW_DUPLICATE_IP:=true}
-    BOOTSTRAP_PEERS=${BOOTSTRAP_PEERS:=}
-    CHUNK_FETCHERS=${CHUNK_FETCHERS:=30}
-    DB_BACKEND=${DB_BACKEND:=goleveldb}
-    DIAL_TIMEOUT=${DIAL_TIMEOUT:=5s}
-    LOG_FORMAT=${LOG_FORMAT:=json}
-    FAST_SYNC=${FAST_SYNC:="true"}
-    TIMEOUT_BROADCAST_TX_COMMIT=${TIMEOUT_BROADCAST_TX_COMMIT:=45s}
-    UNSAFE_SKIP_BACKUP=${UNSAFE_SKIP_BACKUP=true}
-    MAX_BODY_BYTES=${MAX_BODY_BYTES:=2000000}
-    GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
-    IS_SEED_NODE=${IS_SEED_NODE:="false"}
-    IS_SENTRY=${IS_SENTRY:="false"}
-    MAX_PAYLOAD=${MAX_PAYLOAD:=}
-    METRIC_NAMESPACE=${METRIC_NAMESPACE:="tendermint"}
-    NODE_KEY=${NODE_KEY:=}
-    NODE_MODE=${NODE_MODE:=}
-    PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
-    SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
-    SENTRIED_VALIDATOR=${SENTRIED_VALIDATOR:="false"}
-    PRIVATE_VALIDATOR_KEY=${PRIVATE_VALIDATOR_KEY:=}
-    PRIVATE_PEER_IDS=${PRIVATE_PEER_IDS:=}
-    PUBLIC_ADDRESS=${PUBLIC_ADDRESS:=}
-    UNCONDITIONAL_PEER_IDS=${UNCONDITIONAL_PEER_IDS:=}
-    USE_HORCRUX=${USE_HORCRUX:="false"}
-    MAX_NUM_INBOUND_PEERS=${MAX_NUM_INBOUND_PEERS:=20}
-    MAX_NUM_OUTBOUND_PEERS=${MAX_NUM_OUTBOUND_PEERS:=40}
-    TIMEOUT_COMMIT=${TIMEOUT_COMMIT:=}
+    if [ -f "${CHAIN_JSON}" ]; then
+        export DAEMON_NAME=${DAEMON_NAME:="$(jq -r ".daemon_name" ${CHAIN_JSON})"}
+        export CHAIN_ID=${CHAIN_ID:="$(jq -r ".chain_id" ${CHAIN_JSON})"}
+        MINIMUM_GAS_PRICES=${MINIMUM_GAS_PRICES:="$(jq -r '.fees.fee_tokens[] | [ .average_gas_price, .denom ] | join("")' ${CHAIN_JSON} | paste -sd, -)"}
+        GENESIS_URL=${GENESIS_URL:="$(jq -r ".codebase.genesis.genesis_url" ${CHAIN_JSON})"}
+        PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+        SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
+    fi
 
     # State sync
-    WASM_URL=${WASM_URL:=}
-    TRUST_LOOKBACK=${TRUST_LOOKBACK:=2000}
-    RESET_ON_START=${RESET_ON_START:="false"}
-    STATE_SYNC_RPC=${STATE_SYNC_RPC:=}
-    STATE_SYNC_WITNESSES=${STATE_SYNC_WITNESSES:="${STATE_SYNC_RPC}"}
-    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_WITNESSES}" ] && echo "true" || echo "false")"}
     SYNC_BLOCK_HEIGHT=${SYNC_BLOCK_HEIGHT:="${FORCE_SNAPSHOT_HEIGHT:="$(get_sync_block_height)"}"}
     SYNC_BLOCK_HASH=${SYNC_BLOCK_HASH:="$(get_sync_block_hash)"}
 }
@@ -141,6 +93,7 @@ ensure_chain_home(){
 }
 
 initialize_version(){
+    STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_RPC:=}" ] && echo "true" || echo "false")"}
     export  STATE_SYNC_ENABLED CHAIN_JSON_URL BINARY_URL BINARY_VERSION RESTORE_SNAPSHOT
     initversion.py
     if [ $? != 0 ]; then
@@ -168,7 +121,7 @@ initialize_node(){
 }
 
 delete_data_dir(){
-    if [ "${RESET_ON_START}" = "true" ]; then
+    if [ "${RESET_ON_START:=}" = "true" ]; then
         logger "Reset on start set to: ${RESET_ON_START}"
         cp "${DATA_DIR}/priv_validator_state.json" /tmp/priv_validator_state.json.backup
         rm -rf "${DATA_DIR}"
@@ -234,7 +187,7 @@ download_genesis(){
 
 # Download the address book file
 download_addrbook(){
-    if [ -n "${ADDR_BOOK_URL}" ]; then
+    if [ -n "${ADDR_BOOK_URL:=}" ]; then
         echo "Downloading address book file..."
         curl -sSL "${ADDR_BOOK_URL}" -o "${ADDR_BOOK_FILE}"
         chown cosmovisor:cosmovisor ${ADDR_BOOK_FILE}*
@@ -251,95 +204,91 @@ modify_client_toml(){
 
 # Modify the config.toml file
 modify_config_toml(){
+    # config.toml
     cp "${CONFIG_TOML}" "${CONFIG_TOML}.bak"
     sed -e "s|^laddr *=\s*\"tcp:\/\/127.0.0.1|laddr = \"tcp:\/\/0.0.0.0|" -i "${CONFIG_TOML}"
-    sed -e "s|^log.format *=.*|log_format = \"${LOG_FORMAT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^fast.sync *=.*|fast_sync = \"${FAST_SYNC}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^log.format *=.*|log_format = \"${LOG_FORMAT:=json}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^timeout.broadcast.tx.commit *=.*|timeout_broadcast_tx_commit = \"${TIMEOUT_BROADCAST_TX_COMMIT:=45s}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^dial.timeout *=.*|dial_timeout = \"${DIAL_TIMEOUT:="5s"}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^fast.sync *=.*|fast_sync = \"${FAST_SYNC:="true"}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^chunk.fetchers *=.*|chunk_fetchers = \"${CHUNK_FETCHERS:="30"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^seeds *=.*|seeds = \"${SEEDS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^persistent.peers *=.*|persistent_peers = \"${PERSISTENT_PEERS}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^unconditional.peer.ids *=.*|unconditional_peer_ids = \"${UNCONDITIONAL_PEER_IDS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS}\"|" -i "${CONFIG_TOML}"
-    sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP}|" -i "${CONFIG_TOML}"
-    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT}|" -i "${CONFIG_TOML}"
-    sed -e "s|^max.num.inbound.peers *=.*|max_num_inbound_peers = ${MAX_NUM_INBOUND_PEERS}|" -i "${CONFIG_TOML}"
-    sed -e "s|^max.num.outbound.peers *=.*|max_num_outbound_peers = ${MAX_NUM_OUTBOUND_PEERS}|" -i "${CONFIG_TOML}"
+    sed -e "s|^bootstrap.peers *=.*|bootstrap_peers = \"${BOOTSTRAP_PEERS:=""}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^allow.duplicate.ip *=.*|allow_duplicate_ip = ${ALLOW_DUPLICATE_IP:="true"}|" -i "${CONFIG_TOML}"
+    sed -e "s|^addr.book.strict *=.*|addr_book_strict = ${ADDR_BOOK_STRICT:="false"}|" -i "${CONFIG_TOML}"
+    sed -e "s|^max.num.inbound.peers *=.*|max_num_inbound_peers = ${MAX_NUM_INBOUND_PEERS:=20}|" -i "${CONFIG_TOML}"
+    sed -e "s|^max.num.outbound.peers *=.*|max_num_outbound_peers = ${MAX_NUM_OUTBOUND_PEERS:=40}|" -i "${CONFIG_TOML}"
     sed -e "s|^use.p2p *=.*|use_p2p = true|" -i "${CONFIG_TOML}"
     sed -e "s|^prometheus *=.*|prometheus = true|" -i "${CONFIG_TOML}"
-    sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^namespace *=.*|namespace = \"${METRIC_NAMESPACE:="tendermint"}\"|" -i "${CONFIG_TOML}"
     sed -e "s|^discard.abci.responses *=.*|discard_abci_responses = false|" -i "${CONFIG_TOML}"
+    sed -e "s|^db.backend *=.*|db_backend = \"${DB_BACKEND:=goleveldb}\"|" -i "${CONFIG_TOML}"
+    sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES:="2000000"}|" -i "${CONFIG_TOML}"
 
-    if [ -n "${RPC_CORS_ALLOWED_ORIGIN:-}" ]; then
+    if [ -n "${RPC_CORS_ALLOWED_ORIGIN:=}" ]; then
         sed -e "s|^cors.allowed.origins *=.*|cors_allowed_origins = ${RPC_CORS_ALLOWED_ORIGIN}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${NODE_MODE:-}" ]; then
+    if [ -n "${NODE_MODE:=}" ]; then
         sed -e "s|^mode *=.*|mode = \"${NODE_MODE}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_BODY_BYTES:-}" ]; then
-        sed -e "s|^max.body.bytes *=.*|max_body_bytes = ${MAX_BODY_BYTES}|" -i "${CONFIG_TOML}"
-    fi
-
-    if [ -n "${MAX_HEADER_BYTES:-}" ]; then
+    if [ -n "${MAX_HEADER_BYTES:=}" ]; then
         sed -e "s|^max.header.bytes *=.*|max_header_bytes = ${MAX_HEADER_BYTES}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${MAX_PAYLOAD:-}" ]; then
+    if [ -n "${MAX_PAYLOAD:=}" ]; then
         sed -e "s|^max.packet.msg.payload.size *=.*|max_packet_msg_payload_size = ${MAX_PAYLOAD}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${INDEXER:-}" ]; then
+    if [ -n "${INDEXER:=}" ]; then
         sed -e "s|^indexer *=.*|indexer = "\"${INDEXER}\""|" -i "${CONFIG_TOML}"
     fi
 
-    if [ "${IS_SEED_NODE:-}" = "true" ]; then
+    if [ "${IS_SEED_NODE:=}" = "true" ]; then
         sed -e "s|^seed.mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
     fi
 
-    if [ "${IS_SENTRY}" = "true" ] || [ -n "${PRIVATE_PEER_IDS}" ]; then
+    if [ "${IS_SENTRY:=}" = "true" ] || [ -n "${PRIVATE_PEER_IDS}" ]; then
         sed -e "s|^private.peer.ids *=.*|private_peer_ids = \"${PRIVATE_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${PUBLIC_ADDRESS}" ]; then
+    if [ -n "${PUBLIC_ADDRESS:=}" ]; then
         echo "Setting public address to ${PUBLIC_ADDRESS}"
         sed -e "s|^external.address *=.*|external_address = \"${PUBLIC_ADDRESS}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ "${USE_HORCRUX}" = "true" ]; then
+    if [ "${USE_HORCRUX:=}" = "true" ]; then
         sed -e "s|^priv.validator.laddr *=.*|priv_validator_laddr = \"tcp://[::]:23756\"|" \
             -e "s|^laddr *= \"\"|laddr = \"tcp://[::]:23756\"|" \
             -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${DB_BACKEND}" ]; then
-        sed -e "s|^db.backend *=.*|db_backend = \"${DB_BACKEND}\"|" -i "${CONFIG_TOML}"
-    fi
 
-    if [ "${SENTRIED_VALIDATOR}" = "true" ]; then
+    if [ "${SENTRIED_VALIDATOR:=}" = "true" ]; then
         sed -e "s|^pex *=.*|pex = false|" -i "${CONFIG_TOML}"
     fi
 
-    if [ ${STATE_SYNC_ENABLED} = "true" ]; then
+    if [ "${STATE_SYNC_ENABLED:=}" = "true" ]; then
         sed -e "s|^enable *=.*|enable = true|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${STATE_SYNC_RPC}" ] || [ -n "${STATE_SYNC_WITNESSES}" ]; then
-        sed -e "s|^rpc.servers *=.*|rpc_servers = \"${STATE_SYNC_RPC},${STATE_SYNC_WITNESSES}\"|" -i "${CONFIG_TOML}"
+    if [ -n "${STATE_SYNC_RPC:=}" ]; then
+        sed -e "s|^rpc.servers *=.*|rpc_servers = \"${STATE_SYNC_RPC:=},${STATE_SYNC_WITNESSES:=}\"|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${SYNC_BLOCK_HEIGHT}" ]; then
+    if [ -n "${SYNC_BLOCK_HEIGHT:=}" ]; then
         sed -e "s|^trust.height *=.*|trust_height = ${SYNC_BLOCK_HEIGHT}|" -i "${CONFIG_TOML}"
     fi
 
-    if [ -n "${SYNC_BLOCK_HASH}" ]; then
+    if [ -n "${SYNC_BLOCK_HASH:=}" ]; then
         sed -e "s|^trust.hash *=.*|trust_hash = \"${SYNC_BLOCK_HASH}\"|" -i "${CONFIG_TOML}"
     fi
     # sed -e "s|^trust_period *=.*|trust_period = \"168h\"|" -i "${CONFIG_TOML}"
 
-    if [ -n "${TIMEOUT_COMMIT}" ]; then
+    if [ -n "${TIMEOUT_COMMIT:=}" ]; then
         sed -e "s|^timeout.commit *=.*|timeout_commit = \"${TIMEOUT_COMMIT}\"|" -i "${CONFIG_TOML}"
     fi
 
@@ -351,12 +300,11 @@ modify_config_toml(){
 
 modify_app_toml(){
     cp "${APP_TOML}" "${APP_TOML}.bak"
-    sed -e "s|^moniker *=.*|moniker = \"${MONIKER}\"|" -i "${APP_TOML}"
-    sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
-    sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL}\"|" -i "${APP_TOML}"
-    sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS}\"|" -i "${APP_TOML}"
-    sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE}\"|" -i "${APP_TOML}"
-    sed -e "s|^rpc-max-body-bytes *=.*|rpc-max-body-bytes = \"${RPC_MAX_BODY_BYTES}\"|" -i "${APP_TOML}"
+    sed -e "s|^moniker *=.*|moniker = \"${MONIKER:=moniker}\"|" -i "${APP_TOML}"
+    sed -e "s|^snapshot-interval *=.*|snapshot-interval = \"${SNAPSHOT_INTERVAL:="2000"}\"|" -i "${APP_TOML}"
+    sed -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"${KEEP_SNAPSHOTS:="10"}\"|" -i "${APP_TOML}"
+    sed -e "s|^contract-memory-cache-size *=.*|contract-memory-cache-size = \"${CONTRACT_MEMORY_CACHE_SIZE:="8192"}\"|" -i "${APP_TOML}"
+    sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND:="goleveldb"}\"|" -i "${APP_TOML}"
 
     sed -e "s|^address *=.*:1317.*$|address = \"tcp:\/\/0.0.0.0:1317\"|" \
         -e "s|^address *=.*:8080.*$|address = \"0.0.0.0:8080\"|" \
@@ -382,23 +330,23 @@ modify_app_toml(){
         fi
     fi
 
-    if [ -n "${DB_BACKEND}" ]; then
-        sed -e "s|^app-db-backend *=.*|app-db-backend = \"${DB_BACKEND}\"|" -i "${APP_TOML}"
+    if [ -n "${MINIMUM_GAS_PRICES:=}" ]; then
+        sed -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"${MINIMUM_GAS_PRICES}\"|" -i "${APP_TOML}"
     fi
 
-    if [ "${ENABLE_API}" = "true" ]; then
+    if [ "${ENABLE_API:="true"}" = "true" ]; then
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^enable *=.*|enable = true|' -i "${APP_TOML}"
     fi
 
-    if [ "${ENABLE_GRPC}" = "true" ]; then
+    if [ "${ENABLE_GRPC:="true"}" = "true" ]; then
         sed -e '/^\[grpc\]/,/\[grpc-web\]/ s|^enable *=.*|enable = true|' -i "${APP_TOML}"
     fi
 
-    if [ "${ENABLE_SWAGGER}" = "true" ]; then
+    if [ "${ENABLE_SWAGGER:="true"}" = "true" ]; then
         sed -e '/^\[api\]/,/\[rosetta\]/ s|^swagger *=.*|swagger = true|' -i "${APP_TOML}"
     fi
 
-    if [ -n "${HALT_HEIGHT}" ]; then
+    if [ -n "${HALT_HEIGHT:=}" ]; then
         sed -e "s|^halt-height *=.*|halt-height = \"${HALT_HEIGHT}\"|" -i "${APP_TOML}"
     fi
 
@@ -420,20 +368,20 @@ load_data_from_image() {
 get_sync_block_height(){
     local latest_height
     local sync_block_height
-    if [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+    if [ -n "${STATE_SYNC_RPC=:}" ]; then
         latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .result.block.header.height)
         if [ "${latest_height}" = "null" ]; then
             # Maybe Tendermint 0.35+?
             latest_height=$(curl -sSL ${STATE_SYNC_RPC}/block | jq -r .block.header.height)
         fi
-        sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK}))
+        sync_block_height=$((${latest_height} - ${TRUST_LOOKBACK:=2000}))
     fi
     echo "${sync_block_height:=}"
 }
 
 get_sync_block_hash(){
     local sync_block_hash
-    if [ -n "${SYNC_BLOCK_HEIGHT}" ] && [ "${STATE_SYNC_ENABLED}" = "true" ]; then
+    if [ -n "${STATE_SYNC_RPC:=}" ]; then
         sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .result.block_id.hash)
         if [ "${sync_block_hash}" = "null" ]; then
             sync_block_hash=$(curl -sSL "${STATE_SYNC_RPC}/block?height=${SYNC_BLOCK_HEIGHT}" | jq -r .block_id.hash)
@@ -443,7 +391,7 @@ get_sync_block_hash(){
 }
 
 prepare_statesync(){
-    if [ -n "${WASM_URL}" ]; then
+    if [ -n "${WASM_URL:=}" ]; then
         logger "Downloading wasm files from ${WASM_URL}"
         wasm_base_dir=$(dirname ${WASM_DIR})
         mkdir -p "${wasm_base_dir}"
