@@ -160,7 +160,7 @@ versions:
     alias: v15
     height: 19639600
     proposal:
-    tag: v15.0.0
+    tag: v15.1.0
     binaries:
       linux/amd64: >-
-        https://github.com/cosmos/gaia/releases/download/v15.0.0/gaiad-v15.0.0-linux-amd64
+        https://github.com/cosmos/gaia/releases/download/v15.1.0/gaiad-v15.1.0-linux-amd64
