@@ -86,3 +86,14 @@ versions:
       linux/amd64:
         libwasmvm.x86_64.so: >-
           https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so
+  - name: v13
+    proposal: 260
+    tag: v13.0.0
+    height: '12801683'
+    binaries:
+      linux/amd64: >-
+        https://github.com/public-awesome/stargaze/releases/download/v13.0.0/stargaze_13.0.0_linux_amd64.tar.gz
+    libraries:
+      linux/amd64:
+        libwasmvm.x86_64.so: >-
+          https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so
