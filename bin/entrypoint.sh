@@ -34,6 +34,7 @@ export ADDR_BOOK_FILE="${CONFIG_DIR}/addrbook.json"
 
 parse_chain_info(){
     if [ ! -f "${CHAIN_JSON}" ]; then
+        export CHAIN_NETWORK
         getchaininfo.py
     fi
 
@@ -46,10 +47,10 @@ parse_chain_info(){
         PERSISTENT_PEERS=${PERSISTENT_PEERS:="$(jq -r '.peers.persistent_peers[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
         SEEDS=${SEEDS:="$(jq -r '.peers.seeds[] | [.id, .address] | join("@")' ${CHAIN_JSON} | paste -sd, -)"}
     else
-        CHAIN_NETWORK=${CHAIN_NETWORK:="mainnet"}
         export CHAIN_ID=${CHAIN_ID:="${CHAIN_NAME}-${CHAIN_NETWORK}"}
         export DAEMON_NAME=${DAEMON_NAME:="${CHAIN_NAME}d"}
     fi
+
 
     # State sync
     STATE_SYNC_ENABLED=${STATE_SYNC_ENABLED:="$([ -n "${STATE_SYNC_RPC:=}" ] && echo "true" || echo "false")"}
@@ -254,7 +255,7 @@ modify_config_toml(){
         sed -e "s|^seed.mode *=.*|seed_mode = true|" -i "${CONFIG_TOML}"
     fi
 
-    if [ "${IS_SENTRY:=}" = "true" ] || [ -n "${PRIVATE_PEER_IDS}" ]; then
+    if [ -n "${PRIVATE_PEER_IDS:=}" ]; then
         sed -e "s|^private.peer.ids *=.*|private_peer_ids = \"${PRIVATE_PEER_IDS}\"|" -i "${CONFIG_TOML}"
     fi
 
@@ -268,7 +269,6 @@ modify_config_toml(){
             -e "s|^laddr *= \"\"|laddr = \"tcp://[::]:23756\"|" \
             -i "${CONFIG_TOML}"
     fi
-
 
     if [ "${SENTRIED_VALIDATOR:=}" = "true" ]; then
         sed -e "s|^pex *=.*|pex = false|" -i "${CONFIG_TOML}"
