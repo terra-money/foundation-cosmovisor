@@ -92,7 +92,7 @@ start(){
 
 ensure_chain_home(){
     mkdir -p "${CHAIN_HOME}"
-    chown cosmovisor:cosmovisor "${CHAIN_HOME}"
+    chown -R cosmovisor:cosmovisor "${CHAIN_HOME}"
     if [ "${CHAIN_HOME}" != "${DAEMON_HOME}" ]; then
         ln -s ${CHAIN_HOME}/data ${DAEMON_HOME}/data;
     fi
@@ -114,7 +114,7 @@ initialize_node(){
         logger "Initializing node from scratch..."
         mkdir -p "${DATA_DIR}"
         chown -R cosmovisor:cosmovisor "${DATA_DIR}"
-        /usr/local/bin/cosmovisor run init "${MONIKER}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
+        /usr/local/bin/cosmovisor run init "${MONIKER:="moniker"}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
         chown -R cosmovisor:cosmovisor "${CONFIG_DIR}"
         if [ -f "${GENESIS_FILE}" ]; then
             rm "${GENESIS_FILE}"
