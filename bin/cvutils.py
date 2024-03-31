@@ -33,7 +33,7 @@ def get_ctx(args: argparse.Namespace = {}):
     moniker = agetattr(args, "moniker", os.environ.get("MONIKER", "rpcnode"))
     chain_network = agetattr(args, "chain_network", os.environ.get("CHAIN_NETWORK", "mainnet"))
     chain_name = agetattr(args, "chain_name", os.environ.get("CHAIN_NAME", chain_name_from_hostname()))
-    chain_id = agetattr(args, "chain_id", os.environ.get("CHAIN_ID", f"{chain_name}-${chain_network}"))
+    chain_id = agetattr(args, "chain_id", os.environ.get("CHAIN_ID", f"{chain_name}-{chain_network}"))
     daemon_name = agetattr(args, "daemon_name", os.environ.get("DAEMON_NAME", f"{chain_name}d"))
     domain = agetattr(args, "domain", "chains.svc.cluster.local")
     
@@ -70,7 +70,7 @@ def get_ctx(args: argparse.Namespace = {}):
     restore_snapshot = agetattr(args, "restore_snapshot", os.environ.get("RESTORE_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
     rpc_port = agetattr(args, "rpc_port", os.environ.get("P2P_PORT", 26656))
     rpc_port = agetattr(args, "rpc_port", os.environ.get("RPC_PORT", 26657))
-    
+
     return set_cosmovisor_dir(locals(), cosmovisor_dir)
 
 def chain_name_from_hostname():
