@@ -263,7 +263,7 @@ def main(args: argparse.Namespace) -> int:
     cvcontrol.stop_process('cosmovisor')
 
     if args.action == 'create':
-        if ctx.get("statesync_enabled"):
+        if ctx.get("statesync_snapshot"):
             statesync.main(ctx)
         create_snapshot(ctx.get("snapshots_dir"), ctx.get("data_dir"), ctx.get("cosmprund_enabled"))
     elif args.action == 'restore':
@@ -282,12 +282,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
     parser.add_argument('action', type=str, choices=['create', 'restore'], help='Action to perform (create or extract)')
     parser.add_argument('-u', '--snapshot-url', dest="snapshot_url", type=str, help='URL of the snapshot')
-    parser.add_argument('-s', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
+    parser.add_argument('-d', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
     parser.add_argument('-c', '--chain-home', dest="chain_home", type=str, help='Directory to extract snapshots')
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
     parser.add_argument('-p', '--cosmprund-enable', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
     parser.add_argument('-x', '--cosmprund-disable', dest="cosmprund_enabled", action='store_false', help='Disable cosmprund')
-    parser.add_argument('--statesync-enable', dest="statesync_enabled", action='store_true', help='Enable statesync before snapshot')
+    parser.add_argument('-s', '--statesync', dest="statesync_snapshot", action='store_true', help='Enable statesync before snapshot')
 
     args = parser.parse_args()
 
