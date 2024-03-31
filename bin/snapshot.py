@@ -211,7 +211,7 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
     :param chain_home: Directory to extract the snapshot to.
     :return: 0 if the snapshot was successfully restored, 1 otherwise.
     """
-    snapfn = snapshot_url if os.path.basename(snapshot_url.split('?')[0]) else find_latest_snapshot(snapshots_dir)
+    snapfn = os.path.basename(snapshot_url.split('?')[0]) if snapshot_url else find_latest_snapshot(snapshots_dir)
     if not snapfn:
         logging.error(f"No Snapshot file found")
         return 1
@@ -280,14 +280,14 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(description='Load data from image snapshot.')
-    parser.add_argument('action', type=str, choices=['create', 'restore'], help='Action to perform (create or extract)')
+    parser.add_argument('action', type=str, choices=['create', 'restore'], help='Action to perform (create or restore)')
     parser.add_argument('-u', '--snapshot-url', dest="snapshot_url", type=str, help='URL of the snapshot')
-    parser.add_argument('-d', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
+    parser.add_argument('-s', '--snapshots-dir', dest="snapshots_dir", type=str, help='Directory to save snapshots')
     parser.add_argument('-c', '--chain-home', dest="chain_home", type=str, help='Directory to extract snapshots')
     parser.add_argument('-d', '--data-dir', dest="data_dir", type=str, help='Data Directory')
     parser.add_argument('-p', '--cosmprund-enable', dest="cosmprund_enabled", action='store_true', help='Enable cosmprund')
     parser.add_argument('-x', '--cosmprund-disable', dest="cosmprund_enabled", action='store_false', help='Disable cosmprund')
-    parser.add_argument('-s', '--statesync', dest="statesync_snapshot", action='store_true', help='Enable statesync before snapshot')
+    parser.add_argument('--statesync', dest="statesync_snapshot", action='store_true', help='Enable statesync before snapshot')
 
     args = parser.parse_args()
 

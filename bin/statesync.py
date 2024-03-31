@@ -2,6 +2,7 @@
 
 import logging, os, requests, shutil, time, tomlkit
 import cvcontrol
+import cvutils
 import argparse
 
 def statesync_setup(ctx):
@@ -101,6 +102,7 @@ def main(ctx):
             cvcontrol.stop_process("cosmovisor")
         else:
             logging.error("Cannot setup statesync.")
+    return 0
 
 
 if __name__ == "__main__":
@@ -112,6 +114,7 @@ if __name__ == "__main__":
     parser.add_argument('--interval', dest="snapshot_interval", type=str, help='Snapshot interval value')
 
     args = parser.parse_args()
+    ctx = cvutils.get_ctx(args)
 
     exit_code = main(args)
 
