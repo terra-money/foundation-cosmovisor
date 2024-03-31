@@ -153,21 +153,26 @@ def create_snapshot(snapshots_dir: str, data_dir: str, cosmprund_enabled: bool =
     wasm_file = f'{snapshots_dir}/wasm-{identifier}.tar.lz4'
 
     if os.path.exists(outside_wasm_dir):
+        logging.info(f"Compressing {data_dir} and {outside_wasm_dir} to {snapshot_file}")
         compress_lz4(snapshot_file, [data_dir, outside_wasm_dir], ['wasm/wasm/cache'])
+        logging.info(f"Compressing {outside_wasm_dir} to {wasm_file}")
         compress_lz4(wasm_file, [outside_wasm_dir], ['wasm/wasm/cache'])
-        wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
-        link_overwrite(wasm_file, wasm_latest)
+        # wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
+        # link_overwrite(wasm_file, wasm_latest)
     elif os.path.exists(inside_wasm_dir):
+        logging.info(f"Compressing {data_dir} and {inside_wasm_dir} to {snapshot_file}")
         compress_lz4(snapshot_file, [data_dir], ['data/wasm/cache'])
+        logging.info(f"Compressing {inside_wasm_dir} to {wasm_file}")
         compress_lz4(wasm_file, [inside_wasm_dir], ['wasm/wasm/cache'])
-        wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
-        link_overwrite(wasm_file, wasm_latest)
+        # wasm_latest = f'{snapshots_dir}/wasm-latest.tar.lz4'
+        # link_overwrite(wasm_file, wasm_latest)
     else:
+        logging.info(f"Compressing {data_dir} to {snapshot_file}")
         compress_lz4(snapshot_file, [data_dir], [])
 
     # always create a snapshot-latest.tar.lz4 link (but not wasm)
-    snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
-    link_overwrite(snapshot_file, snapshot_latest)
+    # snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
+    # link_overwrite(snapshot_file, snapshot_latest)
 
 
 def link_overwrite(src_file: str, dst_file: str) -> None:
@@ -182,6 +187,21 @@ def link_overwrite(src_file: str, dst_file: str) -> None:
     os.symlink(src_file, dst_file)
 
 
+def find_latest_snapshot(snapshots_dir):
+    # Create a list of files starting with "snapshot" in the given directory
+    snapshot_files = glob.glob(os.path.join(snapshots_dir, 'snapshot-*'))
+    
+    # Filter out directories if any
+    snapshot_files = [file for file in snapshot_files if os.path.isfile(file)]
+
+    if not snapshot_files:
+        logging.error(f"No Snapshot files found in {snapshots_dir}")
+        return None  # If no files found, return None
+
+    # Get the latest file based on modification time
+    latest_file = max(snapshot_files, key=os.path.getmtime)
+    return latest_file
+
 def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> int:
     """
     Restores a snapshot from a given URL.
@@ -191,36 +211,44 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
     :param chain_home: Directory to extract the snapshot to.
     :return: 0 if the snapshot was successfully restored, 1 otherwise.
     """
-    if snapshot_url:
-        snapfn = os.path.basename(snapshot_url.split('?')[0])
-        snapfile = os.path.join(snapshots_dir, snapfn)
+    snapfn = snapshot_url if os.path.basename(snapshot_url.split('?')[0]) else find_latest_snapshot(snapshots_dir)
+    if not snapfn:
+        logging.error(f"No Snapshot file found")
+        return 1
+    
+    snapfile = os.path.join(snapshots_dir, snapfn)
+    snapshot_url = snapshot_url if snapshot_url else f'file://{snapfile}'
+    
+    
 
-        if not snapshot_url.startswith('file://'):
-            logging.info(f"Downloading snapshot from {snapshot_url}")
-            download_file(snapshot_url, snapfile)
-            snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
-            link_overwrite(snapfile, snapshot_latest)
-        elif snapshot_url[len('file://'):] != snapfile:
-            shutil.copy(snapshot_url[len('file://'):], snapfile)
+    if not snapshot_url.startswith('file://'):
+        logging.info(f"Downloading snapshot from {snapshot_url}")
+        download_file(snapshot_url, snapfile)
+        # snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
+        # link_overwrite(snapfile, snapshot_latest)
+    elif snapshot_url[len('file://'):] != snapfile:
+        shutil.copy(snapshot_url[len('file://'):], snapfile)
 
-        logging.info(f"Extracting {snapfn} to {chain_home}")
-        if not extract_file(snapfile, chain_home):
-            return 1
+    logging.info(f"Extracting {snapfn} to {chain_home}")
+    if not extract_file(snapfile, chain_home):
+        return 1
 
-        # Get the owner and group of the chain_home directory
-        stat_info = os.stat(chain_home)
-        uid = stat_info.st_uid
-        gid = stat_info.st_gid
+    # Get the owner and group of the chain_home directory
+    stat_info = os.stat(chain_home)
+    uid = stat_info.st_uid
+    gid = stat_info.st_gid
 
-        # Change the owner and group of the extracted files
-        # chown -R does not thow error for shared dir
-        try:
-            # Running the chown command using subprocess
-            subprocess.run(['chown', '-R', f'{uid}:{gid}', chain_home], check=True)
-        except subprocess.CalledProcessError as e:
-            logging.error(f"An error occurred while changing ownership: {e}")
+    # Change the owner and group of the extracted files
+    # chown -R does not thow error for shared dir
+    try:
+        # Running the chown command using subprocess
+        subprocess.call(['chown', '-R', f'{uid}:{gid}', chain_home],
+             stderr=subprocess.DEVNULL
+        )
+    except subprocess.CalledProcessError as e:
+        logging.error(f"An error occurred while changing ownership: {e}")
 
-        initversion.main(cvutils.get_ctx())
+    initversion.main(cvutils.get_ctx())
     return 0
 
 
@@ -236,7 +264,7 @@ def main(args: argparse.Namespace) -> int:
 
     if args.action == 'create':
         if ctx.get("statesync_enabled"):
-            statesync.statesync(ctx)
+            statesync.main(ctx)
         create_snapshot(ctx.get("snapshots_dir"), ctx.get("data_dir"), ctx.get("cosmprund_enabled"))
     elif args.action == 'restore':
         cvutils.unsafe_reset_all(ctx)

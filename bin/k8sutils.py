@@ -24,7 +24,7 @@ def get_service_peers(chain, domain):
                 port = status.node_info.listen_addr.split(":")[2]
                 yield f"{id}@{ip}:{port}"
             except Exception as e:
-                logging.debug(f"Could not retrieve status for {hostport}: {e}")
+                logging.error(f"Could not retrieve status for {hostport}: {e}")
                 pass
 
 
@@ -34,7 +34,7 @@ def get_service_rpc_status(chain, domain):
             try:
                 yield rpcstatus.RpcStatus(f"http://{hostport}/status")
             except Exception as e:
-                logging.debug(f"Could not retrieve status for {hostport}: {e}")
+                logging.error(f"Could not retrieve status for {hostport}: {e}")
                 pass
 
 
@@ -47,7 +47,7 @@ def get_service_rpc_addresses(dns_name):
             for ip in (ip for ip in ips if ip is not None):
                 yield f"{ip}:{rdata.port}"
     except Exception as e:
-        logging.warn(e)
+        logging.error(f"Could not resolve SRV record for {serviceName}: {e}")
         pass
 
 # Function to add node IDs as persistent peers in config.toml
@@ -68,7 +68,7 @@ def add_persistent_peers(ctx):
         # Convert back to a comma-separated string
         updated_peers = ",".join(updated_peers_set)
 
-        logging.info(f"Updated persistent peers: {updated_peers}")
+        print(f"Updated persistent peers: {updated_peers}")
 
         config["p2p"]["persistent_peers"] = updated_peers
 
@@ -76,4 +76,4 @@ def add_persistent_peers(ctx):
             file.write(tomlkit.dumps(config))
 
     except Exception as e:
-        logging.error(f"Error updating config file: {e}")
+        print(f"Error updating config file: {e}")
