@@ -116,6 +116,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ctx = cvutils.get_ctx(args)
 
-    exit_code = main(args)
+    exit_code = main(ctx)
 
     exit(exit_code)
