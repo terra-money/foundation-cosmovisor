@@ -25,10 +25,10 @@ def main(args: argparse.Namespace) -> int:
         for fd in ret[0]:
             if fd == process.stdout.fileno():
                 read = process.stdout.readline()
-                logging.error(read.strip())
+                print(read.strip(), file=sys.stderr)
             if fd == process.stderr.fileno():
                 read = process.stderr.readline()
-                logging.error(read.strip())
+                print(read.strip(), file=sys.stderr)
 
         # Break from the loop if the process is done
         if process.poll() is not None:

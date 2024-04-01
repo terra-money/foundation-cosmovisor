@@ -15,6 +15,7 @@ import logging
 import glob
 import subprocess
 import statesync
+import tempfile
 from rpcstatus import RpcStatus
 
 
@@ -25,9 +26,10 @@ def download_file(url: str, destination: str) -> None:
     :param url: URL to download the file from.
     :param destination: Destination to save the downloaded file.
     """
-    subprocess.run(['aria2c', '-s16', '-x16', '-d', os.path.dirname(destination), '-o', os.path.basename(destination), url])
-
-
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        fn = os.path.basename(destination)
+        subprocess.run(['aria2c', '-s16', '-x16', '-d', tmpdirname, '-o', fn, url])
+        subprocess.run(['cp', os.path.join(tmpdirname, fn), destination])
 
 def remove_first_directory(full_path: str) -> str:
     """
