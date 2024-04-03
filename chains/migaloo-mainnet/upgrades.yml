@@ -47,8 +47,7 @@ versions:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/migaloo:3.0.3
   - name: v4.1.2
-    tag: v4.1.3
+    tag: v4.1.4
     height: 5962700
     binaries:
-      docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/migaloo:4.1.3
+      linux/amd64: https://tfl-mainnets.s3.amazonaws.com/migaloo/migalood-v4.1.4
