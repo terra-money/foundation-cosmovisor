@@ -190,8 +190,8 @@ def link_overwrite(src_file: str, dst_file: str) -> None:
 
 
 def find_latest_snapshot(snapshots_dir):
-    # Create a list of files starting with "snapshot" in the given directory
-    snapshot_files = glob.glob(os.path.join(snapshots_dir, 'snapshot-*'))
+    # Create a list of snapshot files in the given directory
+    snapshot_files = glob.glob(os.path.join(snapshots_dir, '*.tar.lz4'))
     
     # Filter out directories if any
     snapshot_files = [file for file in snapshot_files if os.path.isfile(file)]
