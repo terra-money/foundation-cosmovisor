@@ -72,7 +72,7 @@ def get_ctx(args: argparse.Namespace = {}):
 
     statesync_enabled = agetattr(args, "statesync_enabled", os.environ.get("STATE_SYNC_ENABLED", "false").lower() in ["true", "1", "yes"])
     statesync_snapshot = agetattr(args, "statesync_snapshot", os.environ.get("STATESYNC_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
-    statesync_rpc = agetattr(args, "statesync_rpc", os.environ.get("STATE_SYNC_RPC", f"http://{chain_name}-sync.{domain}:{rpc_port}"))
+    statesync_rpc = agetattr(args, "statesync_rpc", os.environ.get("STATE_SYNC_RPC", f"{chain_name}-sync.{domain}:{rpc_port}"))
     
     
     return set_cosmovisor_dir(locals(), cosmovisor_dir)
