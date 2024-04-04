@@ -64,13 +64,16 @@ def get_ctx(args: argparse.Namespace = {}):
 
     snapshots_dir = agetattr(args, "snapshots_dir", os.environ.get("SNAPSHOTS_DIR", os.path.join(os.path.dirname(data_dir), "shared", "snapshots")))
     snapshot_url = agetattr(args, "snapshot_url", os.environ.get("SNAPSHOT_URL", ""))
+    restore_snapshot = agetattr(args, "restore_snapshot", os.environ.get("RESTORE_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
     cosmprund_enabled = agetattr(args, "cosmprund_enabled", os.environ.get("COSMPRUND_ENABLED", "false").lower() in ["true", "1", "yes"])
+
+    p2p_port = agetattr(args, "p2p_port", os.environ.get("P2P_PORT", 26656))
+    rpc_port = agetattr(args, "rpc_port", os.environ.get("RPC_PORT", 26657))
 
     statesync_enabled = agetattr(args, "statesync_enabled", os.environ.get("STATE_SYNC_ENABLED", "false").lower() in ["true", "1", "yes"])
     statesync_snapshot = agetattr(args, "statesync_snapshot", os.environ.get("STATESYNC_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
-    restore_snapshot = agetattr(args, "restore_snapshot", os.environ.get("RESTORE_SNAPSHOT", "false").lower() in ["true", "1", "yes"])
-    rpc_port = agetattr(args, "rpc_port", os.environ.get("P2P_PORT", 26656))
-    rpc_port = agetattr(args, "rpc_port", os.environ.get("RPC_PORT", 26657))
+    statesync_rpc = agetattr(args, "statesync_rpc", os.environ.get("STATE_SYNC_RPC", f"http://{chain_name}-sync.{domain}:{rpc_port}"))
+    
     
     return set_cosmovisor_dir(locals(), cosmovisor_dir)
 

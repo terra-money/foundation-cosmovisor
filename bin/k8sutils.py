@@ -31,6 +31,11 @@ def get_service_rpc_status(chain, domain):
 
 def get_service_rpc_addresses(chain, domain):
     for type in ["sync", "read", "write", "snap", "archive"]:
+        for result in get_service_rpc_addresses_type(chain, domain, type):
+            yield result
+
+
+def get_service_rpc_addresses_type(chain, domain, type):
         try:
             serviceName = f'_rpc._tcp.discover-{chain}-{type}.{domain}'  # Replace with your service and protocol
             answers = dns.resolver.resolve(serviceName, 'SRV')
