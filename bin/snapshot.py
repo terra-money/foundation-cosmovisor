@@ -221,11 +221,10 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
     snapfile = os.path.join(snapshots_dir, snapfn)
     snapshot_url = snapshot_url if snapshot_url else f'file://{snapfile}'
     
-    
-
     if not snapshot_url.startswith('file://'):
         logging.info(f"Downloading snapshot from {snapshot_url}")
-        download_file(snapshot_url, snapfile)
+        target = os.path.join(snapshots_dir, f'snapshot-{snapfn}') if not snapfn.startswith('snapshot-') else snapfile
+        download_file(snapshot_url, target)
         # snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
         # link_overwrite(snapfile, snapshot_latest)
     elif snapshot_url[len('file://'):] != snapfile:
