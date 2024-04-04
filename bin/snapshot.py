@@ -254,6 +254,32 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
     return 0
 
 
+def wait_for_sync(ctx, sleep_time=30, max_retries=None):
+    """
+    Waits for the node to catch up.
+
+    :param ctx: Context dictionary containing 'status_url'.
+    :param sleep_time: Time to wait between each check, in seconds. Default is 30.
+    :param max_retries: Maximum number of retries. Infinite if None. Default is None.
+    """
+    logging.info("Waiting for localhost to catch up...")
+    status_url = ctx["status_url"]
+    retries = 0
+
+    while True:
+        time.sleep(sleep_time)
+        try:
+            rpcstatus = RpcStatus(status_url)
+            if not rpcstatus.is_catching_up():
+                break
+        except Exception as e:
+            logging.error(f"Error checking status: {e}")
+            if max_retries is not None and retries >= max_retries:
+                logging.error("Max retries reached. Exiting.")
+                break
+        retries += 1
+
+
 def main(args: argparse.Namespace) -> int:
     """
     Main function to create or restore a snapshot.
@@ -262,13 +288,15 @@ def main(args: argparse.Namespace) -> int:
     :return: 0 if the snapshot was successfully created or restored, 1 otherwise.
     """
     ctx = cvutils.get_ctx(args)
-    cvcontrol.stop_process('cosmovisor')
 
     if args.action == 'create':
         if ctx.get("statesync_snapshot"):
             statesync.main(ctx)
+            wait_for_sync(ctx)
+        cvcontrol.stop_process('cosmovisor')
         create_snapshot(ctx.get("snapshots_dir"), ctx.get("data_dir"), ctx.get("cosmprund_enabled"))
     elif args.action == 'restore':
+        cvcontrol.stop_process('cosmovisor')
         cvutils.unsafe_reset_all(ctx)
         restore_snapshot(ctx.get("snapshot_url"), ctx.get("snapshots_dir"), ctx.get("chain_home"))
     else:

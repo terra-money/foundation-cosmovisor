@@ -134,32 +134,6 @@ def datadir_cleanup(ctx):
             logging.error(f"Error deleting {item_path}: {e}")
 
 
-def wait_for_localhost(ctx, sleep_time=30, max_retries=None):
-    """
-    Waits for the localhost server to catch up.
-
-    :param ctx: Context dictionary containing 'status_url'.
-    :param sleep_time: Time to wait between each check, in seconds. Default is 30.
-    :param max_retries: Maximum number of retries. Infinite if None. Default is None.
-    """
-    logging.info("Waiting for localhost to catch up...")
-    status_url = ctx["status_url"]
-    retries = 0
-
-    while True:
-        time.sleep(sleep_time)
-        try:
-            rpcstatus = RpcStatus(status_url)
-            if not rpcstatus.is_catching_up():
-                break
-        except Exception as e:
-            logging.error(f"Error checking status: {e}")
-            if max_retries is not None and retries >= max_retries:
-                logging.error("Max retries reached. Exiting.")
-                break
-        retries += 1
-
-
 def main(ctx):
     """
     Main function to set up statesync.
@@ -191,6 +165,7 @@ def main(ctx):
     
     logging.info("Preparing data directory")
     try:
+        cvcontrol.stop_process("cosmovisor")
         datadir_cleanup(ctx)
     except Exception as e:
         logging.error(f"Error preparing data directory. {e}")
@@ -199,8 +174,6 @@ def main(ctx):
     logging.info("Starting State Sync...")
     try:
         cvcontrol.start_process("cosmovisor")
-        wait_for_localhost(ctx)
-        cvcontrol.stop_process("cosmovisor")
     except Exception as e:
         logging.error(f"State Sync Failed {e}")
         return 1
