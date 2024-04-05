@@ -7,5 +7,4 @@ versions:
   - name: v0.41.7-ASA-2024-007
     tag: v0.41.7-ASA-2024-007
     binaries:
-      docker/linux/amd64: docker://hub.docker.com/oraichain/foundation-orai:0.41.8-alpine-prod
-      docker/linux/arm64: docker://hub.docker.com/oraichain/foundation-orai:0.41.8-alpine-prod
+      docker/linux/amd64: docker://hub.docker.com/oraichain/foundation-orai:0.41.7-alpine-prod
