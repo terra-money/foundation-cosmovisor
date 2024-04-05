@@ -12,4 +12,4 @@ versions:
     libraries:
       linux/amd64:
         libwasmvm.x86_64.so: >-
-          https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so
+          https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so
