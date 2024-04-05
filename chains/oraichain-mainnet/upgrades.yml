@@ -4,12 +4,8 @@ daemon_name: oraid
 network_type: mainnet
 git_repo: https://github.com/oraichain/orai
 versions:
-  - name: v0.41.7-ASA-2024-007
-    tag: v0.41.7-ASA-2024-007
+  - name: v0.41.7
+    tag: v0.41.7
     binaries:
-      linux/amd64: https://github.com/oraichain/orai/releases/download/v0.41.7-ASA-2024-007/oraid-amd64
-      linux/arm64: https://github.com/oraichain/orai/releases/download/v0.41.7-ASA-2024-007/oraid-arm64
-    libraries:
-      linux/amd64:
-        libwasmvm.x86_64.so: >-
-          https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so
+      linux/amd64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_arm64
+      linux/arm64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_amd64
