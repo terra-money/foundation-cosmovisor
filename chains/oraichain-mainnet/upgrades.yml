@@ -7,5 +7,5 @@ versions:
   - name: v0.41.7
     tag: v0.41.7
     binaries:
-      linux/amd64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_arm64
-      linux/arm64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_amd64
+      linux/amd64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_amd64
+      linux/arm64: https://github.com/oraichain/orai/releases/download/v0.41.7/oraid_alpine_arm64
