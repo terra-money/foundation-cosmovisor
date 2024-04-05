@@ -7,10 +7,5 @@ versions:
   - name: v0.41.7-ASA-2024-007
     tag: v0.41.7-ASA-2024-007
     binaries:
-      linux/amd64: https://github.com/oraichain/orai/releases/download/v0.41.7-ASA-2024-007/oraid-amd64
-      linux/arm64: https://github.com/oraichain/orai/releases/download/v0.41.7-ASA-2024-007/oraid-arm64
-    libraries:
-      linux/amd64:
-        # uses custom wasm but this might work
-        libwasmvm.x86_64.so: >-
-          https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so
+      docker/linux/amd64: docker://ghcr.io/gregnuj/orai:0.41.7-ASA-2024-007
+      docker/linux/arm64: docker://ghcr.io/gregnuj/orai:0.41.7-ASA-2024-007
