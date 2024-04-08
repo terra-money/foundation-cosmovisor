@@ -5,7 +5,7 @@ git_repo: https://github.com/dydxprotocol/v4-chain/
 versions:
   - name: v1
     tag: v1.0.1
-    height: 1 
+    height: 1
     libraries: {}
     binaries:
       linux/amd64: >-
@@ -30,3 +30,12 @@ versions:
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv3.0.0/dydxprotocold-v3.0.0-linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv3.0.0/dydxprotocold-v3.0.0-linux-arm64.tar.gz
+  - name: v4.0.0
+    tag: v4.0.0
+    height: 12791712
+    libraries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv4.0.0/dydxprotocold-v4.0.0-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv4.0.0/dydxprotocold-v4.0.0-linux-arm64.tar.gz
