@@ -29,7 +29,10 @@ def download_file(url: str, destination: str) -> None:
     with tempfile.TemporaryDirectory() as tmpdirname:
         fn = os.path.basename(destination)
         subprocess.run(['aria2c', '-s16', '-x16', '-d', tmpdirname, '-o', fn, url])
-        subprocess.run(['cp', os.path.join(tmpdirname, fn), destination])
+        tmpfile = os.path.join(tmpdirname, fn)
+        snapfile = fn if fn.startswith("snapshot-") else f'snapshot-{fn}'
+        shutil.copy(tmpfile, snapfile)
+
 
 def remove_first_directory(full_path: str) -> str:
     """
