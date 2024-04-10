@@ -30,7 +30,11 @@ def download_file(url: str, destination: str) -> None:
         fn = os.path.basename(destination)
         subprocess.run(['aria2c', '-s16', '-x16', '-d', tmpdirname, '-o', fn, url])
         tmpfile = os.path.join(tmpdirname, fn)
-        shutil.copy(tmpfile, destination)
+        try:
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            shutil.copy(tmpfile, destination)
+        except PermissionError:
+            pass
 
 
 def remove_first_directory(full_path: str) -> str:
@@ -232,7 +236,8 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
         if not snapfn.startswith('snapshot-'):
             snapfn = f'snapshot-{snapfn}'
         snapfile = os.path.join(snapshots_dir, snapfn)
-        download_file(snapshot_url, snapfile)
+        if not os.path.exists(snapfile):
+            download_file(snapshot_url, snapfile)
         # snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
         # link_overwrite(snapfile, snapshot_latest)
 
