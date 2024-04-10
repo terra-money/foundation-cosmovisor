@@ -30,8 +30,7 @@ def download_file(url: str, destination: str) -> None:
         fn = os.path.basename(destination)
         subprocess.run(['aria2c', '-s16', '-x16', '-d', tmpdirname, '-o', fn, url])
         tmpfile = os.path.join(tmpdirname, fn)
-        snapfile = fn if fn.startswith("snapshot-") else f'snapshot-{fn}'
-        shutil.copy(tmpfile, snapfile)
+        shutil.copy(tmpfile, destination)
 
 
 def remove_first_directory(full_path: str) -> str:
@@ -216,24 +215,28 @@ def restore_snapshot(snapshot_url: str, snapshots_dir: str, chain_home: str) -> 
     :param chain_home: Directory to extract the snapshot to.
     :return: 0 if the snapshot was successfully restored, 1 otherwise.
     """
-    snapfn = os.path.basename(snapshot_url.split('?')[0]) if snapshot_url else find_latest_snapshot(snapshots_dir)
-    if not snapfn:
-        logging.error(f"No Snapshot file found")
-        return 1
     
-    snapfile = os.path.join(snapshots_dir, snapfn)
-    snapshot_url = snapshot_url if snapshot_url else f'file://{snapfile}'
-    
-    if not snapshot_url.startswith('file://'):
+    if not snapshot_url:
+        snapfn = find_latest_snapshot(snapshots_dir)
+        snapfile = os.path.join(snapshots_dir, snapfn)
+        snapshot_url = f'file://{snapfile}'
+        if not snapfn:
+            logging.error(f"No Snapshot file found")
+            return 1
+    elif snapshot_url.startswith('file://'):
+        snapfn = os.path.basename(snapshot_url.split('?')[0]) 
+        snapfile = snapshot_url[7:]
+    else:
         logging.info(f"Downloading snapshot from {snapshot_url}")
-        target = os.path.join(snapshots_dir, f'snapshot-{snapfn}') if not snapfn.startswith('snapshot-') else snapfile
-        download_file(snapshot_url, target)
+        snapfn = os.path.basename(snapshot_url.split('?')[0]) 
+        if not snapfn.startswith('snapshot-'):
+            snapfn = f'snapshot-{snapfn}'
+        snapfile = os.path.join(snapshots_dir, snapfn)
+        download_file(snapshot_url, snapfile)
         # snapshot_latest = f'{snapshots_dir}/snapshot-latest.tar.lz4'
         # link_overwrite(snapfile, snapshot_latest)
-    elif snapshot_url[len('file://'):] != snapfile:
-        shutil.copy(snapshot_url[len('file://'):], snapfile)
 
-    logging.info(f"Extracting {snapfn} to {chain_home}")
+    logging.info(f"Extracting {snapfile} to {chain_home}")
     if not extract_file(snapfile, chain_home):
         return 1
 
