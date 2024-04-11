@@ -79,6 +79,7 @@ prepare(){
     modify_client_toml
     modify_config_toml
     modify_app_toml
+    entrypoint_d
 }
 
 start(){
@@ -401,6 +402,17 @@ prepare_statesync(){
         curl -sSL "${WASM_URL}" | lz4 -c -d | tar -x -C "${wasm_base_dir}"
         chown -R cosmovisor:cosmovisor "${wasm_base_dir}"
     fi
+}
+
+entrypoint_d(){
+    TAG="$(basename $0 '.sh')"
+
+    adds=/etc/entrypoint.d/*
+    for add in ${adds}; do 
+        echo "$TAG: running $add"
+        chmod a+rx $add
+        $add
+    done
 }
 
 # check to see if this file is being run or sourced from another script
