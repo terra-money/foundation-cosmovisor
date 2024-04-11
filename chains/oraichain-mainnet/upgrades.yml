@@ -10,5 +10,5 @@ versions:
       docker/linux/amd64: docker://oraichain/foundation-orai:0.41.7-alpine-prod
     libraries:
       linux/amd64:
-        libgcc: >-
+        libgcc_s.so.1: >-
           docker://oraichain/foundation-orai:0.41.7-alpine-prod
