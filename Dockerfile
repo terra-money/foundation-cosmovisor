@@ -70,7 +70,6 @@ ENV CHAIN_NAME=${CHAIN_NAME} \
     LD_LIBRARY_PATH=/app/cosmovisor/current/lib
 
 COPY ./chains/${CHAIN_DIR}/* /etc/default/
-RUN mkdir -p /etc/entrypoint.d
 
 # install binaries to /opt/cosmovisor
 RUN set -eux && \
