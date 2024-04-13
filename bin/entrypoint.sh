@@ -405,14 +405,13 @@ prepare_statesync(){
 }
 
 entrypoint_d(){
-    TAG="$(basename $0 '.sh')"
-
-    adds=/etc/entrypoint.d/*
-    for add in ${adds}; do 
-        echo "$TAG: running $add"
-        chmod a+rx $add
-        $add
-    done
+    if [ -d "/etc/entrypoint_d" ]; then
+        adds=/etc/entrypoint.d/*
+        for add in ${adds}; do 
+            echo "Running $add"
+            $add
+        done
+    fi
 }
 
 # check to see if this file is being run or sourced from another script
