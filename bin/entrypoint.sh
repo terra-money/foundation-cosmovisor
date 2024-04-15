@@ -405,9 +405,9 @@ prepare_statesync(){
 }
 
 entrypoint_d(){
-    if [ -d "/etc/entrypoint_d" ]; then
+    if [ -d "/etc/entrypoint.d" ]; then
         adds=/etc/entrypoint.d/*
-        for add in ${adds}; do 
+        for add in ${adds}; do
             echo "Running $add"
             $add
         done
