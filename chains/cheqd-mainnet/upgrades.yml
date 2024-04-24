@@ -1,4 +1,4 @@
-# ready 20231020
+# ready 20240424
 chain_name: cheqd
 daemon_name: cheqd-noded
 network_type: mainnet
@@ -43,3 +43,13 @@ versions:
         https://github.com/cheqd/cheqd-node/releases/download/v1.4.4/cheqd-noded-1.4.4-linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/cheqd/cheqd-node/releases/download/v1.4.4/cheqd-noded-1.4.4-linux-arm64.tar.gz
+  - name: v2
+    tag: v2.0.1
+    alias: v2.0.1
+    height: '13024570'
+    proposal:
+    binaries:
+      linux/amd64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v2.0.1/cheqd-noded-2.0.1-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/cheqd/cheqd-node/releases/download/v2.0.1/cheqd-noded-2.0.1-linux-arm64.tar.gz
