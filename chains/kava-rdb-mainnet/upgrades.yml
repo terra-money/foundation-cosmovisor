@@ -38,36 +38,28 @@ versions:
   #   binaries: 
   #     docker/linux/amd64: >-
   #       docker://ghcr.io/terra-money/foundation-static-builds/kava:0.23.3
-  - name: v0.24.0
-    tag: v0.24.1
-    height: '5597000'
-    proposal: '146'
-    binaries:
-      docker/linux/amd64: >-
-        docker://kava/kava:v0.24.0-rocksdb
-    libraries:
-      linux/amd64:
-        librocksdb.so.8.1: >-
-          docker://kava/kava:v0.24.0-rocksdb
-        libsnappy.so.1: >-
-          docker://kava/kava:v0.24.0-rocksdb
-        libgflags.so.2.2: >-
-          docker://kava/kava:v0.24.0-rocksdb
+  # - name: v0.24.0
+  #   tag: v0.24.1
+  #   height: '5597000'
+  #   proposal: '146'
+  #   binaries:
+  #     docker/linux/amd64: >-
+  #       docker://ghcr.io/terra-money/foundation-static-builds/kava:0.23.3
   - name: v0.25.0
-    tag: v0.25.0
+    tag: v0.25.1
     height: '7638000'
     proposal: '168'
     binaries:
       docker/linux/amd64: >-
-        docker://kava/kava:v0.25.0-rocksdb
+        docker://kava/kava:v0.25.1-rocksdb
     libraries:
       linux/amd64:
         librocksdb.so.8.1: >-
-          docker://kava/kava:v0.25.0-rocksdb
+          docker://kava/kava:v0.25.1-rocksdb
         libsnappy.so.1: >-
-          docker://kava/kava:v0.25.0-rocksdb
+          docker://kava/kava:v0.25.1-rocksdb
         libgflags.so.2.2: >-
-          docker://kava/kava:v0.25.0-rocksdb
+          docker://kava/kava:v0.25.1-rocksdb
   - name: v0.26.0
     tag: v0.26.0
     height: '9561866'

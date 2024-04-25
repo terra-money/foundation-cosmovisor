@@ -44,7 +44,7 @@ versions:
     proposal: '146'
     binaries:
       docker/linux/amd64: >-
-        docker://kava/kava:v0.24.0-goleveldb
+        docker://ghcr.io/terra-money/foundation-static-builds/kava:0.24.1
   - name: v0.25.0
     tag: v0.25.0
     height: '7638000'
