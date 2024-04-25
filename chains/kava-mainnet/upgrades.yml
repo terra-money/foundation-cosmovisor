@@ -54,7 +54,7 @@ versions:
         docker://kava/kava:v0.25.0-goleveldb
   - name: v0.26.0
     tag: v0.26.0
-    height: '7638000'
+    height: '9561866'
     proposal: '178'
     binaries:
       docker/linux/amd64: >-
