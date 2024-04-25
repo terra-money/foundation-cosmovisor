@@ -69,7 +69,7 @@ versions:
           docker://kava/kava:v0.26.0-rocksdb
     libraries:
       linux/amd64:
-        librocksdb.so.8.1: >-
+        librocksdb.so.8.10: >-
           docker://kava/kava:v0.26.0-rocksdb
         libsnappy.so.1: >-
           docker://kava/kava:v0.26.0-rocksdb
