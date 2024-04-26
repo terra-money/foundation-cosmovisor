@@ -37,14 +37,14 @@ versions:
         https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_amd64.zip
       linux/arm64: >-
         https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_arm64.zip
-  - name: v0.22.0
-    tag: v0.22.7
-    height: '0'
-    binaries:
-      linux/amd64: >-
-        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
-      linux/arm64: >-
-        https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_arm64.zip
+  # - name: v0.22.0
+  #   tag: v0.22.7
+  #   height: '0'
+  #   binaries:
+  #     linux/amd64: >-
+  #       https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
+  #     linux/arm64: >-
+  #       https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_arm64.zip
   - name: v0.24.0
     alias: v0.24.0
     height: '12606074'
