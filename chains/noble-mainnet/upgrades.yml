@@ -43,12 +43,28 @@ versions:
     binaries:
       linux/amd64: https://github.com/strangelove-ventures/noble/releases/download/v4.0.0/nobled_linux-amd64
       linux/arm64: https://github.com/strangelove-ventures/noble/releases/download/v4.0.0/nobled_linux-arm64
-  # Emergency upgrade to 4.0.3 around 5262000
+  # - name: v4.0.1
+  #   alias: v4.0.1
+  #   height: 3529808
+  #   proposal: ''
+  #   tag: v4.0.1
+  #   binaries:
+  #     docker/linux/amd64: >-
+  #       docker://ghcr.io/terra-money/foundation-static-builds/noble:4.0.1
+  # Emergency upgrade to 4.0.at 5262000
   - name: v4.0.1
     alias: v4.0.3
-    height: 3529808 
+    height: 3529808
     proposal: ""
     tag: v4.0.3
     binaries:
       linux/amd64: https://github.com/noble-assets/noble/releases/download/v4.0.3/nobled_linux-amd64
       linux/arm64: https://github.com/noble-assets/noble/releases/download/v4.0.3/nobled_linux-arm64
+  - name: v4.1.1
+    alias: v4.1.1
+    height: ""
+    proposal: ""
+    tag: v4.0.3
+    binaries:
+      linux/amd64: https://github.com/noble-assets/noble/releases/download/v4.1.1/nobled_linux-amd64
+      linux/arm64: https://github.com/noble-assets/noble/releases/download/v4.1.1/nobled_linux-arm64
