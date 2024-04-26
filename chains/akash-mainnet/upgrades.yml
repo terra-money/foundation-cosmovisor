@@ -5,33 +5,33 @@ network_type: mainnet
 git_repo: https://github.com/akash-network/node
 versions:
   - name: genesis
-    height: '1'
+    height: 1
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.10.0/akash_0.10.0_linux_amd64.zip
   - name: akashnet-2-upgrade-1
-    height: '455200'
-    proposal: '5'
+    height: 455200
+    proposal: 5
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.12.0/akash_0.12.0_linux_amd64.zip
   - name: akash_v0.15.0_cosmos_v0.44.x
-    height: '5629650'
-    proposal: '19'
+    height: 5629650
+    proposal: 19
     binaries:
       linux/amd64: >-
           https://github.com/akash-network/node/releases/download/v0.16.0/akash_0.16.0_linux_amd64.zip
   - name: v0.18.0
-    height: '8526250'
-    proposal: '27'
+    height: 8526250
+    proposal: 27
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.18.0/akash_linux_amd64.zip?checksum=sha256:1c0582bdbe7ce1c90eb6df5c29632fc08c07df7254399f98eb6e51fd8a1091ce
       linux/arm64: >-
         https://github.com/akash-network/node/releases/download/v0.18.0/akash_linux_arm64.zip?checksum=sha256:2e098b803adbbc28c1555d02d83dfebd46f95a95be3b5648c65c0f47ff26a8b4
   - name: v0.20.0
-    height: '8998907'
-    proposal: '29'
+    height: 8998907
+    proposal: 29
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_amd64.zip
@@ -39,7 +39,7 @@ versions:
         https://github.com/akash-network/node/releases/download/v0.20.0/akash_linux_arm64.zip
   # - name: v0.22.0
   #   tag: v0.22.7
-  #   height: '0'
+  #   height: 0
   #   binaries:
   #     linux/amd64: >-
   #       https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_amd64.zip
@@ -47,8 +47,8 @@ versions:
   #       https://github.com/akash-network/node/releases/download/v0.22.7/akash_linux_arm64.zip
   - name: v0.24.0
     alias: v0.24.0
-    height: '12606074'
-    proposal: '224'
+    height: 12606074
+    proposal: 224
     binaries:
       linux/amd64: >-
         https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_amd64.zip
@@ -56,8 +56,8 @@ versions:
         https://github.com/akash-network/node/releases/download/v0.24.0/akash_linux_arm64.zip
   - name: v0.26.0
     alias: v0.26.1
-    height: '12992204'
-    proposal: '231'
+    height: 12992204
+    proposal: 231
     binaries:
       darwin/amd64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
       darwin/arm64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_darwin_all.zip?checksum=sha256:351dfaf70b211bc2fbd77a692928df34c55febc71403c13cf5399004ae6675ad
@@ -65,29 +65,29 @@ versions:
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.26.1/akash_linux_arm64.zip?checksum=sha256:583ff9c6586014e4cf9a6a14529d53385a3d16857f89d571c50606f389eb47dc
   - name: v0.26.2
     alias: v0.26.2
-    height: '13602144'
+    height: 13602144
     proposal:
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.26.2/akash_0.26.2_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.26.2/akash_0.26.2_linux_arm64.zip
   - name: v0.28.0
     alias: v0.28.2
-    height: '13759618'
-    proposal: '237'
+    height: 13759618
+    proposal: 237
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.28.2/akash_0.28.2_linux_arm64.zip
   - name: v0.30.0
     alias: v0.30.0
-    height: '13880774'
-    proposal: '238'
+    height: 13880774
+    proposal: 238
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.30.0/akash_0.30.0_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.30.0/akash_0.30.0_linux_arm64.zip
   - name: v0.32.0
     alias: v0.32.0
-    height: '15414427'
-    proposal: '249'
+    height: 15414427
+    proposal: 249
     binaries:
       linux/amd64: https://github.com/akash-network/node/releases/download/v0.32.0/akash_0.32.0_linux_amd64.zip
       linux/arm64: https://github.com/akash-network/node/releases/download/v0.32.0/akash_0.32.0_linux_arm64.zip
