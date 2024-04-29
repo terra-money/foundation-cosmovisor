@@ -67,3 +67,10 @@ versions:
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.9.3-1
+  - name: v1.0.2
+    tag: v1.0.2
+    proposal: 618
+    height: 18700000
+    binaries:
+      docker/linux/amd64: >-
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.1.2
