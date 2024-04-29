@@ -73,4 +73,4 @@ versions:
     height: 18700000
     binaries:
       docker/linux/amd64: >-
-        docker://ghcr.io/terra-money/foundation-static-builds/kujira:0.1.2
+        docker://ghcr.io/terra-money/foundation-static-builds/kujira:1.0.2
