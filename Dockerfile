@@ -25,7 +25,7 @@ RUN pacman -Syyu --noconfirm \
 RUN set -eux && \
     curl -sSL https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2F${COSMOVISOR_VERSION}/cosmovisor-${COSMOVISOR_VERSION}-linux-amd64.tar.gz | \
     tar -xz -C /usr/local/bin cosmovisor && \
-    rm /usr/lib/python3.11/EXTERNALLY-MANAGED
+    rm /usr/lib/python3.11/EXTERNALLY-MANAGED || true
 
 COPY --from=ghcr.io/binaryholdings/cosmprund:v1.0.0 /usr/bin/cosmprund /usr/local/bin/cosmprund
 COPY ./etc /etc/
