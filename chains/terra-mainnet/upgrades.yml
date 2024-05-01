@@ -94,4 +94,4 @@ versions:
     tag: v2.11.1
     binaries:
       linux/amd64: >-
-        https://github.com/terra-money/core/releases/download/v2.11.0/terra_2.11.1_Linux_x86_64.tar.gz
+        https://github.com/terra-money/core/releases/download/v2.11.1/terra_2.11.1_Linux_x86_64.tar.gz
