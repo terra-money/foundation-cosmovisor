@@ -43,7 +43,7 @@ versions:
     binaries:
       linux/amd64: https://github.com/noble-assets/noble/releases/download/v4.0.3/nobled_linux-amd64
       linux/arm64: https://github.com/noble-assets/noble/releases/download/v4.0.3/nobled_linux-arm64
-  - name: v4.1.0
+  - name: fusion
     alias: v4.1.2
     height: 5797500
     proposal: ""
