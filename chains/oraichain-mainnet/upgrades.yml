@@ -4,15 +4,15 @@ daemon_name: oraid
 network_type: mainnet
 git_repo: https://github.com/oraichain/orai
 versions:
+  # - name: v0.41.7
+  #   tag: v0.41.7-ASA-2024-007
+  #   binaries:
+  #     docker/linux/amd64: docker://oraichain/foundation-orai:0.41.7-alpine-prod
+  #   libraries:
+  #     linux/amd64:
+  #       libgcc_s.so.1: >-
+  #         docker://oraichain/foundation-orai:0.41.7-alpine-prod
   - name: v0.41
-    tag: v0.41.7-ASA-2024-007
-    binaries:
-      docker/linux/amd64: docker://oraichain/foundation-orai:0.41.7-alpine-prod
-    libraries:
-      linux/amd64:
-        libgcc_s.so.1: >-
-          docker://oraichain/foundation-orai:0.41.7-alpine-prod
-  - name: v0.41.8
     tag: v0.41.8
     binaries:
       docker/linux/amd64: docker://oraichain/foundation-orai:0.41.8-alpine-prod
