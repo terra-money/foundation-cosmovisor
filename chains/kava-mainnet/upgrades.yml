@@ -7,55 +7,55 @@ git_repo: https://github.com/Kava-Labs/kava
 versions:
   - name: v0.17.0
     tag: v0.17.7
-    height: '1'
+    height: 1
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.17.7
   - name: v0.18.0
     tag: v0.18.2
-    height: '974570'
-    proposal: ''
+    height: 974570
+    proposal: 
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.18.2
   - name: v0.19.0
     tag: v0.19.2
-    height: '2098400'
-    proposal: '102'
+    height: 2098400
+    proposal: 102
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.19.2
   - name: v0.21.0
     tag: v0.21.1
-    height: '3607200'
-    proposal: '124'
+    height: 3607200
+    proposal: 124
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.21.1
   - name: v0.23.0
     tag: v0.23.3
-    height: '4832500'
+    height: 4832500
     binaries: 
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.23.3
   - name: v0.24.0
     tag: v0.24.1
-    height: '5597000'
-    proposal: '146'
+    height: 5597000
+    proposal: 146
     binaries:
       docker/linux/amd64: >-
         docker://ghcr.io/terra-money/foundation-static-builds/kava:0.24.1
   - name: v0.25.0
     tag: v0.25.0
-    height: '7638000'
-    proposal: '168'
+    height: 7638000
+    proposal: 168
     binaries:
       docker/linux/amd64: >-
         docker://kava/kava:v0.25.0-goleveldb
   - name: v0.26.0
     tag: v0.26.0
-    height: '7638000'
-    proposal: '178'
+    height: 9561866
+    proposal: 178
     binaries:
       docker/linux/amd64: >-
         docker://kava/kava:v0.26.0-goleveldb
