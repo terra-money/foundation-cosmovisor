@@ -20,3 +20,11 @@ versions:
       linux/amd64:
         libgcc_s.so.1: >-
           docker://oraichain/foundation-orai:0.41.8-alpine-prod
+  - name: v0.42
+    tag: v0.42.0
+    binaries:
+      docker/linux/amd64: docker://oraichain/foundation-orai:0.42.0-alpine-prod
+    libraries:
+      linux/amd64:
+        libgcc_s.so.1: >-
+          docker://oraichain/foundation-orai:0.42.0-alpine-prod
