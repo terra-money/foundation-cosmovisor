@@ -78,3 +78,14 @@ versions:
       linux/amd64:
         libwasmvm.x86_64.so: >-
           https://github.com/comdex-official/comdex/releases/download/v13.3.0/libwasmvm.x86_64.so
+  - name: v14.1.0
+    tag: v14.1.0
+    height: '13730000'
+    proposal: '234'
+    binaries:
+      linux/amd64: >-
+        https://github.com/comdex-official/comdex/releases/download/v14.1.0/comdex-linux-amd64.tar.gz
+    libraries:
+      linux/amd64:
+        libwasmvm.x86_64.so: >-
+          https://github.com/comdex-official/comdex/releases/download/v14.1.0/libwasmvm.x86_64.so
