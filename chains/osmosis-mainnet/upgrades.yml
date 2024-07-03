@@ -204,3 +204,13 @@ versions:
         https://github.com/osmosis-labs/osmosis/releases/download/v24.0.1/osmosisd-24.0.1-linux-arm64
       linux/amd64: >-
         https://github.com/osmosis-labs/osmosis/releases/download/v24.0.1/osmosisd-24.0.1-linux-amd64
+  - name: v25
+    alias: v25
+    height: '15753500'
+    proposal: '782'
+    tag: v25.2.0
+    binaries:
+      linux/arm64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v25.2.0/osmosisd-25.2.0-linux-arm64
+      linux/amd64: >-
+        https://github.com/osmosis-labs/osmosis/releases/download/v25.2.0/osmosisd-25.2.0-linux-amd64
