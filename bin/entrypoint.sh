@@ -114,9 +114,9 @@ initialize_node(){
     if [ ! -d "${CONFIG_DIR}" ] || [ ! -f "${GENESIS_FILE}" ]; then
         logger "Initializing node from scratch..."
         mkdir -p "${DATA_DIR}"
-        chown -R cosmovisor:cosmovisor "${DATA_DIR}"
         /usr/local/bin/cosmovisor run init "${MONIKER:="moniker"}" --home "${CHAIN_HOME}" --chain-id "${CHAIN_ID}"
         chown -R cosmovisor:cosmovisor "${CONFIG_DIR}"
+        chown -R cosmovisor:cosmovisor "${DATA_DIR}"
         if [ -f "${GENESIS_FILE}" ]; then
             rm "${GENESIS_FILE}"
         else
