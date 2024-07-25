@@ -88,3 +88,9 @@ versions:
     height: 15873890
     binaries:
       linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v22.0.0/junod
+  - name: v23
+    tag: v23.0.0
+    proposal:
+    height: 18032000
+    binaries:
+      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v23.0.0/junod
