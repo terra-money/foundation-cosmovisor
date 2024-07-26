@@ -7,39 +7,39 @@ versions:
   - name: 1.0.5
     alias: 1.0.5
     height: 1
-    proposal: ''
+    proposal: ""
     tag: v1.0.5-full-archive
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v1.0.5-full-archive/terra_1.0.5_Linux_x86_64.tar.gz?checksum=sha256:af3ee3bd99bd719d6d9a93a40af9f0bc49bb3866c68e923e284876784126f38c
   - name: v2
     alias: 1.1.0
-    height: '11734000'
-    proposal: '11367'
+    height: "11734000"
+    proposal: "11367"
     tag: v1.1.0
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v1.1.0/terra_1.1.0_Linux_x86_64.tar.gz?checksum=sha256:fd83c14bcfadea36ad444c219ab557b9d65d2f74be0684498a5c41e3df7cb535
   - name: v3
     alias: 2.0.1
-    height: '12815210'
-    proposal: '11511'
+    height: "12815210"
+    proposal: "11511"
     tag: v2.0.1
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v2.0.1/terra_2.0.1_Linux_x86_64.tar.gz?checksum=sha256:b9edfd51080c9c9ae16b30afd1b8490d7278e51d521ccc0f2afcbb7e3b389b8d
   - name: v4
     alias: 2.1.1
-    height: '13215800'
-    proposal: '11561'
+    height: "13215800"
+    proposal: "11561"
     tag: v2.1.1
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v2.1.1/terra_2.1.1_Linux_x86_64.tar.gz?checksum=sha256:9bf91be244af95f1afcf7fc1ddb1852aa96651adf94e9668c16c7df5596100d6
   - name: v5
-    alias: '2.2.1'
-    height: '14514000'
-    proposal: '11766'
+    alias: "2.2.1"
+    height: "14514000"
+    proposal: "11766"
     tag: v2.2.1
     binaries:
       linux/amd64: >-
@@ -47,26 +47,34 @@ versions:
       linux/arm64: >-
         https://github.com/terra-money/classic-core/releases/download/v2.2.1/terra_2.2.1_Linux_arm64.tar.gz?checksum=sha256:86d457e2a6ee819e1526f41bb80e2be7911798d35ebaedb698aea66e1ff9ecd7
   - name: v6
-    alias: '2.3.0'
-    height: '15493370'
-    proposal: '11874'
+    alias: "2.3.0"
+    height: "15493370"
+    proposal: "11874"
     tag: v2.3.0
     binaries:
       linux/amd64: >-
         https://github.com/terra-money/classic-core/releases/download/v2.3.0/terra_2.3.0_Linux_x86_64.tar.gz?checksum=sha256:03a788fb401f86c663243346df19f95ceaf98881bb2d84ea385d293d91598aa7
   - name: v6_1
-    alias: '2.3.3'
-    height: '15751600'
-    proposal: '11890'
+    alias: "2.3.3"
+    height: "15751600"
+    proposal: "11890"
     tag: v2.3.3
     binaries:
       linux/amd64: >-
         https://github.com/classic-terra/core/releases/download/v2.3.3/terra_2.3.3_Linux_x86_64.tar.gz
   - name: v7
-    alias: '2.4.2'
-    height: '17309000'
-    proposal: '12090'
+    alias: "2.4.2"
+    height: "17309000"
+    proposal: "12090"
     tag: v2.4.2
     binaries:
       linux/amd64: >-
         https://github.com/classic-terra/core/releases/download/v2.4.2/terra_2.4.2_Linux_x86_64.tar.gz?checksum=sha256:33af2144befd0191196f5d33bbabf61df59a353fee0e4dc9dbbe2613a00e1ed0
+  - name: v8
+    alias: "3.0.4"
+    height: "18303000"
+    proposal: "12110"
+    tag: v3.0.4
+    binaries:
+      linux/amd64: >-
+        https://github.com/classic-terra/core/releases/download/v3.0.4/terra_3.0.4_Linux_x86_64.tar.gz
