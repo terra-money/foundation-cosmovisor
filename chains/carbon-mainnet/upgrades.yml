@@ -7,7 +7,7 @@ libraries:
   [
     "https://tfl-mainnets.s3.amazonaws.com/carbon/libleveldb.so.1",
     "https://tfl-mainnets.s3.amazonaws.com/carbon/librocksdb.so.7.10",
-    "https://tfl-mainnets.s3.amazonaws.com/carbon/librocksdb.so.8.9"
+    "https://tfl-mainnets.s3.amazonaws.com/carbon/librocksdb.so.8.9",
   ]
 versions:
   - name: v2.0.0
@@ -480,3 +480,12 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.44.0/carbond2.44.0-mainnet.linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.44.0/carbond2.44.0-mainnet.linux-arm64.tar.gz
+  - name: v2.45.0
+    alias: v2.45.0
+    height: 60040321
+    proposal: 361
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.45.0/carbond2.45.0-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.45.0/carbond2.45.0-mainnet.linux-arm64.tar.gz
