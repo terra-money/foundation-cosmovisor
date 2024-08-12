@@ -59,3 +59,23 @@ versions:
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.0.5/dydxprotocold-v5.0.5-linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.0.5/dydxprotocold-v5.0.5-linux-arm64.tar.gz
+  - name: v5.1.0
+    tag: v5.1.0
+    proposal: 125
+    height: 21142000
+    libraries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.1.0/dydxprotocold-v5.1.0-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.1.0/dydxprotocold-v5.1.0-linux-arm64.tar.gz
+  - name: v5.2.0
+    tag: v5.2.0
+    proposal: 130
+    height: 22170000
+    libraries: {}
+    binaries:
+      linux/amd64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.2.0/dydxprotocold-v5.2.0-linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.2.0/dydxprotocold-v5.2.0-linux-arm64.tar.gz

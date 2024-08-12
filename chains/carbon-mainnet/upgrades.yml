@@ -489,3 +489,12 @@ versions:
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.45.0/carbond2.45.0-mainnet.linux-amd64.tar.gz
       linux/arm64: >-
         https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.45.0/carbond2.45.0-mainnet.linux-arm64.tar.gz
+  - name: v2.46.0
+    alias: v2.46.0
+    height: 60667951
+    proposal: 365
+    binaries:
+      linux/amd64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.46.0/carbond2.46.0-mainnet.linux-amd64.tar.gz
+      linux/arm64: >-
+        https://github.com/Switcheo/carbon-bootstrap/releases/download/v2.46.0/carbond2.46.0-mainnet.linux-arm64.tar.gz
