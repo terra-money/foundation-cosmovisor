@@ -93,4 +93,7 @@ versions:
     proposal:
     height: 18032000
     binaries:
-      linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v23.0.0/junod
+      # linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v23.0.0/junod
+
+      # state breaking and have to be applied after block 18622350
+      docker/linux/amd64: docker://ghcr.io/terra-money/foundation-static-builds/juno:23.1.0
