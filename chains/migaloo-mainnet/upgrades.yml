@@ -57,3 +57,9 @@ versions:
     height: 7824534
     binaries:
       linux/amd64: docker://ghcr.io/terra-money/foundation-static-builds/migaloo:4.2.0
+
+  - name: v4.2.2
+    tag: v4.2.2
+    height: 8322000
+    binaries:
+      linux/amd64: docker://ghcr.io/terra-money/foundation-static-builds/migaloo:4.2.2-fix
