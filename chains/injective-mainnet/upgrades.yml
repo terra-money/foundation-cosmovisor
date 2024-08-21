@@ -98,3 +98,12 @@ versions:
     libraries:
       linux/amd64:
         libwasmvm.x86_64.so: https://github.com/CosmWasm/wasmvm/releases/download/v2.0.0/libwasmvm.x86_64.so
+  - name: v1.13.2
+    tag: v1.13.2-1723753267
+    proposal: 424
+    height: 82830000
+    binaries:
+      linux/amd64: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.13.2-1723753267/linux-amd64.zip
+    libraries:
+      linux/amd64:
+        libwasmvm.x86_64.so: https://github.com/CosmWasm/wasmvm/releases/download/v2.1.2/libwasmvm.x86_64.so
