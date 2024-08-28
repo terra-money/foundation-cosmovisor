@@ -97,3 +97,12 @@ versions:
 
       # state breaking and have to be applied after block 18622350
       docker/linux/amd64: docker://ghcr.io/terra-money/foundation-static-builds/juno:23.1.0
+  - name: v24
+    tag: v24.0.0
+    proposal:
+    height: 19022500
+    binaries:
+      # linux/amd64: https://github.com/CosmosContracts/juno/releases/download/v23.0.0/junod
+
+      # state breaking and have to be applied after block 18622350
+      docker/linux/amd64: docker://ghcr.io/terra-money/foundation-static-builds/juno:24.0.0
